@@ -10,7 +10,7 @@ public class Lexer {
     public static enum Type {
         // This Scheme-like language has three token types:
         // open parens, close parens, and an "atom" type
-        PAREN, ATOM, BINARY_OP;
+        PAREN, ATOM, BINARY_OP, INT;
     }
     public static class Token {
         public final Type t;
@@ -54,31 +54,32 @@ public class Lexer {
         List<Token> result = new ArrayList<Token>();
         for(int i = 0; i < input.length(); ) {
             switch(input.charAt(i)) {
-            // case '(':
-            //     result.add(new Token(Type.LPAREN, "("));
-            //     i++;
-            //     break;
-            case '(':
-            case ')':{
-                result.add(new Token(Type.PAREN, String.valueOf(input.charAt(i))));
-                i++;
-                break;
-            }
-            case '-':    
-            case '+':{
-                result.add(new Token(Type.BINARY_OP, String.valueOf(input.charAt(i))));
-                i++;
-                break;
-            }  
-            default:
-                if(Character.isWhitespace(input.charAt(i))) {
+                case '(':
+                case ')':{
+                    result.add(new Token(Type.PAREN, String.valueOf(input.charAt(i))));
                     i++;
-                } else {
-                    String atom = getAtom(input, i);
-                    i += atom.length();
-                    result.add(new Token(Type.ATOM, atom));
+                    break;
                 }
-                break;
+                case '+':
+                case '-':    
+                case '*':
+                case '/':
+                case '%':
+                case '<':
+                case '>':{
+                    result.add(new Token(Type.BINARY_OP, String.valueOf(input.charAt(i))));
+                    i++;
+                    break;
+                }  
+                default:
+                    if(Character.isWhitespace(input.charAt(i))) {
+                        i++;
+                    } else {
+                        String atom = getAtom(input, i);
+                        i += atom.length();
+                        result.add(new Token(Type.ATOM, atom));
+                    }
+                    break;
             }
         }
         return result;
