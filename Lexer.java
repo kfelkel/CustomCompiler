@@ -10,7 +10,7 @@ public class Lexer {
     public static enum Type {
         // This Scheme-like language has three token types:
         // open parens, close parens, and an "atom" type
-        LPAREN, RPAREN, ATOM, Binary_OP;
+        PAREN, ATOM, BINARY_OP;
     }
     public static class Token {
         public final Type t;
@@ -22,7 +22,13 @@ public class Lexer {
         }
         public String toString() {
             if(t == Type.ATOM) {
-                return "ATOM<" + c + ">";
+                return "ATOM(" + c + ")";
+            }
+            if(t == Type.BINARY_OP){
+                return "Binary_op(" + c + ")";
+            }
+            if(t == Type.PAREN){
+                return "PAREN(" + c + ")";
             }
             return t.toString();
         }
@@ -48,19 +54,22 @@ public class Lexer {
         List<Token> result = new ArrayList<Token>();
         for(int i = 0; i < input.length(); ) {
             switch(input.charAt(i)) {
+            // case '(':
+            //     result.add(new Token(Type.LPAREN, "("));
+            //     i++;
+            //     break;
             case '(':
-                result.add(new Token(Type.LPAREN, "("));
+            case ')':{
+                result.add(new Token(Type.PAREN, String.valueOf(input.charAt(i))));
                 i++;
                 break;
-            case ')':
-                result.add(new Token(Type.RPAREN, ")"));
-                i++;
-                break;
+            }
             case '-':    
-            case '+':
-                result.add(new Token(Type.Binary_OP, "+"));
+            case '+':{
+                result.add(new Token(Type.BINARY_OP, String.valueOf(input.charAt(i))));
                 i++;
                 break;
+            }  
             default:
                 if(Character.isWhitespace(input.charAt(i))) {
                     i++;
@@ -78,7 +87,6 @@ public class Lexer {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         String name = in.nextLine();
-
 
         List<Token> tokens = lex(name);
         for(Token t : tokens) {
