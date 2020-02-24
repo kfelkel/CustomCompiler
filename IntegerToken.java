@@ -4,4 +4,8 @@ public class IntegerToken implements Token {
     public IntegerToken(final int value) {
         this.value = value;
     }
+
+    public String toString(){
+        return "IntegerToken(" + value + ")";
+    }
 }
