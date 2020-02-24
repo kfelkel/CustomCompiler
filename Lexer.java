@@ -66,7 +66,8 @@ public class Lexer {
                 case '/':
                 case '%':
                 case '<':
-                case '>':{
+                case '>':
+                case '=':{
                     result.add(new Token(Type.BINARY_OP, String.valueOf(input.charAt(i))));
                     i++;
                     break;
