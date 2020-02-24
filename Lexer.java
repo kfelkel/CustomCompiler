@@ -15,10 +15,12 @@ public class Lexer {
     public static class Token {
         public final Type t;
         public final String c; // contents mainly for atom tokens
+        
         // could have column and line number fields too, for reporting errors later
         public Token(Type t, String c) {
             this.t = t;
             this.c = c;
+            
         }
         public String toString() {
             if(t == Type.ATOM) {
