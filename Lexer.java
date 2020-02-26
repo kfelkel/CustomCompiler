@@ -22,6 +22,17 @@ public class Lexer {
         }
         return s.substring(i, j);
     }
+    public static String getString(String s, int i){
+        int j = i;
+        for(; j < s.length();){
+            if(s.charAt(j)=='"'){
+                return s.substring(i,j);
+            }else{
+                j++;
+            }
+        }
+        return s.substring(i,j);
+    }
     public static String getInt(String s, int i){
         int j = i;
         for (; j < s.length();){
@@ -92,6 +103,9 @@ public class Lexer {
                         }
                         break;
                     }
+                    case '"':{
+
+                    }
                     default:
                         if(Character.isWhitespace(input.charAt(i))){
                             i++;
@@ -122,3 +136,4 @@ public class Lexer {
         }
     }
 }
+

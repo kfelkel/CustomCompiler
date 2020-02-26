@@ -1,4 +1,4 @@
-package Token_Classes;
+package tokens;
 
 public class LeftParenToken implements Token {
     public String toString(){

@@ -28,25 +28,9 @@ public class 	ConstructorToken	implements ReservedWordToken	{}
 
 		
 
-public class 	PlusToken	implements OperatorToken	{}
-public class 	MinusToken	implements OperatorToken	{}
-public class 	MultiplicationToken	implements OperatorToken	{}
-public class 	DivisionToken	implements OperatorToken	{}
-public class 	ModulusToken	implements OperatorToken	{}
-public class 	LessThanToken	implements OperatorToken	{}
-public class 	GreaterThanToken	implements OperatorToken	{}
-public class 	LessThanOrEqualToken	implements OperatorToken	{}
-public class 	GreaterThanOrEqualToken	implements OperatorToken	{}
-public class 	EqualEqualToken	implements OperatorToken	{}
 
 		
 
-
-public class 	LParenToken	extends Token	{}
-public class 	RParenToken 	extends Token	{}
-public class 	LCurlyToken	extends Token	{}
-public class 	RCurlyToken	extends Token	{}
-public class 	EqualsToken	extends Token	{}
 public class 	SemicolonToken	extends Token	{}
 public class 	PeriodToken	extends Token	{}
 public class 	CommaToken	extends Token	{}
