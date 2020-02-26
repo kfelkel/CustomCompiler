@@ -1,4 +1,4 @@
-package Token_Classes;
+package tokens;
 
 public class IntegerToken implements Token {
     public final int value;
