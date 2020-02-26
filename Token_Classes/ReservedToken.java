@@ -1,3 +1,4 @@
+package Token_Classes;
 public class ReservedToken implements Token{
     public final String reserved;
 

@@ -1,3 +1,5 @@
+package Token_Classes;
+
 public class Binary_OPToken implements Token {
     public final String value;
 

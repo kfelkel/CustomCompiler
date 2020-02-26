@@ -1,3 +1,5 @@
+package Token_Classes;
+
 public class IntegerToken implements Token {
     public final int value;
 

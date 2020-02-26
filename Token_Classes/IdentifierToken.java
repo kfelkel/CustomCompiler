@@ -1,3 +1,5 @@
+package Token_Classes;
+
 public class IdentifierToken implements Token {
 
     public final String name;
