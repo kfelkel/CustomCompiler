@@ -1,2 +1,2 @@
-package Token_Classes;
+package tokens;
 public class 	PeriodToken	implements Token	{}

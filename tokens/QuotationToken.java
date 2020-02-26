@@ -1,3 +1,2 @@
-
-package Token_Classes;
+package tokens;
 public class 	QuotationToken	implements Token	{}
