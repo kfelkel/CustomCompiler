@@ -1,2 +1,6 @@
 package tokens.keywords;
-public class 	ForToken	implements ReservedWordToken	{}
+public class 	ForToken	implements ReservedWordToken	{
+    public String toString(){
+        return "ForToken";
+    }
+}

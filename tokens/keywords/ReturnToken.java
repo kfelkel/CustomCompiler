@@ -1,2 +1,6 @@
 package tokens.keywords;
-public class 	ReturnToken	implements ReservedWordToken	{}
+public class 	ReturnToken	implements ReservedWordToken	{
+    public String toString(){
+        return "ReturnToken";
+    }
+}
