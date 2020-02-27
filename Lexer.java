@@ -1,8 +1,13 @@
 import java.util.List;
 import java.util.Scanner;
+
+import tokens.*;
+import tokens.keywords.*;
+import tokens.operatortokens.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import Token_Classes.*;
+
 
 public class Lexer {
     static String[] reserved = { "Int", "String", "Bool", 
@@ -70,61 +75,76 @@ public class Lexer {
                     i += atom.length();
                     result.add(new IntegerToken(Integer.parseInt(atom)));
                 }
-            }else{
-                switch (input.charAt(i)){
-                    case '(':{
-                        result.add(new LeftParenToken());
-                        i++;
-                        break;
-                    }
-                    case ')':{
-                        result.add(new RightParenToken());
-                        i++;
-                        break;
-                    }
-                    case '+':
-                    case '-':
-                    case '*':
-                    case '/':
-                    case '%':{
-                        result.add(new Binary_OPToken(String.valueOf(input.charAt(i))));
-                        i++;
-                        break;
-                    }
-                    case '<':
-                    case '>':
-                    case '=':{
-                        if(Character.isWhitespace(input.charAt(i))){
-                            i++;
-                        }else{
-                            String atom = getDoubleOp(input, i);
-                            i += atom.length();
-                            result.add(new Binary_OPToken(atom));
-                        }
-                        break;
-                    }
-                    case '"':{
-
-                    }
-                    default:
-                        if(Character.isWhitespace(input.charAt(i))){
-                            i++;
-                        }else{
-                            String atom = getAtom(input, i);
-                            i += atom.length();
-                            if (Arrays.asList(reserved).contains(atom)){
-                                result.add(new ReservedToken(atom));
-                            }else{
-                                result.add(new StringToken(atom));
-                            }
-                        }
-                        break;
+            }else if(input.charAt(i)=='('){
+                result.add(new LeftParenToken());
+                i++;
+            }else if(input.charAt(i)==')'){
+                result.add(new RightParenToken());
+                i++;
+            }else if(input.charAt(i)=='+'){
+                result.add(new PlusToken());
+                i++;
+            }else if(input.charAt(i)=='-'){
+                result.add(new MinusToken());
+                i++;
+            }else if(input.charAt(i)=='*'){
+                result.add(new MultiplicationToken());
+                i++;
+            }else if(input.charAt(i)=='/'){
+                result.add(new DivisionToken());
+                i++;
+            }else if(input.charAt(i)=='%'){
+                result.add(new ModulusToken());
+                i++;
+            }else if(input.charAt(i)=='<'){
+                if(input.charAt(i+1)=='='){
+                    result.add(new LessThanOrEqualToken());
+                    i++;
+                    i++;
+                }else{
+                    result.add(new LessThanToken());
+                    i++;
                 }
+            }else if(input.charAt(i)=='>'){
+                if(input.charAt(i+1)=='='){
+                    result.add(new GreaterThanOrEqualToken());
+                    i++;
+                    i++;
+                }else{
+                    result.add(new GreaterThanToken());
+                    i++;
+                }
+            }else if(input.charAt(i)=='='){
+                if(input.charAt(i+1)=='='){
+                    result.add(new EqualEqualToken());
+                    i++;
+                    i++;
+                }else{
+                    result.add(new EqualToken());
+                    i++;
+                }
+            }else{
+                if(Character.isWhitespace(input.charAt(i))){
+                    i++;
+                }else{
+                    String atom = getAtom(input, i);
+                    i += atom.length();
+                    if (Arrays.asList(reserved).contains(atom)){
+
+                    }else{
+                        result.add(new StringToken(atom));
+                    }
+                }
+
             }
+                   
+
         }
-            
         return result;
     }
+          
+        
+
 
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
