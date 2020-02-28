@@ -6,37 +6,21 @@ import tokens.keywords.*;
 import tokens.operatortokens.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class Lexer {
-    static String[] reserved = { "Int", "String", "Bool", 
-                                "Void", "this", "print", 
-                                "println", "new", "for", 
-                                "while", "if", "else", 
-                                "return", "public", "private",
-                                "protected", "class", "constructor" };
-    public static String getAtom(String s, int i){
+    public static String getString(String s, int i){
         int j = i;
         for (; j < s.length();){
             if (Character.isLetter(s.charAt(j)) || Character.isDigit(s.charAt(j))){
                 j++;
-            } else {
-                return s.substring(i, j);
+            }else if(s.charAt(j)=='"'){
+                return s.substring(i,j);
+            }else{
+                return s.substring(i,j);
             }
         }
         return s.substring(i, j);
-    }
-    public static String getString(String s, int i){
-        int j = i;
-        for(; j < s.length();){
-            if(s.charAt(j)=='"'){
-                return s.substring(i,j);
-            }else{
-                j++;
-            }
-        }
-        return s.substring(i,j);
     }
     public static String getInt(String s, int i){
         int j = i;
@@ -100,7 +84,7 @@ public class Lexer {
                 result.add(new ModulusToken());
                 i++;
             }else if(input.charAt(i)=='<'){
-                if(input.charAt(i+1)=='='){
+                if( i+1 < input.length()&&input.charAt(i+1)=='='){
                     result.add(new LessThanOrEqualToken());
                     i++;
                     i++;
@@ -109,7 +93,7 @@ public class Lexer {
                     i++;
                 }
             }else if(input.charAt(i)=='>'){
-                if(input.charAt(i+1)=='='){
+                if(i+1 < input.length()&&input.charAt(i+1)=='='){
                     result.add(new GreaterThanOrEqualToken());
                     i++;
                     i++;
@@ -118,7 +102,7 @@ public class Lexer {
                     i++;
                 }
             }else if(input.charAt(i)=='='){
-                if(input.charAt(i+1)=='='){
+                if(i+1 < input.length()&&input.charAt(i+1)=='='){
                     result.add(new EqualEqualToken());
                     i++;
                     i++;
@@ -126,17 +110,23 @@ public class Lexer {
                     result.add(new EqualToken());
                     i++;
                 }
+            }else if(input.charAt(i)=='\"'){
+                i++;
+                String atom = getString(input, i);
+                i += atom.length();
+                result.add(new QuotationToken(atom));
+                i++;
             }else{
                 if(Character.isWhitespace(input.charAt(i))){
                     i++;
                 }else{
-                    String atom = getAtom(input, i);
+                    String atom = getString(input, i);
                     i += atom.length();
                     if(atom.equals("String")){
                         result.add(new StringKeywordToken());
                     }else if(atom.equals("class")){
                         result.add(new ClassKeywordToken());
-                    }else if(atom.equals("Constructor")){
+                    }else if(atom.equals("constructor")){
                         result.add(new ConstructorKeywordToken());
                     }else if(atom.equals("else")){
                         result.add(new ElseToken());
@@ -156,10 +146,12 @@ public class Lexer {
                         result.add(new ReturnToken());
                     }else if(atom.equals("this")){
                         result.add(new ThisToken());
-                    }else if(atom.equals("void")){
+                    }else if(atom.equals("Void")){
                         result.add(new VoidToken());
                     }else if(atom.equals("while")){
                         result.add(new WhileToken());
+                    }else if(atom.equals("Bool")){
+                        result.add(new BoolKeywordToken());
                     }else{
                         result.add(new StringToken(atom));
                     }
