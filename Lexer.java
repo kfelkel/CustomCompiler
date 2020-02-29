@@ -58,11 +58,11 @@ public class Lexer {
                 i++;
             }
             else if(input.charAt(i)==';'){
-                result.add(new LeftParenToken());
+                result.add(new SemicolonToken());
                 i++;
             }
             else if(input.charAt(i)=='.'){
-                result.add(new PeriodToken());
+                result.add(new DotOperatorToken());
                 i++;
             }
             else if(input.charAt(i)==','){
@@ -150,6 +150,10 @@ public class Lexer {
                         result.add(new VoidToken());
                     }else if(atom.equals("while")){
                         result.add(new WhileToken());
+                    }else if(atom.equals("true")){
+                        result.add(new BoolValueToken(true));
+                    }else if(atom.equals("false")){
+                        result.add(new BoolValueToken(false));
                     }else if(atom.equals("Bool")){
                         result.add(new BoolKeywordToken());
                     }else{
