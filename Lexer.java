@@ -9,13 +9,22 @@ import java.util.ArrayList;
 
 
 public class Lexer {
+    public static String getStringLiteral(String s, int i){
+        int j = i;
+        for (; j < s.length();){
+            if (s.charAt(j)!='\"'){
+                j++;
+            }else{
+                return s.substring(i,j);
+            }
+        }
+        return s.substring(i, j);
+    }
     public static String getString(String s, int i){
         int j = i;
         for (; j < s.length();){
             if (Character.isLetter(s.charAt(j)) || Character.isDigit(s.charAt(j))){
                 j++;
-            }else if(s.charAt(j)=='"'){
-                return s.substring(i,j);
             }else{
                 return s.substring(i,j);
             }
@@ -112,7 +121,7 @@ public class Lexer {
                 }
             }else if(input.charAt(i)=='"'){
                 i++;
-                String atom = getString(input, i);
+                String atom = getStringLiteral(input, i);
                 i += atom.length();
                 result.add(new StringLiteralToken(atom));
                 i++;
