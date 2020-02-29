@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 
 public class Lexer {
-    public static String getStringLiteral(String s, int i){
+    public static String getIdentifierLiteral(String s, int i){
         int j = i;
         for (; j < s.length();){
             if (s.charAt(j)!='\"'){
@@ -20,7 +20,7 @@ public class Lexer {
         }
         return null;
     }
-    public static String getString(String s, int i){
+    public static String getIdentifier(String s, int i){
         int j = i;
         for (; j < s.length();){
             if (Character.isLetter(s.charAt(j)) || Character.isDigit(s.charAt(j))){
@@ -121,7 +121,7 @@ public class Lexer {
                 }
             }else if(input.charAt(i)=='"'){
                 i++;
-                String atom = getStringLiteral(input, i);
+                String atom = getIdentifierLiteral(input, i);
                 i += atom.length();
                 result.add(new StringLiteralToken(atom));
                 i++;
@@ -129,7 +129,7 @@ public class Lexer {
                 if(Character.isWhitespace(input.charAt(i))){
                     i++;
                 }else{
-                    String atom = getString(input, i);
+                    String atom = getIdentifier(input, i);
                     i += atom.length();
                     if(atom.equals("String")){
                         result.add(new StringKeywordToken());
