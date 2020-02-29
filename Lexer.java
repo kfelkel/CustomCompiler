@@ -110,11 +110,11 @@ public class Lexer {
                     result.add(new EqualToken());
                     i++;
                 }
-            }else if(input.charAt(i)=='\"'){
+            }else if(input.charAt(i)=='"'){
                 i++;
                 String atom = getString(input, i);
                 i += atom.length();
-                result.add(new QuotationToken(atom));
+                result.add(new StringLiteralToken(atom));
                 i++;
             }else{
                 if(Character.isWhitespace(input.charAt(i))){
@@ -153,7 +153,7 @@ public class Lexer {
                     }else if(atom.equals("Bool")){
                         result.add(new BoolKeywordToken());
                     }else{
-                        result.add(new StringToken(atom));
+                        result.add(new IdentifierToken(atom));
                     }
                 }
 
