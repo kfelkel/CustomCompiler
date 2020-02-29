@@ -5,7 +5,7 @@ import tokens.operatortokens.*;
 
 public class LexerTest {
 
-    public static void testLex(String input, Token... expectedTokens) {
+    public static void testLex(String input, Token... expectedTokens) throws TokenizationException {
 
         List<Token> expected = new ArrayList<Token>();
         for (final Token token : expectedTokens) {
@@ -15,7 +15,7 @@ public class LexerTest {
         assert (receivedTokens.toString().equals(expected.toString()));
     }
 
-    private static void testAllKeywordsIndividually() {
+    private static void testAllKeywordsIndividually() throws TokenizationException {
         testLex("String", new StringKeywordToken());
         testLex("class", new ClassKeywordToken());
         testLex("constructor", new ConstructorKeywordToken());
@@ -35,46 +35,45 @@ public class LexerTest {
         testLex("false", new BoolValueToken(false));
     }
 
-    private static void testIntegers() {
+    private static void testIntegers() throws TokenizationException {
         testLex("0", new IntegerToken(0));
         testLex("10", new IntegerToken(10));
         testLex("500", new IntegerToken(500));
         testLex("123456", new IntegerToken(123456));
     }
 
-    private static void testStringLiterals(){
+    private static void testStringLiterals() throws TokenizationException {
         testLex("\"word\"", new StringLiteralToken("word"));
         testLex("\"12345\"", new StringLiteralToken("12345"));
         testLex("\"This is a sentence.\"", new StringLiteralToken("This is a sentence."));
         testLex("\"return + while bool if false 1234\"", new StringLiteralToken("return + while bool if false 1234"));
     }
 
-    private static void testOperatorTokensIndividually(){
-        testLex(".",	new DotOperatorToken	());
-        testLex("+",	new PlusToken	());
-        testLex("-",	new MinusToken	());
-        testLex("*",	new MultiplicationToken	());
-        testLex("/",	new DivisionToken	());
-        testLex("%",	new ModulusToken	());
-        testLex("<",	new LessThanToken	());
-        testLex("<=",	new LessThanOrEqualToken	());
-        testLex(">=",	new GreaterThanOrEqualToken	());
-        testLex(">",	new GreaterThanToken	());
-        testLex("=",	new EqualToken	());
-        testLex("==",	new EqualEqualToken	());
-    }
-    
-    private static void TestOtherTokensIndividually(){
-        testLex("(",	new LeftParenToken	());
-        testLex(")",	new RightParenToken	());
-        testLex("{",	new LCurlyToken	());
-        testLex("}",	new RCurlyToken	());
-        testLex(";",	new SemicolonToken	());
-        testLex(",",	new CommaToken	());
+    private static void testOperatorTokensIndividually() throws TokenizationException {
+        testLex(".", new DotOperatorToken());
+        testLex("+", new PlusToken());
+        testLex("-", new MinusToken());
+        testLex("*", new MultiplicationToken());
+        testLex("/", new DivisionToken());
+        testLex("%", new ModulusToken());
+        testLex("<", new LessThanToken());
+        testLex("<=", new LessThanOrEqualToken());
+        testLex(">=", new GreaterThanOrEqualToken());
+        testLex(">", new GreaterThanToken());
+        testLex("=", new EqualToken());
+        testLex("==", new EqualEqualToken());
     }
 
+    private static void TestOtherTokensIndividually() throws TokenizationException {
+        testLex("(", new LeftParenToken());
+        testLex(")", new RightParenToken());
+        testLex("{", new LCurlyToken());
+        testLex("}", new RCurlyToken());
+        testLex(";", new SemicolonToken());
+        testLex(",", new CommaToken());
+    }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TokenizationException {
         System.out.println("Testing Mode");
 
         testAllKeywordsIndividually();
@@ -82,8 +81,7 @@ public class LexerTest {
         testIntegers();
         testOperatorTokensIndividually();
         TestOtherTokensIndividually();
-        
-        
+
     }
 
 }

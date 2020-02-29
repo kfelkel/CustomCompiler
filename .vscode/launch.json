@@ -6,11 +6,18 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Lexer",
+            "request": "launch",
+            "mainClass": "Lexer",
+            "projectName": "C.O.O.L.---C-Object-Oriented-Language_30ee303f"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch)-Tests",
             "request": "launch",
             "mainClass": "LexerTest",
             "vmArgs": "-ea"
-         },
+        },
         {
             "type": "java",
             "name": "Debug (Launch) - Current File",
