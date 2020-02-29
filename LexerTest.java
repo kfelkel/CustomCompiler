@@ -35,6 +35,12 @@ public class LexerTest {
         testLex("false", new BoolValueToken(false));
     }
 
+    private static void testIdentifiers() throws TokenizationException {
+        testLex("x", new IdentifierToken("x"));
+        testLex("y1", new IdentifierToken("y1"));
+        testLex("ifx", new IdentifierToken("ifx"));
+    }
+
     private static void testIntegers() throws TokenizationException {
         testLex("0", new IntegerToken(0));
         testLex("10", new IntegerToken(10));
@@ -73,15 +79,23 @@ public class LexerTest {
         testLex(",", new CommaToken());
     }
 
+    private static void TestMultipleTokens() throws TokenizationException{
+        testLex("String x = \"my string\";", new StringKeywordToken(), new IdentifierToken("x"),
+                new EqualToken(), new StringLiteralToken("my string"), new SemicolonToken());
+    }
+
     public static void main(String[] args) throws TokenizationException {
         System.out.println("Testing Mode");
 
         testAllKeywordsIndividually();
+        testIdentifiers();
         testStringLiterals();
         testIntegers();
         testOperatorTokensIndividually();
         TestOtherTokensIndividually();
+        TestMultipleTokens();
 
+        System.out.println("Tests Passed");
     }
 
 }
