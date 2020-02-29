@@ -36,9 +36,6 @@ public class LexerTest {
     }
 
     private static void testIntegers() {
-        testLex("-10", new IntegerToken(-10));
-        testLex("-500", new IntegerToken(-500));
-        testLex("-123456", new IntegerToken(-123456));
         testLex("0", new IntegerToken(0));
         testLex("10", new IntegerToken(10));
         testLex("500", new IntegerToken(500));
@@ -75,14 +72,13 @@ public class LexerTest {
         testLex(";",	new SemicolonToken	());
         testLex(",",	new CommaToken	());
     }
+
+
     public static void main(String[] args) {
-
-
         System.out.println("Testing Mode");
 
-
         testAllKeywordsIndividually();
-        //testStringLiterals();
+        testStringLiterals();
         testIntegers();
         testOperatorTokensIndividually();
         TestOtherTokensIndividually();

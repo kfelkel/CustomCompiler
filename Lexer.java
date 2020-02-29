@@ -18,7 +18,7 @@ public class Lexer {
                 return s.substring(i,j);
             }
         }
-        return s.substring(i, j);
+        return null;
     }
     public static String getString(String s, int i){
         int j = i;
