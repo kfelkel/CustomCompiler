@@ -1,0 +1,42 @@
+Reserved words:
+    //Int/
+    //String
+    //Bool
+    //Void
+    //this
+    //print
+    //println
+    //new
+    //for
+    //while
+    //if
+    //else
+    //return
+    //class
+    //constructor
+
+Binary Operators:
+    //+
+    //-
+    //*
+    ///
+    //%
+    //<
+    //>
+    //<=
+    //>=
+    //==
+    //=
+
+Identifiers
+Integers
+Strings “ ”
+
+    //(
+    //)
+    //{
+    //}
+    //;
+    //.
+    //,
+
