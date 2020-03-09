@@ -54,7 +54,7 @@
     </plugins>
   </build>
   <properties>
-    <maven.compiler.source>1.8.0_181</maven.compiler.source>
-    <maven.compiler.target>1.8.0_181</maven.compiler.target>
+    <maven.compiler.source>11.0.6</maven.compiler.source>
+    <maven.compiler.target>11.0.6</maven.compiler.target>
   </properties>
 </project>

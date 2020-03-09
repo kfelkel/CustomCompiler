@@ -1,42 +1,43 @@
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\EqualToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\SemicolonToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ReturnToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ReservedWordToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\MultiplicationToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\PlusToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\BoolKeywordToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\GreaterThanToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\EqualEqualToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ElseToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\RCurlyToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\DivisionToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\RightParenToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\NewToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\PrintlnToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\OperatorToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\StringLiteralToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\LessThanToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ForToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\StringKeywordToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\IntegerToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\GreaterThanOrEqualToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\BoolValueToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ClassKeywordToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ConstructorKeywordToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\PrintToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\VoidToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\LCurlyToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ThisToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\DotOperatorToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\LeftParenToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\IfToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\Token.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\IdentifierToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\WhileToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\Lexer.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\ModulusToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\CommaToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\LessThanOrEqualToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\TokenizationException.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\IntKeywordToken.java
-D:\Users\Kyle\Google Drive\School\CSUN\Spring 2020\COMP 430\430-Compiler\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\MinusToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ClassKeywordToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\PrintToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\LeftParenToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\IntKeywordToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\StringLiteralToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\Lexer.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\BoolKeywordToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\IdentifierToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\EqualToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ConstructorKeywordToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\MultiplicationToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\DotOperatorToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\Parser.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\RCurlyToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\Token.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\PrintlnToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\WhileToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ThisToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\DivisionToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ForToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\NewToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\OperatorToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\LessThanToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\RightParenToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ElseToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\GreaterThanOrEqualToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\TokenizationException.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\ModulusToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\EqualEqualToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\StringKeywordToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\BoolValueToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\IfToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\MinusToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\CommaToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\PlusToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\SemicolonToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\LessThanOrEqualToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\IntegerToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\VoidToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ReturnToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\LCurlyToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\keywords\ReservedWordToken.java
+C:\Users\tomav\Documents\Programs\C.O.O.L.---C-Object-Oriented-Language\src\main\java\tokenizer\tokens\operatortokens\GreaterThanToken.java
