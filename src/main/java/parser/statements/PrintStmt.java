@@ -1,9 +1,9 @@
 package parser.statements;
-
+import parser.expressions.Expression;
 public class PrintStmt implements Statement {
-    public final String output;
+    public final Expression output;
 
-    public PrintStmt(String output) {
+    public PrintStmt(Expression output) {
         this.output = output;
     }
 
@@ -12,12 +12,6 @@ public class PrintStmt implements Statement {
     }
 
     public boolean equals(Statement stmt) {
-        if(stmt instanceof PrintStmt){
-            PrintStmt castStmt = (PrintStmt) stmt;
-            return castStmt.output == output;
-        }
-        else
-            return false;
+        return toString().equals(stmt.toString());
     }
-    
 }

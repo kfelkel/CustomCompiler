@@ -1,9 +1,11 @@
 package parser.statements;
 
-public class PrintlnStmt implements Statement {
-    public final String output;
+import parser.expressions.Expression;
 
-    public PrintlnStmt(String output) {
+public class PrintlnStmt implements Statement {
+    public final Expression output;
+
+    public PrintlnStmt(Expression output) {
         this.output = output;
     }
 
@@ -12,11 +14,6 @@ public class PrintlnStmt implements Statement {
     }
 
     public boolean equals(Statement stmt) {
-        if(stmt instanceof PrintlnStmt){
-            PrintlnStmt castStmt = (PrintlnStmt) stmt;
-            return castStmt.output == output;
-        }
-        else
-            return false;
+        return toString().equals(stmt.toString());
     }
 }

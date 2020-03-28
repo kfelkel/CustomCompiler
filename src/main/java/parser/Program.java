@@ -7,9 +7,9 @@ public class Program{
 
     ArrayList<ClassDef> classDefs;
 
-    Expression entryPoint;
+    MethodDef entryPoint;
 
-    public Program(final ArrayList<ClassDef> classDefs, final Expression entryPoint){
+    public Program(final ArrayList<ClassDef> classDefs, final MethodDef entryPoint){
         this.classDefs = classDefs;
         this.entryPoint = entryPoint;
     }
