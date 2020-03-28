@@ -5,7 +5,7 @@ import java.util.List;
 public class BlockStmt implements Statement {
     public final List<Statement> body;
 
-    public BlockStmt(List<Statement> body) {
+    public BlockStmt(final List<Statement> body) {
         this.body = body;
     }
 
