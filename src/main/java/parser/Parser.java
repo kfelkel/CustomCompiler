@@ -31,12 +31,18 @@ public class Parser{
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException{
 		return null;
     }
+
+    public ParseResult<BlockStmt> parseBlockStmt(final int startPos) throws ParseException{
+        return null;
+    }
     
     public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException{
         String type;
         String name;
         Expression value = null;
+
         int nextPos = startPos;
+
         if(tokens[nextPos] instanceof IntKeywordToken){
             type = "Int";
             nextPos++;
@@ -64,11 +70,6 @@ public class Parser{
             value = result.result;
             nextPos = result.nextPos;
         }
-        if(tokens[nextPos] instanceof SemicolonToken){
-            nextPos++;
-        } else {
-            throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
-        }
 
         if(value != null){
             return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name, value), nextPos);
@@ -78,7 +79,42 @@ public class Parser{
     }
 
     public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException{
-        return null;
+        int nextPos = startPos;
+        ArrayList<VariableDeclarationStmt> parameters = new ArrayList<VariableDeclarationStmt>();
+        BlockStmt body;
+
+        if(tokens[nextPos] instanceof ClassKeywordToken){
+            nextPos++;
+        } else {
+            throw new ParseException("should not have started parsing a Constructor that doesn't start with a ConstructorKeywordToken, but somehow we did");
+        }
+        if(tokens[nextPos] instanceof LeftParenToken){
+            nextPos++;
+        } else {
+            throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
+        }
+        if(!(tokens[nextPos] instanceof RightParenToken)){
+            ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
+            parameters.add(result.result);
+            nextPos = result.nextPos;
+            while(tokens[nextPos] instanceof CommaToken){
+                nextPos++;
+                result = parseVarDec(nextPos);
+                parameters.add(result.result);
+                nextPos = result.nextPos;
+            }
+        }
+        if(!(tokens[nextPos] instanceof RightParenToken)){
+            nextPos++;
+        } else {
+            throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
+        }
+
+        ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
+        body = result.result;
+        nextPos = result.nextPos;
+
+        return new ParseResult<Constructor>(new Constructor(parameters, body), nextPos);
     }
 
     public ParseResult<MethodDef> parseMethodDef(final int startPos) throws ParseException{
@@ -121,7 +157,12 @@ public class Parser{
         while(!(tokens[nextPos] instanceof ConstructorKeywordToken)){
             ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             fields.add(result.result);
-            nextPos = result.nextPos; 
+            nextPos = result.nextPos;
+            if(tokens[nextPos] instanceof SemicolonToken){
+                nextPos++;
+            } else {
+                throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+            }
         }
         if(tokens[nextPos] instanceof ConstructorKeywordToken){
             ParseResult<Constructor> result = parseConstructor(nextPos);
@@ -157,7 +198,8 @@ public class Parser{
             nextPos = result.nextPos;
         }
 
-        final ParseResult<Expression> result = parseExp(nextPos);
+        //final ParseResult<Expression> result = parseExp(nextPos);
+        final ParseResult<MethodDef> result = parseMethodDef(nextPos);
 
         if (result.nextPos == tokens.length) {
             return new Program(classDefs, result.result);
