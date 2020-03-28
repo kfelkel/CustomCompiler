@@ -3,6 +3,7 @@ package parser;
 import java.util.ArrayList;
 import tokenizer.tokens.*;
 import tokenizer.tokens.keywords.*;
+import tokenizer.tokens.operatortokens.*;
 import parser.expressions.*;
 import parser.statements.*;
 
@@ -32,7 +33,48 @@ public class Parser{
     }
     
     public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException{
-        return null;
+        String type;
+        String name;
+        Expression value = null;
+        int nextPos = startPos;
+        if(tokens[nextPos] instanceof IntKeywordToken){
+            type = "Int";
+            nextPos++;
+        } else if(tokens[nextPos] instanceof BoolKeywordToken){
+            type = "Bool";
+            nextPos++;
+        } else if(tokens[nextPos] instanceof StringKeywordToken){
+            type = "String";
+            nextPos++;
+        } else if(tokens[nextPos] instanceof IdentifierToken){
+            type = ((IdentifierToken) tokens[nextPos]).name;
+            nextPos++;
+        } else {
+            throw new ParseException("Expected token indicating variable type; received " + tokens[nextPos].toString());
+        }
+        if(tokens[nextPos] instanceof IdentifierToken){
+            name = ((IdentifierToken) tokens[nextPos]).name;
+            nextPos++;
+        } else {
+            throw new ParseException("Expected IdentifierToken for variable name; received " + tokens[nextPos].toString());
+        }
+        if(tokens[nextPos] instanceof EqualToken){
+            nextPos++;
+            ParseResult<Expression> result = parseExp(nextPos);
+            value = result.result;
+            nextPos = result.nextPos;
+        }
+        if(tokens[nextPos] instanceof SemicolonToken){
+            nextPos++;
+        } else {
+            throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+        }
+
+        if(value != null){
+            return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name, value), nextPos);
+        } else{
+            return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name), nextPos);
+        }
     }
 
     public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException{

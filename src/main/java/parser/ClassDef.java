@@ -5,11 +5,11 @@ import parser.statements.VariableDeclarationStmt;
 
 public class ClassDef{
 
-    String className;
-    String parent;
-    ArrayList<VariableDeclarationStmt> fields;
-    Constructor constructor;
-    ArrayList<MethodDef> methods;
+    public final String className;
+    public final String parent;
+    public final ArrayList<VariableDeclarationStmt> fields;
+    public final Constructor constructor;
+    public final ArrayList<MethodDef> methods;
 
     public ClassDef(final String className, final String parent, 
             final ArrayList<VariableDeclarationStmt> fields, 
@@ -24,6 +24,7 @@ public class ClassDef{
     public ClassDef(final String className, final ArrayList<VariableDeclarationStmt> fields, 
            final Constructor constructor, final ArrayList<MethodDef> methods){
         this.className = className;
+        this.parent = null;
         this.fields = fields;
         this.constructor = constructor;
         this.methods = methods;

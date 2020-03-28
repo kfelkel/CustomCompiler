@@ -5,7 +5,7 @@ import parser.expressions.Expression;
 
 public class Program{
 
-    ArrayList<ClassDef> classDefs;
+    public final ArrayList<ClassDef> classDefs;
 
     MethodDef entryPoint;
 
