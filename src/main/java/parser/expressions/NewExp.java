@@ -1,12 +1,18 @@
 package parser.expressions;
 
 public class NewExp implements Expression {
+
+    public final Expression exp;
+
+    public NewExp(Expression exp) {
+        this.exp = exp;
+    }
     
     public String toString() {
-        return "NewExp";
+        return "NewExp(" + exp + ")";
     }
 
     public boolean equals(Expression exp) {
-        return exp instanceof NewExp;
+        return (this.toString()).equals(exp.toString());
     }
 }
