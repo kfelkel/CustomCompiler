@@ -1,0 +1,30 @@
+
+
+
+
+
+
+
+
+
+
+public class BinaryOpExp implements Expression{} //possibly not needed
+//Binary Op Expressions 
+//possible inheritance from BinaryOpExp?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
