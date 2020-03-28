@@ -1,5 +1,24 @@
 package parser.expressions;
-public class GreaterThanExp implements Expression{    public String toString(){      
+
+public class GreaterThanExp implements Expression {
+    public final Expression exp1;
+    public final Expression exp2;
+
+    public GreaterThanExp(Expression exp1, Expression exp2) {
+        this.exp1 = exp1;
+        this.exp2 = exp2;
     }
-    public boolean equals(){
-    }}
+
+    public String toString() {
+        return "GreaterThanExp(" + exp1 + ", " + exp2 + ")";
+    }
+
+    public boolean equals(Expression exp) {
+        if(exp instanceof GreaterThanExp){
+            GreaterThanExp castExp = (GreaterThanExp) exp;
+            return (castExp.exp1 == exp1 && castExp.exp2 == exp2);
+        }
+        else
+            return false;
+    }
+}

@@ -1,7 +1,12 @@
 package parser.expressions;
-public class ThisExp implements Expression{
-        public String toString(){      
+
+public class ThisExp implements Expression {
+    
+    public String toString() {
+        return "ThisExp";
     }
-    public boolean equals(){
+
+    public boolean equals(Expression exp) {
+        return exp instanceof ThisExp;
     }
 }
