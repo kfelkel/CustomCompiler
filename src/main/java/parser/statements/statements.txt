@@ -1,0 +1,14 @@
+public interface Statement {}
+
+
+public class VarDeclarationStmt implements Statement {}
+public class VarAssignmentStmt implements Statement {}
+public class PrintStmt implements Statement {}
+public class PrintlnStmt implements Statement {}
+public class ForStmt implements Statement {}
+public class WhileStmt implements Statement {}
+public class BlockStmt implements Statement {}
+public class IfStmt implements Statement {}
+public class IfElseStmt implements Statement {} 
+public class ReturnStmt implements Statement {}
+public class ReturnVoidStmt implements Statement {}
