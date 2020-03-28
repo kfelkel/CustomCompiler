@@ -2,7 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 import tokenizer.tokens.*;
-import tokenizer.tokens.keywords.ClassKeywordToken;
+import tokenizer.tokens.keywords.*;
 import parser.expressions.*;
 import parser.statements.*;
 
@@ -29,42 +29,81 @@ public class Parser{
 
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException{
 		return null;
-	}
+    }
+    
+    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException{
+        return null;
+    }
+
+    public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException{
+        return null;
+    }
+
+    public ParseResult<MethodDef> parseMethodDef(final int startPos) throws ParseException{
+        return null;
+    }
     
     public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException{
         String className;
-        String parentClass;
-        ArrayList<VarDec> fields = new ArrayList<VarDec>();
+        String parentClass = "";
+        ArrayList<VariableDeclarationStmt> fields = new ArrayList<VariableDeclarationStmt>();
+        Constructor constructor;
+        ArrayList<MethodDef> methods = new ArrayList<MethodDef>();
 
-        int currPos = startPos;
-        if(tokens[currPos] instanceof ClassKeywordToken){
-            currPos++;
+        int nextPos = startPos;
+        if(tokens[nextPos] instanceof ClassKeywordToken){
+            nextPos++;
         } else {
             throw new ParseException("should not have started parsing a ClassDefinition that doesn't start with a ClassKeywordToken, but somehow we did");
         }
-        if(tokens[currPos] instanceof IdentifierToken){
-            className = ((IdentifierToken) tokens[startPos + 1]).name;
-            currPos++;
+        if(tokens[nextPos] instanceof IdentifierToken){
+            className = ((IdentifierToken) tokens[nextPos]).name;
+            nextPos++;
         } else {
-            throw new ParseException("Expected IdentifierToken for className; received " + tokens[startPos + 1].toString());
+            throw new ParseException("Expected IdentifierToken for className; received " + tokens[nextPos].toString());
         }
-        if(tokens[currPos] instanceof ColonToken){
-            currPos++;
-            if(tokens[currPos] instanceof IdentifierToken){
-                parentClass = ((IdentifierToken) tokens[startPos + 1]).name;
-                currPos++;
+        if(tokens[nextPos] instanceof ColonToken){
+            nextPos++;
+            if(tokens[nextPos] instanceof IdentifierToken){
+                parentClass = ((IdentifierToken) tokens[nextPos]).name;
+                nextPos++;
             } else {
-                throw new ParseException("Expected IdentifierToken for parent class; received " + tokens[startPos + 1].toString());
+                throw new ParseException("Expected IdentifierToken for parent class; received " + tokens[nextPos].toString());
             }
         }
-        if(tokens[currPos] instanceof LCurlyToken){
-            currPos++;
+        if(tokens[nextPos] instanceof LCurlyToken){
+            nextPos++;
         } else {
-            throw new ParseException("Expected LCurlyToken; received " + tokens[startPos + 1].toString());
+            throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
+        }
+        while(!(tokens[nextPos] instanceof ConstructorKeywordToken)){
+            ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
+            fields.add(result.result);
+            nextPos = result.nextPos; 
+        }
+        if(tokens[nextPos] instanceof ConstructorKeywordToken){
+            ParseResult<Constructor> result = parseConstructor(nextPos);
+            constructor = result.result;
+            nextPos = result.nextPos;
+        } else {
+            throw new ParseException("should not have reached here if next token wasn't a ConstructorKeywordToken, but somehow we did");
+        }
+        while(!(tokens[nextPos] instanceof RCurlyToken)){
+            ParseResult<MethodDef> result = parseMethodDef(nextPos);
+            methods.add(result.result);
+            nextPos = result.nextPos;
+        }
+        if(tokens[nextPos] instanceof RCurlyToken){
+            nextPos++;
+        } else {
+            throw new ParseException("should not have reached here if next token wasn't a RCurlyToken, but somehow we did");
         }
 
-
-		return null;
+		if(parentClass.isEmpty()){
+            return new ParseResult<ClassDef>(new ClassDef(className, fields, constructor, methods), nextPos);
+        } else {
+            return new ParseResult<ClassDef>(new ClassDef(className, parentClass, fields, constructor, methods), nextPos);
+        }
 	}
 
     public Program parseProgram() throws ParseException{
