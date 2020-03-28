@@ -80,6 +80,9 @@ public class Lexer {
             } else if (input.charAt(i) == ',') {
                 result.add(new CommaToken());
                 i++;
+            } else if (input.charAt(i) == ':') {
+                result.add(new ColonToken());
+                i++;
             } else if (input.charAt(i) == '+') {
                 result.add(new PlusToken());
                 i++;
