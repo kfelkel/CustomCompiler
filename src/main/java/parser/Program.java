@@ -5,9 +5,9 @@ import parser.expressions.Expression;
 
 public class Program{
 
-    ArrayList<ClassDef> classDefs;
+    public final ArrayList<ClassDef> classDefs;
 
-    Expression entryPoint;
+    public final Expression entryPoint;
 
     public Program(final ArrayList<ClassDef> classDefs, final Expression entryPoint){
         this.classDefs = classDefs;
