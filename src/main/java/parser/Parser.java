@@ -33,7 +33,27 @@ public class Parser{
     }
 
     public ParseResult<BlockStmt> parseBlockStmt(final int startPos) throws ParseException{
-        return null;
+        ArrayList<Statement> block = new ArrayList<Statement>();
+
+        int nextPos = startPos;
+
+        if(tokens[nextPos] instanceof LCurlyToken){
+            nextPos++;
+        } else {
+            throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
+        }
+        while(!(tokens[nextPos] instanceof RCurlyToken)){
+            ParseResult<Statement> result = parseStmt(nextPos);
+            block.add(result.result);
+            nextPos = result.nextPos;
+        }
+        if(tokens[nextPos] instanceof RCurlyToken){
+            nextPos++;
+        } else {
+            throw new ParseException("Expected RCurlyToken; received " + tokens[nextPos].toString());
+        }
+
+        return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
     }
     
     public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException{
