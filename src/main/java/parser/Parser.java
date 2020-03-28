@@ -34,7 +34,7 @@ public class Parser{
     public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException{
         String className;
         String parentClass;
-        ArrayList<VarDec> fields = new ArrayList<VarDec>();
+        ArrayList<VariableDeclarationStmt> fields = new ArrayList<VariableDeclarationStmt>();
 
         int currPos = startPos;
         if(tokens[currPos] instanceof ClassKeywordToken){
