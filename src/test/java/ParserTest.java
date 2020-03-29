@@ -15,14 +15,14 @@ import static org.junit.Assert.*;
 public class ParserTest {
     @Test
     public void HelloWorldTest() throws TokenizationException, ParseException {
-        String programString = "int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
+        String programString = "Int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
                 + ")";
         ArrayList<Statement> stmtList = new ArrayList<Statement>();
         stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
         stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
         stmtList.add(new ReturnStmt(new IntegerExp(0)));
         BlockStmt mainBody = new BlockStmt(stmtList);
-        Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("int", "main", new ArrayList<Statement>(), mainBody));
+        Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
 
         List<Token> tokens = Lexer.lex(programString);
 

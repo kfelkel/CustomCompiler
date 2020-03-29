@@ -2,17 +2,18 @@ package parser;
 
 import java.util.ArrayList;
 import parser.statements.Statement;
+import parser.statements.VariableDeclarationStmt;
 import parser.statements.BlockStmt;
 
 public class MethodDef {
 
     public final String type;
     public final String name;
-    public final ArrayList<Statement> parameters;
+    public final ArrayList<VariableDeclarationStmt> parameters;
     public final BlockStmt body;
 
     public MethodDef(final String type, final String name, 
-            final ArrayList<Statement> parameters, final BlockStmt body) {
+            final ArrayList<VariableDeclarationStmt> parameters, final BlockStmt body) {
         this.type = type;
         this.name = name;
         this.parameters = parameters;

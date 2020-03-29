@@ -105,7 +105,7 @@ public class Parser{
             nextPos = result.nextPos;
         } else if(tokens[nextPos] instanceof IntKeywordToken || tokens[nextPos] instanceof BoolKeywordToken
         || tokens[nextPos] instanceof StringKeywordToken){
-            ParseResult<Statement> result = parseVarDec(nextPos);
+            ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             myStmt = result.result;
             nextPos = result.nextPos;
             if(tokens[nextPos] instanceof SemicolonToken){
@@ -115,7 +115,7 @@ public class Parser{
             }
         } else if (tokens[nextPos] instanceof IdentifierToken){
             if(tokens[nextPos + 1] instanceof IdentifierToken){
-                ParseResult<Statement> result = parseVarDec(nextPos);
+                ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
                 myStmt = result.result;
                 nextPos = result.nextPos;
                 if(tokens[nextPos] instanceof SemicolonToken){
@@ -274,7 +274,7 @@ public class Parser{
         return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
     }
     
-    public ParseResult<Statement> parseVarDec(final int startPos) throws ParseException{
+    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException{
         String type;
         String name;
         Expression value = null;
@@ -310,9 +310,9 @@ public class Parser{
         }
 
         if(value != null){
-            return new ParseResult<Statement>(new VariableDeclarationStmt(type, name, value), nextPos);
+            return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name, value), nextPos);
         } else{
-            return new ParseResult<Statement>(new VariableDeclarationStmt(type, name), nextPos);
+            return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name), nextPos);
         }
     }
 
@@ -333,7 +333,7 @@ public class Parser{
         }
         // get parameters
         if(!(tokens[nextPos] instanceof RightParenToken)){
-            ParseResult<Statement> result = parseVarDec(nextPos);
+            ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             parameters.add(result.result);
             nextPos = result.nextPos;
             while(tokens[nextPos] instanceof CommaToken){
@@ -361,7 +361,7 @@ public class Parser{
 
         String type;
         String name;
-        ArrayList<Statement> parameters = new ArrayList<Statement>();
+        ArrayList<VariableDeclarationStmt> parameters = new ArrayList<VariableDeclarationStmt>();
         BlockStmt body;
 
         // get type
@@ -397,7 +397,7 @@ public class Parser{
             throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
         }
         if(!(tokens[nextPos] instanceof RightParenToken)){
-            ParseResult<Statement> result = parseVarDec(nextPos);
+            ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             parameters.add(result.result);
             nextPos = result.nextPos;
             while(tokens[nextPos] instanceof CommaToken){
@@ -456,7 +456,7 @@ public class Parser{
         }
         // get fields
         while(!(tokens[nextPos] instanceof ConstructorKeywordToken)){
-            ParseResult<Statement> result = parseVarDec(nextPos);
+            ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             fields.add(result.result);
             nextPos = result.nextPos;
             if(tokens[nextPos] instanceof SemicolonToken){
