@@ -28,7 +28,7 @@ public class ParserTest {
         stmtList.add(new PrintlnStmt(new VariableExp("String", "mystring")));
         stmtList.add(new ReturnStmt(new IntegerExp(0)));
         BlockStmt mainBody = new BlockStmt(stmtList);
-        Program expected = new Program(null, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
+        Program expected = new Program(null, new MethodDef("int", "main", new ArrayList<Statement>(), mainBody));
 
         List<Token> tokens = Lexer.lex(programString);
         Parser myparser = new Parser((Token[]) tokens.toArray());

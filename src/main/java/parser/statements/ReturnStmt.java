@@ -5,7 +5,7 @@ import parser.expressions.Expression;
 public class ReturnStmt implements Statement {
     public final Expression value;
 
-    public ReturnStmt(Expression value) {
+    public ReturnStmt(final Expression value) {
         this.value = value;
     }
 

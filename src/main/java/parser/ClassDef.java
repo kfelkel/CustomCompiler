@@ -1,18 +1,18 @@
 package parser;
 
 import java.util.ArrayList;
-import parser.statements.VariableDeclarationStmt;
+import parser.statements.Statement;
 
 public class ClassDef{
 
     public final String className;
     public final String parent;
-    public final ArrayList<VariableDeclarationStmt> fields;
+    public final ArrayList<Statement> fields;
     public final Constructor constructor;
     public final ArrayList<MethodDef> methods;
 
     public ClassDef(final String className, final String parent, 
-            final ArrayList<VariableDeclarationStmt> fields, 
+            final ArrayList<Statement> fields, 
             final Constructor constructor, final ArrayList<MethodDef> methods){
         this.className = className;
         this.parent = parent;
@@ -21,7 +21,7 @@ public class ClassDef{
         this.methods = methods;
     }
 
-    public ClassDef(final String className, final ArrayList<VariableDeclarationStmt> fields, 
+    public ClassDef(final String className, final ArrayList<Statement> fields, 
            final Constructor constructor, final ArrayList<MethodDef> methods){
         this.className = className;
         this.parent = null;
