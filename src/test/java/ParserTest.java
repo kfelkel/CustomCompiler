@@ -14,17 +14,11 @@ import static org.junit.Assert.*;
 
 public class ParserTest {
     @Test
-    public void HelloWorldTest()throws TokenizationException, ParseException{
-        String programString = 
-            "int main(){" +
-                "String mystring= \"Hello World!\";" +
-                "println(mystring);"+
-                "return 0;"+
-            ")";
+    public void HelloWorldTest() throws TokenizationException, ParseException {
+        String programString = "int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
+                + ")";
         ArrayList<Statement> stmtList = new ArrayList<Statement>();
-        stmtList.add(new VariableInitializerStmt("String", 
-                                            "mystring",
-                                            new StringExp("Hello World!")));
+        stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
         stmtList.add(new PrintlnStmt(new VariableExp("String", "mystring")));
         stmtList.add(new ReturnStmt(new IntegerExp(0)));
         BlockStmt mainBody = new BlockStmt(stmtList);
@@ -33,8 +27,8 @@ public class ParserTest {
         List<Token> tokens = Lexer.lex(programString);
         Parser myparser = new Parser((Token[]) tokens.toArray());
         Program actual = myparser.parseProgram();
-assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
-}
+    }
 
 }

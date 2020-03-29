@@ -6,7 +6,7 @@ public class ThisExp implements Expression {
         return "ThisExp";
     }
 
-    public boolean equals(Expression exp) {
+    public boolean equals(final Expression exp) {
         return exp instanceof ThisExp;
     }
 }

@@ -2,7 +2,7 @@ package parser.expressions;
 public class StringExp implements Expression{
     public final String value;
 
-    public StringExp(String value) {
+    public StringExp(final String value) {
         this.value = value;
     }
 
@@ -10,12 +10,7 @@ public class StringExp implements Expression{
         return "StringExp(" + value + ")";
     }
 
-    public boolean equals(Expression exp){
-        if(exp instanceof StringExp){
-            StringExp castExp = (StringExp) exp;
-            return (castExp.value == value);
-        }
-        else
-            return false;
+    public boolean equals(final Expression exp) {
+        return (this.toString()).equals(exp.toString());
     }
 }

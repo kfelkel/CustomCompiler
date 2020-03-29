@@ -28,7 +28,7 @@ public class MethodDef {
             ret += parameters.get(0).toString();
         }
         for(int i = 1; i < parameters.size(); i++){
-            ret += ", " + parameters.get(0).toString();
+            ret += ", " + parameters.get(i).toString();
         }
         return ret;
     }

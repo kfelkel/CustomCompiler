@@ -10,15 +10,21 @@ public class BlockStmt implements Statement {
     }
 
     public String toString() {
-        return "BlockStmt( " + body + ")";  
+        return "BlockStmt( " + bodyString() + ")";  
     }
 
-    public boolean equals(Statement stmt) {
-        if(stmt instanceof BlockStmt){
-            BlockStmt castStmt = (BlockStmt) stmt;
-            return castStmt.body == body;
+    private String bodyString(){
+        String ret = "";
+        if(body.size() >= 1){
+            ret += body.get(0).toString();
         }
-        else
-            return false;
+        for(int i = 1; i < body.size(); i++){
+            ret += ", " + body.get(i).toString();
+        }
+        return ret;
+    }
+
+    public boolean equals(final Statement exp) {
+        return (this.toString()).equals(exp.toString());
     }
 }
