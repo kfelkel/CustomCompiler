@@ -407,7 +407,7 @@ public class Parser{
                 nextPos = result.nextPos;
             }
         }
-        if(!(tokens[nextPos] instanceof RightParenToken)){
+        if(tokens[nextPos] instanceof RightParenToken){
             nextPos++;
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());

@@ -19,16 +19,20 @@ public class ParserTest {
                 + ")";
         ArrayList<Statement> stmtList = new ArrayList<Statement>();
         stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
-        stmtList.add(new PrintlnStmt(new VariableExp("String", "mystring")));
+        stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
         stmtList.add(new ReturnStmt(new IntegerExp(0)));
         BlockStmt mainBody = new BlockStmt(stmtList);
-        Program expected = new Program(null, new MethodDef("int", "main", new ArrayList<Statement>(), mainBody));
+        Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("int", "main", new ArrayList<Statement>(), mainBody));
 
         List<Token> tokens = Lexer.lex(programString);
-        Parser myparser = new Parser((Token[]) tokens.toArray());
+
+        // I know Token[0] is weird, but, from the documentation,
+        // "If the list fits in the specified array, it is returned therein."
+        // "Otherwise, a new array is allocated with the runtime type of the specified array and the size of this list."
+        // So, as far as I can tell, toArray(new Token[0]) will return an array of the proper size
+        Parser myparser = new Parser(tokens.toArray(new Token[0]));
         Program actual = myparser.parseProgram();
         assertEquals(expected, actual);
-
     }
 
 }
