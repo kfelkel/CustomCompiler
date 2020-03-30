@@ -89,6 +89,7 @@ public class LexerTest {
         testLex("}", new RCurlyToken());
         testLex(";", new SemicolonToken());
         testLex(",", new CommaToken());
+        testLex(":", new ColonToken());
     }
 
     @Test

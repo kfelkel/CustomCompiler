@@ -7,34 +7,35 @@ import tokenizer.tokens.operatortokens.*;
 import parser.expressions.*;
 import parser.statements.*;
 
-public class Parser{
+public class Parser {
 
     private final Token[] tokens;
-    
+
     public Parser(final Token[] tokens) {
         this.tokens = tokens;
     }
 
     private class ParseResult<A> {
-		public final A result;
-		public final int nextPos;
-		public ParseResult(final A result, final int nextPos){
-			this.result = result;
-			this.nextPos = nextPos;
-		}
+        public final A result;
+        public final int nextPos;
+
+        public ParseResult(final A result, final int nextPos) {
+            this.result = result;
+            this.nextPos = nextPos;
+        }
     }
 
     public ParseResult<Expression> parseExp(final int startPos) throws ParseException {
         return null;
     }
 
-    public ParseResult<Statement> parseStmt(final int startPos) throws ParseException{
+    public ParseResult<Statement> parseStmt(final int startPos) throws ParseException {
         int nextPos = startPos;
         Statement myStmt = null;
 
-        if(tokens[nextPos] instanceof PrintToken){
+        if (tokens[nextPos] instanceof PrintToken) {
             nextPos++;
-            if(tokens[nextPos] instanceof LeftParenToken){
+            if (tokens[nextPos] instanceof LeftParenToken) {
                 nextPos++;
                 ParseResult<Expression> expressionResult = parseExp(nextPos);
                 myStmt = new PrintStmt(expressionResult.result);
@@ -42,19 +43,19 @@ public class Parser{
             } else {
                 throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
             }
-            if(tokens[nextPos] instanceof RightParenToken){
+            if (tokens[nextPos] instanceof RightParenToken) {
                 nextPos++;
             } else {
                 throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
             }
-            if(tokens[nextPos] instanceof SemicolonToken){
+            if (tokens[nextPos] instanceof SemicolonToken) {
                 nextPos++;
             } else {
                 throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
             }
-        } else if(tokens[nextPos] instanceof PrintlnToken){
+        } else if (tokens[nextPos] instanceof PrintlnToken) {
             nextPos++;
-            if(tokens[nextPos] instanceof LeftParenToken){
+            if (tokens[nextPos] instanceof LeftParenToken) {
                 nextPos++;
                 ParseResult<Expression> expressionResult = parseExp(nextPos);
                 myStmt = new PrintlnStmt(expressionResult.result);
@@ -62,92 +63,95 @@ public class Parser{
             } else {
                 throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
             }
-            if(tokens[nextPos] instanceof RightParenToken){
+            if (tokens[nextPos] instanceof RightParenToken) {
                 nextPos++;
             } else {
                 throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
             }
-            if(tokens[nextPos] instanceof SemicolonToken){
+            if (tokens[nextPos] instanceof SemicolonToken) {
                 nextPos++;
             } else {
                 throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
             }
-        } else if(tokens[nextPos] instanceof ReturnToken){
+        } else if (tokens[nextPos] instanceof ReturnToken) {
             nextPos++;
-            if(tokens[nextPos] instanceof SemicolonToken){
+            if (tokens[nextPos] instanceof SemicolonToken) {
                 nextPos++;
                 myStmt = new ReturnVoidStmt();
-            } else{
+            } else {
                 ParseResult<Expression> expressionResult = parseExp(nextPos);
                 myStmt = new ReturnStmt(expressionResult.result);
                 nextPos = expressionResult.nextPos;
-                if(tokens[nextPos] instanceof SemicolonToken){
+                if (tokens[nextPos] instanceof SemicolonToken) {
                     nextPos++;
                 } else {
                     throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
                 }
             }
-        } else if(tokens[nextPos] instanceof ForToken){
+        } else if (tokens[nextPos] instanceof ForToken) {
             ParseResult<ForStmt> result = parseForStmt(nextPos);
             myStmt = result.result;
             nextPos = result.nextPos;
-        } else if(tokens[nextPos] instanceof WhileToken){
+        } else if (tokens[nextPos] instanceof WhileToken) {
             ParseResult<WhileStmt> result = parseWhileStmt(nextPos);
             myStmt = result.result;
             nextPos = result.nextPos;
-        } else if(tokens[nextPos] instanceof IfToken){
+        } else if (tokens[nextPos] instanceof IfToken) {
             ParseResult<Statement> result = parseIfStmt(nextPos);
             myStmt = result.result;
             nextPos = result.nextPos;
-        } else if(tokens[nextPos] instanceof LCurlyToken){
+        } else if (tokens[nextPos] instanceof LCurlyToken) {
             ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
             myStmt = result.result;
             nextPos = result.nextPos;
-        } else if(tokens[nextPos] instanceof IntKeywordToken || tokens[nextPos] instanceof BoolKeywordToken
-        || tokens[nextPos] instanceof StringKeywordToken){
+        } else if (tokens[nextPos] instanceof IntKeywordToken || tokens[nextPos] instanceof BoolKeywordToken
+                || tokens[nextPos] instanceof StringKeywordToken) {
             ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             myStmt = result.result;
             nextPos = result.nextPos;
-            if(tokens[nextPos] instanceof SemicolonToken){
+            if (tokens[nextPos] instanceof SemicolonToken) {
                 nextPos++;
             } else {
                 throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
             }
-        } else if (tokens[nextPos] instanceof IdentifierToken){
-            if(tokens[nextPos + 1] instanceof IdentifierToken){
+        } else if (tokens[nextPos] instanceof IdentifierToken) {
+            if (tokens[nextPos + 1] instanceof IdentifierToken) {
                 ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
                 myStmt = result.result;
                 nextPos = result.nextPos;
-                if(tokens[nextPos] instanceof SemicolonToken){
+                if (tokens[nextPos] instanceof SemicolonToken) {
                     nextPos++;
                 } else {
                     throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
                 }
             } else {
                 // This is where assignment statements are handled
-                // Need to fill this in, but wasn't sure how to do it until I have expression code
-                // Not sure how much I should write here, and how much I should pass off to another method
+                // Need to fill this in, but wasn't sure how to do it until I have expression
+                // code
+                // Not sure how much I should write here, and how much I should pass off to
+                // another method
             }
         } else {
-            throw new ParseException("Unexpected Token " + tokens[nextPos].toString() + " received while parsing a statement.");
+            throw new ParseException(
+                    "Unexpected Token " + tokens[nextPos].toString() + " received while parsing a statement.");
         }
 
-		return new ParseResult<Statement>(myStmt, nextPos);
+        return new ParseResult<Statement>(myStmt, nextPos);
     }
 
-    public ParseResult<ForStmt> parseForStmt(final int startPos) throws ParseException{
+    public ParseResult<ForStmt> parseForStmt(final int startPos) throws ParseException {
         int nextPos = startPos;
         Statement initialization;
         Expression condition;
         Statement incrementation;
         Statement body;
 
-        if(tokens[nextPos] instanceof ForToken){
+        if (tokens[nextPos] instanceof ForToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected ForToken; received " + tokens[nextPos].toString());
         }
-        if(tokens[nextPos] instanceof LeftParenToken){
+        if (tokens[nextPos] instanceof LeftParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
@@ -155,7 +159,7 @@ public class Parser{
         ParseResult<Statement> stmtResult = parseStmt(nextPos);
         initialization = stmtResult.result;
         nextPos = stmtResult.nextPos;
-        if(tokens[nextPos] instanceof SemicolonToken){
+        if (tokens[nextPos] instanceof SemicolonToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
@@ -163,7 +167,7 @@ public class Parser{
         ParseResult<Expression> expResult = parseExp(nextPos);
         condition = expResult.result;
         nextPos = expResult.nextPos;
-        if(tokens[nextPos] instanceof SemicolonToken){
+        if (tokens[nextPos] instanceof SemicolonToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
@@ -171,7 +175,7 @@ public class Parser{
         stmtResult = parseStmt(nextPos);
         incrementation = stmtResult.result;
         nextPos = stmtResult.nextPos;
-        if(tokens[nextPos] instanceof RightParenToken){
+        if (tokens[nextPos] instanceof RightParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
@@ -183,17 +187,17 @@ public class Parser{
         return new ParseResult<ForStmt>(new ForStmt(initialization, condition, incrementation, body), nextPos);
     }
 
-    public ParseResult<WhileStmt> parseWhileStmt(final int startPos) throws ParseException{
+    public ParseResult<WhileStmt> parseWhileStmt(final int startPos) throws ParseException {
         int nextPos = startPos;
         Expression condition;
         Statement body;
 
-        if(tokens[nextPos] instanceof WhileToken){
+        if (tokens[nextPos] instanceof WhileToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected ForToken; received " + tokens[nextPos].toString());
         }
-        if(tokens[nextPos] instanceof LeftParenToken){
+        if (tokens[nextPos] instanceof LeftParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
@@ -201,7 +205,7 @@ public class Parser{
         ParseResult<Expression> expResult = parseExp(nextPos);
         condition = expResult.result;
         nextPos = expResult.nextPos;
-        if(tokens[nextPos] instanceof RightParenToken){
+        if (tokens[nextPos] instanceof RightParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
@@ -213,18 +217,18 @@ public class Parser{
         return new ParseResult<WhileStmt>(new WhileStmt(condition, body), nextPos);
     }
 
-    public ParseResult<Statement> parseIfStmt(final int startPos) throws ParseException{
+    public ParseResult<Statement> parseIfStmt(final int startPos) throws ParseException {
         int nextPos = startPos;
         Expression condition;
         Statement trueBranch;
         Statement falseBranch;
 
-        if(tokens[nextPos] instanceof IfToken){
+        if (tokens[nextPos] instanceof IfToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected ForToken; received " + tokens[nextPos].toString());
         }
-        if(tokens[nextPos] instanceof LeftParenToken){
+        if (tokens[nextPos] instanceof LeftParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
@@ -232,7 +236,7 @@ public class Parser{
         ParseResult<Expression> expResult = parseExp(nextPos);
         condition = expResult.result;
         nextPos = expResult.nextPos;
-        if(tokens[nextPos] instanceof RightParenToken){
+        if (tokens[nextPos] instanceof RightParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
@@ -240,7 +244,7 @@ public class Parser{
         ParseResult<Statement> stmtResult = parseStmt(nextPos);
         trueBranch = stmtResult.result;
         nextPos = stmtResult.nextPos;
-        if(tokens[nextPos] instanceof ElseToken){
+        if (tokens[nextPos] instanceof ElseToken) {
             nextPos++;
             stmtResult = parseStmt(nextPos);
             falseBranch = stmtResult.result;
@@ -250,22 +254,22 @@ public class Parser{
         return new ParseResult<Statement>(new IfStmt(condition, trueBranch), nextPos);
     }
 
-    public ParseResult<BlockStmt> parseBlockStmt(final int startPos) throws ParseException{
+    public ParseResult<BlockStmt> parseBlockStmt(final int startPos) throws ParseException {
         ArrayList<Statement> block = new ArrayList<Statement>();
 
         int nextPos = startPos;
 
-        if(tokens[nextPos] instanceof LCurlyToken){
+        if (tokens[nextPos] instanceof LCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
         }
-        while(!(tokens[nextPos] instanceof RCurlyToken)){
+        while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<Statement> result = parseStmt(nextPos);
             block.add(result.result);
             nextPos = result.nextPos;
         }
-        if(tokens[nextPos] instanceof RCurlyToken){
+        if (tokens[nextPos] instanceof RCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RCurlyToken; received " + tokens[nextPos].toString());
@@ -273,77 +277,80 @@ public class Parser{
 
         return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
     }
-    
-    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException{
+
+    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException {
         String type;
         String name;
         Expression value = null;
 
         int nextPos = startPos;
 
-        if(tokens[nextPos] instanceof IntKeywordToken){
+        if (tokens[nextPos] instanceof IntKeywordToken) {
             type = "Int";
             nextPos++;
-        } else if(tokens[nextPos] instanceof BoolKeywordToken){
+        } else if (tokens[nextPos] instanceof BoolKeywordToken) {
             type = "Bool";
             nextPos++;
-        } else if(tokens[nextPos] instanceof StringKeywordToken){
+        } else if (tokens[nextPos] instanceof StringKeywordToken) {
             type = "String";
             nextPos++;
-        } else if(tokens[nextPos] instanceof IdentifierToken){
+        } else if (tokens[nextPos] instanceof IdentifierToken) {
             type = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
         } else {
             throw new ParseException("Expected token indicating variable type; received " + tokens[nextPos].toString());
         }
-        if(tokens[nextPos] instanceof IdentifierToken){
+        if (tokens[nextPos] instanceof IdentifierToken) {
             name = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
         } else {
-            throw new ParseException("Expected IdentifierToken for variable name; received " + tokens[nextPos].toString());
+            throw new ParseException(
+                    "Expected IdentifierToken for variable name; received " + tokens[nextPos].toString());
         }
-        if(tokens[nextPos] instanceof EqualToken){
+        if (tokens[nextPos] instanceof EqualToken) {
             nextPos++;
             ParseResult<Expression> result = parseExp(nextPos);
             value = result.result;
             nextPos = result.nextPos;
         }
 
-        if(value != null){
+        if (value != null) {
             return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name, value), nextPos);
-        } else{
+        } else {
             return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name), nextPos);
         }
     }
 
-    public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException{
+    public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException {
         int nextPos = startPos;
-        ArrayList<Statement> parameters = new ArrayList<Statement>();
+        ArrayList<VariableDeclarationStmt> parameters = new ArrayList<VariableDeclarationStmt>();
         BlockStmt body;
 
-        if(tokens[nextPos] instanceof ClassKeywordToken){
+        if (tokens[nextPos] instanceof ConstructorKeywordToken) {
             nextPos++;
         } else {
-            throw new ParseException("should not have started parsing a Constructor that doesn't start with a ConstructorKeywordToken, but somehow we did");
+            throw new ParseException(
+                    "should not have started parsing a Constructor that doesn't start with a ConstructorKeywordToken, but somehow we have a "
+                            + tokens[nextPos].toString());
         }
-        if(tokens[nextPos] instanceof LeftParenToken){
+        if (tokens[nextPos] instanceof LeftParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
         }
         // get parameters
-        if(!(tokens[nextPos] instanceof RightParenToken)){
+        if (!(tokens[nextPos] instanceof RightParenToken)) {
             ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             parameters.add(result.result);
             nextPos = result.nextPos;
-            while(tokens[nextPos] instanceof CommaToken){
+            while (tokens[nextPos] instanceof CommaToken) {
                 nextPos++;
                 result = parseVarDec(nextPos);
                 parameters.add(result.result);
                 nextPos = result.nextPos;
             }
         }
-        if(!(tokens[nextPos] instanceof RightParenToken)){
+        if (tokens[nextPos] instanceof RightParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
@@ -356,7 +363,7 @@ public class Parser{
         return new ParseResult<Constructor>(new Constructor(parameters, body), nextPos);
     }
 
-    public ParseResult<MethodDef> parseMethodDef(final int startPos) throws ParseException{
+    public ParseResult<MethodDef> parseMethodDef(final int startPos) throws ParseException {
         int nextPos = startPos;
 
         String type;
@@ -365,49 +372,52 @@ public class Parser{
         BlockStmt body;
 
         // get type
-        if(tokens[nextPos] instanceof IntKeywordToken){
+        if (tokens[nextPos] instanceof IntKeywordToken) {
             type = "Int";
             nextPos++;
-        } else if(tokens[nextPos] instanceof BoolKeywordToken){
+        } else if (tokens[nextPos] instanceof BoolKeywordToken) {
             type = "Bool";
             nextPos++;
-        } else if(tokens[nextPos] instanceof StringKeywordToken){
+        } else if (tokens[nextPos] instanceof StringKeywordToken) {
             type = "String";
             nextPos++;
-        } else if(tokens[nextPos] instanceof VoidToken){
+        } else if (tokens[nextPos] instanceof VoidToken) {
             type = "Void";
             nextPos++;
-        } else if(tokens[nextPos] instanceof IdentifierToken){
+        } else if (tokens[nextPos] instanceof IdentifierToken) {
             type = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
         } else {
-            throw new ParseException("Expected token indicating method return type; received " + tokens[nextPos].toString());
+            throw new ParseException(
+                    "Expected token indicating method return type; received " + tokens[nextPos].toString());
         }
         // get method name
-        if(tokens[nextPos] instanceof IdentifierToken){
+        if (tokens[nextPos] instanceof IdentifierToken) {
             name = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
         } else {
-            throw new ParseException("Expected IdentifierToken for method name; received " + tokens[nextPos].toString());
+            throw new ParseException(
+                    "Expected IdentifierToken for method name; received " + tokens[nextPos].toString());
         }
         // get parameters
-        if(tokens[nextPos] instanceof LeftParenToken){
+        if (tokens[nextPos] instanceof LeftParenToken) {
             nextPos++;
         } else {
-            throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
+            throw new ParseException(
+                    "Expected LeftParenToken; received " + tokens[nextPos].toString() + " at position " + nextPos);
         }
-        if(!(tokens[nextPos] instanceof RightParenToken)){
+        if (!(tokens[nextPos] instanceof RightParenToken)) {
             ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             parameters.add(result.result);
             nextPos = result.nextPos;
-            while(tokens[nextPos] instanceof CommaToken){
+            while (tokens[nextPos] instanceof CommaToken) {
                 nextPos++;
                 result = parseVarDec(nextPos);
                 parameters.add(result.result);
                 nextPos = result.nextPos;
             }
         }
-        if(tokens[nextPos] instanceof RightParenToken){
+        if (tokens[nextPos] instanceof RightParenToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
@@ -419,89 +429,94 @@ public class Parser{
 
         return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, body), nextPos);
     }
-    
-    public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException{
+
+    public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException {
         String className;
         String parentClass = "";
-        ArrayList<Statement> fields = new ArrayList<Statement>();
+        ArrayList<VariableDeclarationStmt> fields = new ArrayList<VariableDeclarationStmt>();
         Constructor constructor;
         ArrayList<MethodDef> methods = new ArrayList<MethodDef>();
 
         int nextPos = startPos;
-        if(tokens[nextPos] instanceof ClassKeywordToken){
+        if (tokens[nextPos] instanceof ClassKeywordToken) {
             nextPos++;
         } else {
-            throw new ParseException("should not have started parsing a ClassDefinition that doesn't start with a ClassKeywordToken, but somehow we did");
+            throw new ParseException(
+                    "should not have started parsing a ClassDefinition that doesn't start with a ClassKeywordToken, but somehow we did");
         }
-        if(tokens[nextPos] instanceof IdentifierToken){
+        if (tokens[nextPos] instanceof IdentifierToken) {
             className = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
         } else {
             throw new ParseException("Expected IdentifierToken for className; received " + tokens[nextPos].toString());
         }
         // check for parent class
-        if(tokens[nextPos] instanceof ColonToken){
+        if (tokens[nextPos] instanceof ColonToken) {
             nextPos++;
-            if(tokens[nextPos] instanceof IdentifierToken){
+            if (tokens[nextPos] instanceof IdentifierToken) {
                 parentClass = ((IdentifierToken) tokens[nextPos]).name;
                 nextPos++;
             } else {
-                throw new ParseException("Expected IdentifierToken for parent class; received " + tokens[nextPos].toString());
+                throw new ParseException(
+                        "Expected IdentifierToken for parent class; received " + tokens[nextPos].toString());
             }
         }
-        if(tokens[nextPos] instanceof LCurlyToken){
+        if (tokens[nextPos] instanceof LCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
         }
         // get fields
-        while(!(tokens[nextPos] instanceof ConstructorKeywordToken)){
+        while (!(tokens[nextPos] instanceof ConstructorKeywordToken)) {
             ParseResult<VariableDeclarationStmt> result = parseVarDec(nextPos);
             fields.add(result.result);
             nextPos = result.nextPos;
-            if(tokens[nextPos] instanceof SemicolonToken){
+            if (tokens[nextPos] instanceof SemicolonToken) {
                 nextPos++;
             } else {
                 throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
             }
         }
         // get constructor
-        if(tokens[nextPos] instanceof ConstructorKeywordToken){
+        if (tokens[nextPos] instanceof ConstructorKeywordToken) {
             ParseResult<Constructor> result = parseConstructor(nextPos);
             constructor = result.result;
             nextPos = result.nextPos;
         } else {
-            throw new ParseException("should not have reached here if next token wasn't a ConstructorKeywordToken, but somehow we did");
+            throw new ParseException(
+                    "should not have reached here if next token wasn't a ConstructorKeywordToken, but somehow we did");
         }
         // get methods
-        while(!(tokens[nextPos] instanceof RCurlyToken)){
+        while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<MethodDef> result = parseMethodDef(nextPos);
             methods.add(result.result);
             nextPos = result.nextPos;
         }
-        if(tokens[nextPos] instanceof RCurlyToken){
+        if (tokens[nextPos] instanceof RCurlyToken) {
             nextPos++;
         } else {
-            throw new ParseException("should not have reached here if next token wasn't a RCurlyToken, but somehow we did");
+            throw new ParseException(
+                    "should not have reached here if next token wasn't a RCurlyToken, but somehow we did");
         }
 
-		if(parentClass.isEmpty()){
+        if (parentClass.isEmpty()) {
             return new ParseResult<ClassDef>(new ClassDef(className, fields, constructor, methods), nextPos);
         } else {
-            return new ParseResult<ClassDef>(new ClassDef(className, parentClass, fields, constructor, methods), nextPos);
+            return new ParseResult<ClassDef>(new ClassDef(className, parentClass, fields, constructor, methods),
+                    nextPos);
         }
-	}
+    }
 
-    public Program parseProgram() throws ParseException{
+    public Program parseProgram() throws ParseException {
         int nextPos = 0;
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
-        while(tokens[nextPos] instanceof ClassKeywordToken){
+        while (tokens[nextPos] instanceof ClassKeywordToken) {
             ParseResult<ClassDef> result = parseClassDefinition(nextPos);
             classDefs.add(result.result);
             nextPos = result.nextPos;
         }
 
-        //final ParseResult<Expression> result = parseExp(nextPos);
+        // final ParseResult<Expression> result = parseExp(nextPos);
         final ParseResult<MethodDef> result = parseMethodDef(nextPos);
 
         if (result.nextPos == tokens.length) {

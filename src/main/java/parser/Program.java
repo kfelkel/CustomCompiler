@@ -30,6 +30,6 @@ public class Program{
     }
 
     public boolean equals(Program program) {
-        return (toString()).equals(program.toString());
+        return toString().equals(program.toString());
     }
 }
