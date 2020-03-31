@@ -19,7 +19,7 @@ public class Parser {
 
     public Parser(Token[] tokens) {
         Parser.tokens = tokens;
-        Parser.subtokens =  Arrays.asList(tokens);
+        Parser.subtokens = new ArrayList<Token>(Arrays.asList(tokens));
     }
 
 
@@ -57,9 +57,9 @@ public class Parser {
                         rightPos--;
                         return new ParseResult<Expression>(new PlusExp(plus, parseExp(startPos).result ),nextPos);
                     }else{
-                        Expression plus =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
-                        subtokens.remove(rightPos);
-                        subtokens.remove(rightPos);
+                        Expression plus = new IntegerExp((IntegerToken) subtokens.get(rightPos + 1));
+                        Parser.subtokens.remove(rightPos);
+                        Parser.subtokens.remove(rightPos);
                         rightPos--;
                         return new ParseResult<Expression>(new PlusExp(parseExp(startPos).result, plus ),nextPos);
                     }
@@ -94,7 +94,7 @@ public class Parser {
                         rightPos--;
                         return new ParseResult<Expression>(new MultiplicationExp(mult, parseExp(startPos).result ),nextPos);
                     }else{
-                        Expression mult =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
+                        Expression mult = new IntegerExp((IntegerToken) subtokens.get(rightPos + 1));
                         subtokens.remove(rightPos);
                         subtokens.remove(rightPos);
                         rightPos--;

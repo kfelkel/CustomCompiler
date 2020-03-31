@@ -17,7 +17,7 @@ public class ParserTest {
     public static void testParse(String programString, Program expected) throws TokenizationException, ParseException {
         List<Token> tokens = Lexer.lex(programString);
         Token[] tokenArray = tokens.toArray(new Token[tokens.size()]);
-        System.out.println(Arrays.toString(tokenArray));
+        //System.out.println(Arrays.toString(tokenArray));
         Parser myparser = new Parser(tokenArray);
         Program actual = myparser.parseProgram();
         // for some reason, comparing the toString()s was working, but comparing the
@@ -135,7 +135,7 @@ public class ParserTest {
         // new MultiplicationToken(), new IntegerToken(5),new PlusToken(), new IntegerToken(6),new MinusToken(), 
         //                 new IntegerToken(7) };
         // // String mystring = "int main(){int x = 9*8+1/2*3/4*5+6-7;}";
-        String mystring = "9*8+4;";
+        String mystring = "9*8+1/2*3/4*5+6-7;;";
         Token[] tokens2 = Lexer.lex(mystring).toArray(new Token[0]);
         Parser myparser = new Parser(tokens2);
         // System.out.println(myparser.parseProgram());
