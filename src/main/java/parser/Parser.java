@@ -1,6 +1,11 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
+
+import tokenizer.TokenizationException;
 import tokenizer.tokens.*;
 import tokenizer.tokens.keywords.*;
 import tokenizer.tokens.operatortokens.*;
@@ -9,13 +14,14 @@ import parser.statements.*;
 
 public class Parser {
 
-    private final Token[] tokens;
+    private static Token[] tokens;
 
     public Parser(final Token[] tokens) {
         this.tokens = tokens;
     }
+    private final static List<Token> subtokens = new ArrayList(Arrays.asList(tokens));
 
-    private class ParseResult<A> {
+    public static class ParseResult<A> {
         public final A result;
         public final int nextPos;
 
@@ -25,11 +31,125 @@ public class Parser {
         }
     }
 
-    public ParseResult<Expression> parseExp(final int startPos) throws ParseException {
+    public static ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
+        int nextPos = startPos;
+        int rightPos = startPos;
+        int length = 0;
+
+        while ((subtokens.get(nextPos) instanceof IntegerToken || subtokens.get(nextPos) instanceof LeftParenToken
+                || subtokens.get(nextPos) instanceof OperatorToken|| subtokens.get(nextPos) instanceof RightParenToken
+                 || subtokens.get(nextPos) instanceof IdentifierToken) && nextPos!=subtokens.size() ){
+
+            length++;
+            nextPos++;
+            rightPos++;
+        }
+        if(addsub()){
+            for(int i=length;i>=0;i--)  {
+                if (subtokens.get(rightPos) instanceof PlusToken ) {
+                    if(rightPos-1==1){  
+
+                        Expression plus =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
+                        subtokens.remove(rightPos);
+                        subtokens.remove(rightPos-1);
+                        rightPos--;
+                        return new ParseResult<Expression>(new PlusExp(plus, parseExp(startPos).result ),nextPos);
+                    }else{
+                        Expression plus =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
+                        subtokens.remove(rightPos);
+                        subtokens.remove(rightPos);
+                        rightPos--;
+                        return new ParseResult<Expression>(new PlusExp(parseExp(startPos).result, plus ),nextPos);
+                    }
+                }else if(subtokens.get(rightPos) instanceof MinusToken){
+                    if(rightPos-1==0){  
+                        Expression sub =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
+                        // System.out.println(rightPos+ " Division");
+                        subtokens.remove(rightPos-1);
+                        subtokens.remove(rightPos);
+                        rightPos--;       
+                        return new ParseResult<Expression>(new SubtractionExp(sub,parseExp(startPos).result),nextPos);
+                    }
+                    Expression sub =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
+                    // System.out.println(rightPos+ " Division");
+                    subtokens.remove(rightPos);
+                    subtokens.remove(rightPos);
+                    rightPos--;       
+                    return new ParseResult<Expression>(new SubtractionExp(parseExp(startPos).result, sub),nextPos);
+                }else{
+                    // System.out.println(rightPos+ " else");
+                    rightPos--;
+                }
+            }
+        }
+        if(multdiv()){
+            for(int i=length;i>=0;i--) {
+                if (subtokens.get(rightPos) instanceof MultiplicationToken ) {
+                    if(rightPos-1==1){  
+                        Expression mult =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
+                        subtokens.remove(rightPos);
+                        subtokens.remove(rightPos-1);
+                        rightPos--;
+                        return new ParseResult<Expression>(new MultiplicationExp(mult, parseExp(startPos).result ),nextPos);
+                    }else{
+                        Expression mult =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
+                        subtokens.remove(rightPos);
+                        subtokens.remove(rightPos);
+                        rightPos--;
+                        return new ParseResult<Expression>(new MultiplicationExp(parseExp(startPos).result, mult ),nextPos);
+                    }
+                }else if(subtokens.get(rightPos) instanceof DivisionToken){
+                    if(rightPos-1==1){  
+                        Expression div =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
+                        subtokens.remove(rightPos);
+                        subtokens.remove(rightPos-1);
+                        rightPos--;
+                        return new ParseResult<Expression>(new DivisionExp(div, parseExp(startPos).result ),nextPos);
+                    }else{
+                    Expression div =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
+                    // System.out.println(rightPos+ " Division");
+                    subtokens.remove(rightPos);
+                    subtokens.remove(rightPos);
+                    rightPos--;       
+                    return new ParseResult<Expression>((new DivisionExp(parseExp(startPos).result, div )),nextPos);
+                    }
+                }else{
+                    // System.out.println(rightPos+ " else");
+                    rightPos--;
+                }
+            }
+        }
+        if(subtokens.get(startPos) instanceof IntegerToken){
+            // System.out.println(rightPos);
+            return new ParseResult<Expression>(new IntegerExp((IntegerToken)subtokens.get(startPos)), startPos);
+        }  
         return null;
     }
-
-    public ParseResult<Statement> parseStmt(final int startPos) throws ParseException {
+    public static Boolean multdiv(){
+        for(Token model : subtokens) {
+            if(model instanceof MultiplicationToken ||model instanceof DivisionToken){
+                return true;
+            }
+        }
+        return false;
+    }
+    public static Boolean addsub(){
+        for(Token model : subtokens) {
+            if(model instanceof PlusToken ||model instanceof MinusToken){
+                return true;
+            }
+        }
+        return false;
+    }
+    public static Boolean paren(){
+        for(Token model : subtokens) {
+            if(model instanceof LeftParenToken ||model instanceof RightParenToken){
+                return true;
+            }
+        }
+        return false;
+    }
+    public ParseResult<Statement> parseStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Statement myStmt = null;
 
@@ -139,7 +259,7 @@ public class Parser {
         return new ParseResult<Statement>(myStmt, nextPos);
     }
 
-    public ParseResult<ForStmt> parseForStmt(final int startPos) throws ParseException {
+    public ParseResult<ForStmt> parseForStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Statement initialization;
         Expression condition;
@@ -187,7 +307,7 @@ public class Parser {
         return new ParseResult<ForStmt>(new ForStmt(initialization, condition, incrementation, body), nextPos);
     }
 
-    public ParseResult<WhileStmt> parseWhileStmt(final int startPos) throws ParseException {
+    public ParseResult<WhileStmt> parseWhileStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Expression condition;
         Statement body;
@@ -214,10 +334,10 @@ public class Parser {
         body = stmtResult.result;
         nextPos = stmtResult.nextPos;
 
-        return new ParseResult<WhileStmt>(new WhileStmt(condition, body), nextPos);
+        return new ParseResult<WhileStmt>((new WhileStmt(condition, body)), nextPos);
     }
 
-    public ParseResult<Statement> parseIfStmt(final int startPos) throws ParseException {
+    public ParseResult<Statement> parseIfStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Expression condition;
         Statement trueBranch;
@@ -254,7 +374,7 @@ public class Parser {
         return new ParseResult<Statement>(new IfStmt(condition, trueBranch), nextPos);
     }
 
-    public ParseResult<BlockStmt> parseBlockStmt(final int startPos) throws ParseException {
+    public ParseResult<BlockStmt> parseBlockStmt(final int startPos) throws ParseException, TokenizationException {
         ArrayList<Statement> block = new ArrayList<Statement>();
 
         int nextPos = startPos;
@@ -278,7 +398,8 @@ public class Parser {
         return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
     }
 
-    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException {
+    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException,
+            TokenizationException {
         String type;
         String name;
         Expression value = null;
@@ -321,7 +442,7 @@ public class Parser {
         }
     }
 
-    public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException {
+    public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         ArrayList<VariableDeclarationStmt> parameters = new ArrayList<VariableDeclarationStmt>();
         BlockStmt body;
@@ -363,7 +484,7 @@ public class Parser {
         return new ParseResult<Constructor>(new Constructor(parameters, body), nextPos);
     }
 
-    public ParseResult<MethodDef> parseMethodDef(final int startPos) throws ParseException {
+    public ParseResult<MethodDef> parseMethodDef(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
 
         String type;
@@ -430,7 +551,7 @@ public class Parser {
         return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, body), nextPos);
     }
 
-    public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException {
+    public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException, TokenizationException {
         String className;
         String parentClass = "";
         ArrayList<VariableDeclarationStmt> fields = new ArrayList<VariableDeclarationStmt>();
@@ -507,7 +628,7 @@ public class Parser {
         }
     }
 
-    public Program parseProgram() throws ParseException {
+    public Program parseProgram() throws ParseException, TokenizationException {
         int nextPos = 0;
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         while (tokens[nextPos] instanceof ClassKeywordToken) {

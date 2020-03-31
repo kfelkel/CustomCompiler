@@ -1,8 +1,14 @@
 package parser.expressions;
-public class IntegerExp implements Expression{
+
+import tokenizer.tokens.IntegerToken;
+
+public class IntegerExp implements Expression {
     public final int value;
 
-    public IntegerExp(int value) {
+    public IntegerExp(IntegerToken value) {
+        this.value = value.value;
+    }
+    public IntegerExp(final int value) {
         this.value = value;
     }
 
