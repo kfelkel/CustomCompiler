@@ -1,7 +1,6 @@
 package parser;
 
 import java.util.ArrayList;
-import parser.statements.Statement;
 import parser.statements.VariableDeclarationStmt;
 import parser.statements.BlockStmt;
 
