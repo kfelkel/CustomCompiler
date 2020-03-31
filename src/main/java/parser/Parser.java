@@ -15,11 +15,13 @@ import parser.statements.*;
 public class Parser {
 
     private static Token[] tokens;
+    private static List<Token> subtokens;
 
-    public Parser(final Token[] tokens) {
-        this.tokens = tokens;
+    public Parser(Token[] tokens) {
+        Parser.tokens = tokens;
+        Parser.subtokens =  Arrays.asList(tokens);
     }
-    private final static List<Token> subtokens = new ArrayList(Arrays.asList(tokens));
+
 
     public static class ParseResult<A> {
         public final A result;

@@ -16,7 +16,7 @@ public class ParserTest {
 
     public static void testParse(String programString, Program expected) throws TokenizationException, ParseException {
         List<Token> tokens = Lexer.lex(programString);
-        Token[] tokenArray = tokens.toArray(new Token[0]);
+        Token[] tokenArray = tokens.toArray(new Token[tokens.size()]);
         System.out.println(Arrays.toString(tokenArray));
         Parser myparser = new Parser(tokenArray);
         Program actual = myparser.parseProgram();
@@ -102,29 +102,47 @@ public class ParserTest {
         testParse(programString, expected);
     }
 
+//     @Test
+//     public void HelloWorldTest() throws TokenizationException, ParseException {
+//         String programString = "Int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
+//                 + ")";
+//         ArrayList<Statement> stmtList = new ArrayList<Statement>();
+//         stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
+//         stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
+//         stmtList.add(new ReturnStmt(new IntegerExp(0)));
+//         BlockStmt mainBody = new BlockStmt(stmtList);
+//         Program expected = new Program(new ArrayList<ClassDef>(),
+//                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
+
+//         List<Token> tokens = Lexer.lex(programString);
+
+//         // I know Token[0] is weird, but, from the documentation,
+//         // "If the list fits in the specified array, it is returned therein."
+//         // "Otherwise, a new array is allocated with the runtime type of the specified
+//         // array and the size of this list."
+//         // So, as far as I can tell, toArray(new Token[0]) will return an array of the
+//         // proper size
+//         Parser myparser = new Parser(tokens.toArray(new Token[0]));
+//         Program actual = myparser.parseProgram();
+//         assertEquals(expected, actual);
+//     }
+
     @Test
-    public void HelloWorldTest() throws TokenizationException, ParseException {
-        String programString = "Int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
-                + ")";
-        ArrayList<Statement> stmtList = new ArrayList<Statement>();
-        stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
-        stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
-        stmtList.add(new ReturnStmt(new IntegerExp(0)));
-        BlockStmt mainBody = new BlockStmt(stmtList);
-        Program expected = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
-
-        List<Token> tokens = Lexer.lex(programString);
-
-        // I know Token[0] is weird, but, from the documentation,
-        // "If the list fits in the specified array, it is returned therein."
-        // "Otherwise, a new array is allocated with the runtime type of the specified
-        // array and the size of this list."
-        // So, as far as I can tell, toArray(new Token[0]) will return an array of the
-        // proper size
-        Parser myparser = new Parser(tokens.toArray(new Token[0]));
-        Program actual = myparser.parseProgram();
-        assertEquals(expected, actual);
+    public void testParseExpression() throws TokenizationException, ParseException{
+        // Token[] tokens = new Token[]{new IntegerToken(9),new MultiplicationToken(),new IntegerToken(8),new PlusToken(),
+        // new IntegerToken(1), new DivisionToken(), new IntegerToken(2),
+        // new MultiplicationToken(), new IntegerToken(3), new DivisionToken(), new IntegerToken(4),
+        // new MultiplicationToken(), new IntegerToken(5),new PlusToken(), new IntegerToken(6),new MinusToken(), 
+        //                 new IntegerToken(7) };
+        // // String mystring = "int main(){int x = 9*8+1/2*3/4*5+6-7;}";
+        String mystring = "9*8+4;";
+        Token[] tokens2 = Lexer.lex(mystring).toArray(new Token[0]);
+        Parser myparser = new Parser(tokens2);
+        // System.out.println(myparser.parseProgram());
+        //assertEquals(tokens.toString(), Lexer.lex(mystring).toString());
+        System.out.println(Parser.parseExp(0).result);
+        
+        
+        
     }
-
 }

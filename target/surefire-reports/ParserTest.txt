@@ -1,11 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: ParserTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.017 sec <<< FAILURE!
-testAdd(ParserTest)  Time elapsed: 0.002 sec  <<< ERROR!
-java.lang.NullPointerException
-	at parser.Parser.parseProgram(Parser.java:81)
-	at ParserTest.testAdd(ParserTest.java:23)
+Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.098 sec <<< FAILURE!
+testParseExpression(ParserTest)  Time elapsed: 0.008 sec  <<< ERROR!
+java.lang.UnsupportedOperationException
+	at java.util.AbstractList.remove(AbstractList.java:161)
+	at parser.Parser.parseExp(Parser.java:61)
+	at ParserTest.testParseExpression(ParserTest.java:143)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
