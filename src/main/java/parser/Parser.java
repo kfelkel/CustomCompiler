@@ -14,16 +14,16 @@ import parser.statements.*;
 
 public class Parser {
 
-    private static Token[] tokens;
-    private static List<Token> subtokens;
+    private  Token[] tokens;
+    private  List<Token> subtokens;
 
     public Parser(Token[] tokens) {
-        Parser.tokens = tokens;
-        Parser.subtokens = new ArrayList<Token>(Arrays.asList(tokens));
+        this.tokens = tokens;
+        this.subtokens = new ArrayList<Token>(Arrays.asList(tokens));
     }
 
 
-    public static class ParseResult<A> {
+    public  class ParseResult<A> {
         public final A result;
         public final int nextPos;
 
@@ -33,7 +33,7 @@ public class Parser {
         }
     }
 
-    public static ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
+    public  ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         int rightPos = startPos;
         int length = 0;
@@ -58,13 +58,13 @@ public class Parser {
                         return new ParseResult<Expression>(new PlusExp(plus, parseExp(startPos).result ),nextPos);
                     }else{
                         Expression plus = new IntegerExp((IntegerToken) subtokens.get(rightPos + 1));
-                        Parser.subtokens.remove(rightPos);
-                        Parser.subtokens.remove(rightPos);
+                        subtokens.remove(rightPos);
+                        subtokens.remove(rightPos);
                         rightPos--;
                         return new ParseResult<Expression>(new PlusExp(parseExp(startPos).result, plus ),nextPos);
                     }
                 }else if(subtokens.get(rightPos) instanceof MinusToken){
-                    if(rightPos-1==0){  
+                    if(rightPos-1==1){  
                         Expression sub =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
                         // System.out.println(rightPos+ " Division");
                         subtokens.remove(rightPos-1);
@@ -127,7 +127,7 @@ public class Parser {
         }  
         return null;
     }
-    public static Boolean multdiv(){
+    public  Boolean multdiv(){
         for(Token model : subtokens) {
             if(model instanceof MultiplicationToken ||model instanceof DivisionToken){
                 return true;
@@ -135,7 +135,7 @@ public class Parser {
         }
         return false;
     }
-    public static Boolean addsub(){
+    public  Boolean addsub(){
         for(Token model : subtokens) {
             if(model instanceof PlusToken ||model instanceof MinusToken){
                 return true;
@@ -143,7 +143,7 @@ public class Parser {
         }
         return false;
     }
-    public static Boolean paren(){
+    public  Boolean paren(){
         for(Token model : subtokens) {
             if(model instanceof LeftParenToken ||model instanceof RightParenToken){
                 return true;

@@ -25,7 +25,8 @@ public class ParserTest {
         // even though all the .equals() method is doing for those objects is comparing
         // the toString()s
         // assertEquals(expected, actual);
-        assertEquals(expected.toString(), actual.toString());
+        assert (expected.equals(actual));
+        //assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
@@ -135,12 +136,66 @@ public class ParserTest {
         // new MultiplicationToken(), new IntegerToken(5),new PlusToken(), new IntegerToken(6),new MinusToken(), 
         //                 new IntegerToken(7) };
         // // String mystring = "int main(){int x = 9*8+1/2*3/4*5+6-7;}";
-        String mystring = "9*8+1/2*3/4*5+6-7;;";
-        Token[] tokens2 = Lexer.lex(mystring).toArray(new Token[0]);
-        Parser myparser = new Parser(tokens2);
-        // System.out.println(myparser.parseProgram());
-        //assertEquals(tokens.toString(), Lexer.lex(mystring).toString());
-        System.out.println(Parser.parseExp(0).result);
+
+        //String mystring = "9+8;";
+        //String mystring = "9*8+1/2*3/4*5+6-7;";
+        String mystring;
+        Expression expected;
+        Expression actual;
+        Token[] tokens;
+        Parser myparser;
+
+        mystring = "1/2;";
+        expected = new DivisionExp(new IntegerExp(1), new IntegerExp(2));
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        assert (actual.equals(expected));
+        
+        mystring = "1/2*3;";
+        expected = new MultiplicationExp(expected, new IntegerExp(3));
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        assert (actual.equals(expected));
+
+        mystring = "1/2*3/4;";
+        expected = new DivisionExp(expected, new IntegerExp(4));
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        assert (actual.equals(expected));
+        
+        mystring = "1/2*3/4*5;";
+        expected = new MultiplicationExp(expected, new IntegerExp(5));
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        assert (actual.equals(expected));
+        
+        mystring = "9*8+1/2*3/4*5;";
+        expected = new PlusExp(new MultiplicationExp(new IntegerExp(9), new IntegerExp(8)), expected);
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        System.out.println("Expected: " + expected);
+        System.out.println("Actual: " + actual);
+        assert (actual.equals(expected));
+        
+        // mystring = "9*8+1/2*3/4*5+6;";
+        // expected = new PlusExp(expected, new IntegerExp(6));
+        // tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        // myparser = new Parser(tokens);
+        // actual = myparser.parseExp(0).result;
+        // assert (actual.equals(expected));
+        
+        // mystring = "9*8+1/2*3/4*5+6-7;";
+        // expected = new SubtractionExp(expected, new IntegerExp(7));
+        // tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        // myparser = new Parser(tokens);
+        // actual = myparser.parseExp(0).result;
+        // assert (actual.equals(expected));
+
         
         
         
