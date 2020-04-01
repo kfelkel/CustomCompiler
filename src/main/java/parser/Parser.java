@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
+import tokenizer.Lexer;
 import tokenizer.TokenizationException;
 import tokenizer.tokens.*;
 import tokenizer.tokens.keywords.*;
@@ -16,7 +17,7 @@ public class Parser {
 
     private  Token[] tokens;
     private  List<Token> subtokens;
-
+    
     public Parser(Token[] tokens) {
         this.tokens = tokens;
         this.subtokens = new ArrayList<Token>(Arrays.asList(tokens));
@@ -35,122 +36,68 @@ public class Parser {
 
     public  ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
-        int rightPos = startPos;
-        int length = 0;
-
         while ((subtokens.get(nextPos) instanceof IntegerToken || subtokens.get(nextPos) instanceof LeftParenToken
                 || subtokens.get(nextPos) instanceof OperatorToken|| subtokens.get(nextPos) instanceof RightParenToken
                  || subtokens.get(nextPos) instanceof IdentifierToken) && nextPos!=subtokens.size() ){
-
-            length++;
             nextPos++;
-            rightPos++;
         }
-        if(addsub()){
-            for(int i=length;i>=0;i--)  {
-                if (subtokens.get(rightPos) instanceof PlusToken ) {
-                    if(rightPos-1==1){  
+        return new ParseResult<Expression>(parseSubExp(getExp(startPos, nextPos,subtokens)), nextPos);
+    }
+    public ArrayList<Token> getExp(int left,int right, List<Token> array) {
+        ArrayList<Token> subExp = new ArrayList<Token>();
+        while(left!=right){
+            subExp.add(array.get(left));
+            left++;
+        }
+        return(subExp);
+    }
+    public  Expression parseSubExp(ArrayList<Token> array) throws ParseException, TokenizationException {
+        int right = array.size()-1;
+        int left = array.size()-1;
 
-                        Expression plus =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
-                        subtokens.remove(rightPos);
-                        subtokens.remove(rightPos-1);
-                        rightPos--;
-                        return new ParseResult<Expression>(new PlusExp(plus, parseExp(startPos).result ),nextPos);
-                    }else{
-                        Expression plus = new IntegerExp((IntegerToken) subtokens.get(rightPos + 1));
-                        subtokens.remove(rightPos);
-                        subtokens.remove(rightPos);
-                        rightPos--;
-                        return new ParseResult<Expression>(new PlusExp(parseExp(startPos).result, plus ),nextPos);
-                    }
-                }else if(subtokens.get(rightPos) instanceof MinusToken){
-                    if(rightPos-1==1){  
-                        Expression sub =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
-                        // System.out.println(rightPos+ " Division");
-                        subtokens.remove(rightPos-1);
-                        subtokens.remove(rightPos);
-                        rightPos--;       
-                        return new ParseResult<Expression>(new SubtractionExp(sub,parseExp(startPos).result),nextPos);
-                    }
-                    Expression sub =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
-                    // System.out.println(rightPos+ " Division");
-                    subtokens.remove(rightPos);
-                    subtokens.remove(rightPos);
-                    rightPos--;       
-                    return new ParseResult<Expression>(new SubtractionExp(parseExp(startPos).result, sub),nextPos);
-                }else{
-                    // System.out.println(rightPos+ " else");
-                    rightPos--;
-                }
+        // for(left=array.size()-1;left>0;left--){
+        //     if(array.get(left) instanceof RightParenToken){
+        //         return new PlusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+        //     }
+        //     if(array.get(left) instanceof MinusToken){
+        //         return new SubtractionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+        //     }
+        // }
+        //Pluss/minus
+        for(left=array.size()-1;left>0;left--){
+            if(array.get(left) instanceof PlusToken){
+                return new PlusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof MinusToken){
+                return new SubtractionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
         }
-        if(multdiv()){
-            for(int i=length;i>=0;i--) {
-                if (subtokens.get(rightPos) instanceof MultiplicationToken ) {
-                    if(rightPos-1==1){  
-                        Expression mult =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
-                        subtokens.remove(rightPos);
-                        subtokens.remove(rightPos-1);
-                        rightPos--;
-                        return new ParseResult<Expression>(new MultiplicationExp(mult, parseExp(startPos).result ),nextPos);
-                    }else{
-                        Expression mult = new IntegerExp((IntegerToken) subtokens.get(rightPos + 1));
-                        subtokens.remove(rightPos);
-                        subtokens.remove(rightPos);
-                        rightPos--;
-                        return new ParseResult<Expression>(new MultiplicationExp(parseExp(startPos).result, mult ),nextPos);
-                    }
-                }else if(subtokens.get(rightPos) instanceof DivisionToken){
-                    if(rightPos-1==1){  
-                        Expression div =new IntegerExp((IntegerToken)subtokens.get(rightPos-1));
-                        subtokens.remove(rightPos);
-                        subtokens.remove(rightPos-1);
-                        rightPos--;
-                        return new ParseResult<Expression>(new DivisionExp(div, parseExp(startPos).result ),nextPos);
-                    }else{
-                    Expression div =new IntegerExp((IntegerToken)subtokens.get(rightPos+1));
-                    // System.out.println(rightPos+ " Division");
-                    subtokens.remove(rightPos);
-                    subtokens.remove(rightPos);
-                    rightPos--;       
-                    return new ParseResult<Expression>((new DivisionExp(parseExp(startPos).result, div )),nextPos);
-                    }
-                }else{
-                    // System.out.println(rightPos+ " else");
-                    rightPos--;
-                }
+        //Mult/Divide
+        for(left=array.size()-1;left>0;left--){
+            if(array.get(left) instanceof MultiplicationToken){
+                return new MultiplicationExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof DivisionToken){
+                return new DivisionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
         }
-        if(subtokens.get(startPos) instanceof IntegerToken){
-            // System.out.println(rightPos);
-            return new ParseResult<Expression>(new IntegerExp((IntegerToken)subtokens.get(startPos)), startPos);
-        }  
+        //Single int
+        if(array.size()==1 && array.get(0) instanceof IntegerToken){
+            return new IntegerExp((IntegerToken)array.get(left));
+        }
         return null;
     }
-    public  Boolean multdiv(){
-        for(Token model : subtokens) {
-            if(model instanceof MultiplicationToken ||model instanceof DivisionToken){
-                return true;
-            }
-        }
-        return false;
-    }
-    public  Boolean addsub(){
-        for(Token model : subtokens) {
-            if(model instanceof PlusToken ||model instanceof MinusToken){
-                return true;
-            }
-        }
-        return false;
-    }
-    public  Boolean paren(){
-        for(Token model : subtokens) {
-            if(model instanceof LeftParenToken ||model instanceof RightParenToken){
-                return true;
-            }
-        }
-        return false;
-    }
+    // public static void main(String [] args) throws TokenizationException, ParseException {
+    //     String mystring;
+    //     Token[] tokens;
+    //     Parser myparser;
+        
+    //     mystring = "2/3+4*5;";
+    //     tokens = Lexer.lex(mystring).toArray(new Token[0]);
+    //     myparser = new Parser(tokens);
+    //     System.out.println(myparser.parseExp(0).result);
+    // }
+
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Statement myStmt = null;
