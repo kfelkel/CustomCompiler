@@ -54,31 +54,71 @@ public class Parser {
     public  Expression parseSubExp(ArrayList<Token> array) throws ParseException, TokenizationException {
         int right = array.size()-1;
         int left = array.size()-1;
-
-        // for(left=array.size()-1;left>0;left--){
-        //     if(array.get(left) instanceof RightParenToken){
-        //         return new PlusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
-        //     }
-        //     if(array.get(left) instanceof MinusToken){
-        //         return new SubtractionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
-        //     }
-        // }
-        //Pluss/minus
-        for(left=array.size()-1;left>0;left--){
-            if(array.get(left) instanceof PlusToken){
+        int paren = 0;
+        for(left=0;left<array.size()-1;left++){
+            if(array.get(left) instanceof LessThanToken){
+                return new LessThanExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof GreaterThanToken){
+                return new GreaterThanExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof LessThanOrEqualToken){
+                return new LessThanOrEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof GreaterThanOrEqualToken){
+                return new GreaterThanOrEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof EqualEqualToken){
+                return new EqualEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+        }
+        for(int i=array.size()-1;i>=0;i--) {   
+            if(array.get(i) instanceof RightParenToken){
+                paren++;
+            }
+            if(array.get(i) instanceof LeftParenToken){
+                paren--;
+            }
+        }
+        if(paren%2!=0){
+            throw new ParseException("Missing Parentheses" );
+        }
+        for(left=array.size()-1;left>=0;left--){
+            if(array.get(left) instanceof RightParenToken){
+                paren++;
+            }
+            if(array.get(left) instanceof LeftParenToken){
+                paren--;
+            }
+            if(array.get(left) instanceof PlusToken && paren==0){
                 return new PlusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
-            if(array.get(left) instanceof MinusToken){
-                return new SubtractionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if(array.get(left) instanceof MinusToken && paren==0){
+                return new MinusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
         }
         //Mult/Divide
-        for(left=array.size()-1;left>0;left--){
-            if(array.get(left) instanceof MultiplicationToken){
+        for(left=array.size()-1;left>=0;left--){
+            if(array.get(left) instanceof RightParenToken){
+                paren+=1;
+            }
+            if(array.get(left) instanceof LeftParenToken){
+                paren--;
+            }
+            if(array.get(left) instanceof MultiplicationToken && paren==0 ){
                 return new MultiplicationExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
-            if(array.get(left) instanceof DivisionToken){
+            if(array.get(left) instanceof DivisionToken && paren==0){
                 return new DivisionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+            if(array.get(left) instanceof ModulusToken && paren==0 ){
+                return new ModulusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            }
+        }
+        //Paren
+        for(left=array.size()-1;left>0;left--){
+            if(array.get(left) instanceof RightParenToken){
+                return new ParenthesizedExp(parseSubExp(getExp(1, array.size()-1,array)));
             }
         }
         //Single int
@@ -92,7 +132,7 @@ public class Parser {
     //     Token[] tokens;
     //     Parser myparser;
         
-    //     mystring = "2/3+4*5;";
+    //     mystring = "1==2<3;";
     //     tokens = Lexer.lex(mystring).toArray(new Token[0]);
     //     myparser = new Parser(tokens);
     //     System.out.println(myparser.parseExp(0).result);

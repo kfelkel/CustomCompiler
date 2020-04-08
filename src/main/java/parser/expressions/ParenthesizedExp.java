@@ -8,7 +8,7 @@ public class ParenthesizedExp implements Expression {
     }
 
     public String toString() {
-        return "ParenthesizedExp( " + body + ")";  
+        return "ParenthesizedExp(" + body + ")";  
     }
 
     public boolean equals(final Expression exp) {

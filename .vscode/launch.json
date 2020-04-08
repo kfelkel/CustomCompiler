@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Parser",
+            "request": "launch",
+            "mainClass": "parser.Parser",
+            "projectName": "tokenizer"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Lexer",
             "request": "launch",
             "mainClass": "Lexer",
