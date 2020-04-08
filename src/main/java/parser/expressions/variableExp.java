@@ -1,5 +1,7 @@
 package parser.expressions;
 
+import tokenizer.tokens.IdentifierToken;
+
 public class VariableExp implements Expression {
 
     public final String name;
@@ -7,7 +9,9 @@ public class VariableExp implements Expression {
     public VariableExp(final String name) {
         this.name = name;
     }
-
+    public VariableExp(IdentifierToken name) {
+        this.name = name.name;
+    }
     public String toString() {
         return "VariableExp(" + name + ")";     
     }

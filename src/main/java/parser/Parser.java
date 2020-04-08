@@ -55,6 +55,10 @@ public class Parser {
         int right = array.size()-1;
         int left = array.size()-1;
         int paren = 0;
+        int ops=0;
+        int nums=0;
+        
+        //Comparison Ops
         for(left=0;left<array.size()-1;left++){
             if(array.get(left) instanceof LessThanToken){
                 return new LessThanExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
@@ -72,6 +76,7 @@ public class Parser {
                 return new EqualEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
         }
+        //find even amount of Parens
         for(int i=array.size()-1;i>=0;i--) {   
             if(array.get(i) instanceof RightParenToken){
                 paren++;
@@ -81,8 +86,23 @@ public class Parser {
             }
         }
         if(paren%2!=0){
-            throw new ParseException("Missing Parentheses" );
+            throw new ParseException("Missing Parentheses");
         }
+        //Check for missing ops or variables
+        for(int i=array.size()-1;i>=0;i--) {   
+            if(array.get(i) instanceof IntegerToken ||array.get(i) instanceof IdentifierToken){
+                nums++;
+            }
+            if(array.get(i) instanceof OperatorToken){
+                ops++;
+            }
+        }
+        if(ops>=nums){
+            throw new ParseException("Missing Int or Variable");
+        }else if(nums>(ops+1)){
+            throw new ParseException("Missing Operation");
+        }
+        //Plus/Minus
         for(left=array.size()-1;left>=0;left--){
             if(array.get(left) instanceof RightParenToken){
                 paren++;
@@ -125,6 +145,9 @@ public class Parser {
         if(array.size()==1 && array.get(0) instanceof IntegerToken){
             return new IntegerExp((IntegerToken)array.get(left));
         }
+        if(array.size()==1 && array.get(0) instanceof IdentifierToken){
+            return new VariableExp((IdentifierToken)array.get(left));
+        }
         return null;
     }
     // public static void main(String [] args) throws TokenizationException, ParseException {
@@ -132,7 +155,7 @@ public class Parser {
     //     Token[] tokens;
     //     Parser myparser;
         
-    //     mystring = "1==2<3;";
+    //     mystring = "ab+b-c+b+d<6+;";
     //     tokens = Lexer.lex(mystring).toArray(new Token[0]);
     //     myparser = new Parser(tokens);
     //     System.out.println(myparser.parseExp(0).result);
