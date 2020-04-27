@@ -178,26 +178,21 @@ public class ParserTest {
         tokens = Lexer.lex(mystring).toArray(new Token[0]);
         myparser = new Parser(tokens);
         actual = myparser.parseExp(0).result;
-        System.out.println("Expected: " + expected);
-        System.out.println("Actual: " + actual);
         assert (actual.equals(expected));
         
-        // mystring = "9*8+1/2*3/4*5+6;";
-        // expected = new PlusExp(expected, new IntegerExp(6));
-        // tokens = Lexer.lex(mystring).toArray(new Token[0]);
-        // myparser = new Parser(tokens);
-        // actual = myparser.parseExp(0).result;
-        // assert (actual.equals(expected));
+        mystring = "9*8+1/2*3/4*5+6;";
+        expected = new PlusExp(expected, new IntegerExp(6));
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        assert (actual.equals(expected));
         
-        // mystring = "9*8+1/2*3/4*5+6-7;";
-        // expected = new SubtractionExp(expected, new IntegerExp(7));
-        // tokens = Lexer.lex(mystring).toArray(new Token[0]);
-        // myparser = new Parser(tokens);
-        // actual = myparser.parseExp(0).result;
-        // assert (actual.equals(expected));
-
-        
-        
+        mystring = "9*8+1/2*3/4*5+6-7;";
+        expected = new MinusExp(expected, new IntegerExp(7));
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        actual = myparser.parseExp(0).result;
+        assert (actual.equals(expected));
         
     }
 }

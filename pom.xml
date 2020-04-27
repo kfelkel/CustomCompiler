@@ -44,17 +44,17 @@
 	  <targetClasses>
 	    <param>tokenizer.*</param>
       <param>parser.*</param>
+      <param>typechecker.*</param>
 	  </targetClasses>
 	  <targetTests>
 	    <param>tokenizer.LexerTest</param>
       <param>parser.ParserTest</param>
+      <param>typechecker.TypecheckerTest</param>
 	  </targetTests>
 	</configuration>
       </plugin>
     </plugins>
   </build>
   <properties>
-    <maven.compiler.source>11.0.6</maven.compiler.source>
-    <maven.compiler.target>11.0.6</maven.compiler.target>
   </properties>
 </project>
