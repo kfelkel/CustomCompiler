@@ -56,8 +56,10 @@ public class Parser {
         int left = array.size()-1;
         int paren = 0;
         int ops=0;
+        int neg=0;
         int nums=0;
-        
+        System.out.println(Arrays.asList(array));
+
         //Comparison Ops
         for(left=0;left<array.size()-1;left++){
             if(array.get(left) instanceof LessThanToken){
@@ -93,10 +95,24 @@ public class Parser {
             if(array.get(i) instanceof IntegerToken ||array.get(i) instanceof IdentifierToken){
                 nums++;
             }
+            if((array.get(i) instanceof MinusToken)){
+                if(i==0){
+                    neg++;
+                    System.out.println("Negative token");
+                }else if(array.get(i-1) instanceof OperatorToken){
+                    neg++;
+                    System.out.println("Negative token");
+                }
+                
+            }
             if(array.get(i) instanceof OperatorToken){
                 ops++;
             }
+            
         }
+        ops=ops-neg;
+        System.out.println(ops);
+        System.out.println(nums);
         if(ops>=nums){
             throw new ParseException("Missing Int or Variable");
         }else if(nums>(ops+1)){
@@ -113,8 +129,13 @@ public class Parser {
             if(array.get(left) instanceof PlusToken && paren==0){
                 return new PlusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
-            if(array.get(left) instanceof MinusToken && paren==0){
-                return new MinusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if(array.get(left) instanceof MinusToken && paren==0 && left!=0){
+                if(array.get(left-1) instanceof OperatorToken){
+                   
+                }else{
+                    return new MinusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+                }
+                
             }
         }
         //Mult/Divide
@@ -141,6 +162,11 @@ public class Parser {
                 return new ParenthesizedExp(parseSubExp(getExp(1, array.size()-1,array)));
             }
         }
+        //Negative Int
+        if(array.size()==2 && array.get(0) instanceof MinusToken){
+            IntegerToken numb =(IntegerToken)array.get(left+1);
+            return new IntegerExp(numb.value*-1);
+        }
         //Single int
         if(array.size()==1 && array.get(0) instanceof IntegerToken){
             return new IntegerExp((IntegerToken)array.get(left));
@@ -155,7 +181,7 @@ public class Parser {
     //     Token[] tokens;
     //     Parser myparser;
         
-    //     mystring = "ab+b-c+b+d<6+;";
+    //     mystring = "-2--3+4;";
     //     tokens = Lexer.lex(mystring).toArray(new Token[0]);
     //     myparser = new Parser(tokens);
     //     System.out.println(myparser.parseExp(0).result);
