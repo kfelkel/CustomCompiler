@@ -7,7 +7,7 @@ public class Program{
 
     public final ArrayList<ClassDef> classDefs;
 
-    MethodDef entryPoint;
+    public final MethodDef entryPoint;
 
     public Program(final ArrayList<ClassDef> classDefs, final MethodDef entryPoint){
         this.classDefs = classDefs;

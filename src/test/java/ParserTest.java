@@ -32,7 +32,7 @@ public class ParserTest {
     @Test
     public void ClassDefTest() throws TokenizationException, ParseException {
         // no class defs
-        String programString = "Int main(){}";
+        String programString = "Int main2(){} Int main(){}";
         Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("Int", "main",
                 new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())));
         testParse(programString, expected);
