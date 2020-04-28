@@ -119,7 +119,7 @@ public class Typechecker {
         }
 
         //TO-DO
-        final Map<String, Type> finalGamma = typecheckStmts(variables, function.body);
+        final Map<String, Type> finalGamma = typecheckStmts(variables,classMethods, function.body);
         final Type actualReturnType = typecheckExp(finalGamma, classMethods, function.returnExp);
         if (!actualReturnType.equals(convertStringToType(function.type))) {
             throw new IllTypedException("return type mismatch");
@@ -135,9 +135,8 @@ public class Typechecker {
             // int x = 7; [x -> int]
             // int y = x + 3; [x -> int, y -> int]
             // int z = y + x; [x -> int, y -> int, z -> int]
-            gamma = typecheckStmt(gamma, s);
+            gamma = typecheckStmt(gamma,classMethods, s);
         }
-
         return gamma;
     } // typecheckStmts
 
@@ -146,7 +145,7 @@ public class Typechecker {
         // x
         if (s instanceof BlockStmt) {
             final BlockStmt asBlock = (BlockStmt)s;
-            typecheckStmts(gamma,classMethods, asBlock.body);
+            typecheckStmts(gamma,classMethods, new BlockStmt(asBlock.body));
         } else if (s instanceof ForStmt) {
             // for(int x = 0; x < 10; x++) { s* }
             // gamma: []
