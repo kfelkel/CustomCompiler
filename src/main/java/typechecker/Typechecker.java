@@ -205,6 +205,15 @@ public class Typechecker {
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Function must have return value of " + guardType);
             }
+            return gamma; 
+        }else if(s instanceof WhileStmt){
+            final WhileStmt asWhile = (WhileStmt)s;
+            final Type guardType = typecheckExp(gamma,classMethods, asWhile.condition);
+            if (guardType instanceof Type) {
+            typecheckStmts(gamma,classMethods, asWhile.body);
+            } else {
+            throw new IllTypedException("Guard in While must be boolean");
+            }
             return gamma;
         } else if (s instanceof VariableDeclarationStmt) {
             VariableDeclarationStmt asVarDec = (VariableDeclarationStmt) s;
