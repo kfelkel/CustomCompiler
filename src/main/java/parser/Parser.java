@@ -236,6 +236,7 @@ public class Parser {
             if (tokens[nextPos] instanceof SemicolonToken) {
                 nextPos++;
                 myStmt = new ReturnVoidStmt();
+                //methodDef.returnlist.add(mystmt);
             } else {
                 ParseResult<Expression> expressionResult = parseExp(nextPos);
                 myStmt = new ReturnStmt(expressionResult.result);

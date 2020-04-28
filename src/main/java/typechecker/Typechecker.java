@@ -2,7 +2,7 @@ package typechecker;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import typechecker.types.*;
 import parser.*;
 import parser.statements.*;
 import parser.expressions.*;
@@ -24,6 +24,19 @@ public class Typechecker {
 
     } // Typechecker
 
+    public Type convertStringToType(String stringtype) {
+        if (stringtype.equals("Int"))
+            return new IntType();
+        if (stringtype.equals("Bool"))
+            return new BoolType();
+        if (stringtype.equals("String"))
+            return new StringType();
+        if (stringtype.equals("Void"))
+            return new VoidType();
+        else
+            return null; // add objects
+    }
+
     public void typecheckProgram(final Program program) throws IllTypedException {
         for (final ClassDef classdef : program.classDefs) {
             typecheckClass(classdef);
@@ -32,23 +45,27 @@ public class Typechecker {
     } // typecheckProgram
 
     public void typecheckClass(final ClassDef classdef) {
-  //To-Do
+        // To-Do
     }
 
     public void typecheckFunction(MethodDef function) throws IllTypedException {
-    // final Map<Variable, Type> gamma = new HashMap<Variable, Type>();
-    // for (final FormalParameter formalParam : function.formalParams) {
-    //     if (!gamma.containsKey(formalParam.theVariable)) {
-    //         gamma.put(formalParam.theVariable, formalParam.theType);
-    //     } else {
-    //         throw new IllTypedException("Duplicate formal parameter name");
-    //     }
-    // }
 
-    // final Map<Variable, Type> finalGamma = typecheckStmts(gamma, false, function.body);
-    // final Type actualReturnType = typeof(finalGamma, function.returnExp);
-    // if (!actualReturnType.equals(function.returnType)) {
-    //     throw new IllTypedException("return type mismatch");
+        final Map<String, Type> gamma = new HashMap<String, Type>();
+
+        for (final VariableDeclarationStmt parameter : function.parameters) {
+            if (!gamma.containsKey(parameter.name)) {
+                Type paramType = convertStringToType(parameter.type);
+                gamma.put(parameter.name, paramType);
+            } else {
+                throw new IllTypedException("Duplicate formal parameter name");
+            }
+        }
+
+        final Map<VariableExp, Type> finalGamma = typecheckStmts(gamma, false, function.body);
+        final Type actualReturnType = typeof(finalGamma, function.returnExp);
+        if (!actualReturnType.equals(function.type)) {// need to convert String type to Type
+            throw new IllTypedException("return type mismatch");
+        }
+
     }
-} // typecheckFunction
-
+}

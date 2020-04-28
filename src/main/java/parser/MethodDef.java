@@ -10,6 +10,7 @@ public class MethodDef {
     public final String name;
     public final ArrayList<VariableDeclarationStmt> parameters;
     public final BlockStmt body;
+    public final List<Exp> returnExp;
 
     public MethodDef(final String type, final String name, 
             final ArrayList<VariableDeclarationStmt> parameters, final BlockStmt body) {
