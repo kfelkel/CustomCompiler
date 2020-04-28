@@ -94,7 +94,7 @@ public class Typechecker {
 
         // check constructor statements
         // TO-DO
-        // typecheckStmts(variables, false, function.body) //pass functions
+        typecheckStmts(variables, classdef.constructor.body);
 
         // check method statements
 
@@ -118,8 +118,9 @@ public class Typechecker {
             }
         }
 
-        final Map<String, Type> finalGamma = typecheckStmts(variables, classMethods,function.body);
-        final Type actualReturnType = typeOfExpression(finalGamma, function.returnExp);
+        //TO-DO
+        final Map<String, Type> finalGamma = typecheckStmts(variables, function.body);
+        final Type actualReturnType = typecheckExp(finalGamma, classMethods, function.returnExp);
         if (!actualReturnType.equals(convertStringToType(function.type))) {
             throw new IllTypedException("return type mismatch");
         }
@@ -134,18 +135,18 @@ public class Typechecker {
             // int x = 7; [x -> int]
             // int y = x + 3; [x -> int, y -> int]
             // int z = y + x; [x -> int, y -> int, z -> int]
-            gamma = typecheckStmt(gamma,classMethods, s);
+            gamma = typecheckStmt(gamma, s);
         }
 
         return gamma;
     } // typecheckStmts
 
-    public Map<String, Type> typecheckStmt(final Map<String, Type> gamma,
+    public Map<String, Type> typecheckStmt(final Map<String, Type> gamma,Map<String, MethodDef> classMethods,
             final Statement s) throws IllTypedException {
         // x
         if (s instanceof BlockStmt) {
             final BlockStmt asBlock = (BlockStmt)s;
-            typecheckStmts(gamma, asBlock.body);
+            typecheckStmts(gamma,classMethods, asBlock.body);
         } else if (s instanceof ForStmt) {
             // for(int x = 0; x < 10; x++) { s* }
             // gamma: []
@@ -156,44 +157,44 @@ public class Typechecker {
             // [x -> int, y -> int, z -> int]
             // }
             final ForStmt asFor = (ForStmt)s;
-            final Map<String, Type> newGamma = typecheckStmt(gamma,asFor.initializer);
-            final Type guardType = typeOfExpression(newGamma, asFor.condition);
+            final Map<String, Type> newGamma = typecheckStmt(gamma,classMethods, asFor.initializer);
+            final Type guardType = typecheckExp(newGamma,classMethods, asFor.condition);
             if (guardType instanceof BoolType) {
-            typecheckStmt(newGamma, asFor.incrementor);
-            typecheckStmts(newGamma, asFor.body);
+            typecheckStmt(newGamma,classMethods, asFor.incrementor);
+            typecheckStmts(newGamma,classMethods, asFor.body);
             } else {
             throw new IllTypedException("Guard in for must be boolean");
             }
             return gamma;
         } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
             final IfElseStmt asIf = (IfElseStmt)s;
-            final Type guardType = typeOfExpression(gamma, asIf.condition);
+            final Type guardType = typecheckExp(gamma,classMethods, asIf.condition);
             if (guardType instanceof BoolType && asIf.falseBranch!=null ) {
-                typecheckStmts(gamma, asIf.trueBranch);
-                typecheckStmts(gamma, asIf.falseBranch);
+                typecheckStmts(gamma,classMethods,  asIf.trueBranch);
+                typecheckStmts(gamma,classMethods,  asIf.falseBranch);
             }else if(guardType instanceof BoolType){
-                typecheckStmts(gamma, asIf.trueBranch);
+                typecheckStmts(gamma,classMethods, asIf.trueBranch);
             } else {
                 throw new IllTypedException("Guard in If must be boolean");
             }
             return gamma;
         } else if (s instanceof PrintlnStmt) {
             final PrintlnStmt asPrintln = (PrintlnStmt)s;
-            final Type guardType = typeOfExpression(newGamma, asPrintln.output);
+            final Type guardType = typecheckExp(gamma,classMethods, asPrintln.output);
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Println must have Expression");
             } 
             return gamma;
         } else if (s instanceof PrintStmt) {
             final PrintStmt asPrint = (PrintStmt)s;
-            final Type guardType = typeOfExpression(newGamma, asPrint.output);
+            final Type guardType = typecheckExp(gamma,classMethods, asPrint.output);
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Print must have Expression");
             } 
             return gamma;
         } else if (s instanceof ReturnStmt) {
             final ReturnStmt asReturn = (ReturnStmt)s;
-            final Type guardType = typeOfExpression(newGamma, asReturn.value);
+            final Type guardType = typecheckExp(gamma,classMethods, asReturn.value);
             //xxxxxxget type of function return 
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Function must have return value of "+guardType);
@@ -214,7 +215,7 @@ public class Typechecker {
         }
     } // typecheckStmt
 
-    public Type typeOfExpression(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods, final Expression e)
+    public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods, final Expression e)
             throws IllTypedException {
 
         // Check for integers
@@ -231,8 +232,8 @@ public class Typechecker {
         // Check for Binary Operators
         else if (e instanceof PlusExp) {
             PlusExp asBinOpExp = (PlusExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
@@ -241,8 +242,8 @@ public class Typechecker {
             }
         } else if (e instanceof MinusExp) {
             MinusExp asBinOpExp = (MinusExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new IntType();
@@ -251,8 +252,8 @@ public class Typechecker {
             }
         } else if (e instanceof ModulusExp) {
             ModulusExp asBinOpExp = (ModulusExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new IntType();
@@ -261,8 +262,8 @@ public class Typechecker {
             }
         } else if (e instanceof MultiplicationExp) {
             MultiplicationExp asBinOpExp = (MultiplicationExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new IntType();
@@ -271,8 +272,8 @@ public class Typechecker {
             }
         } else if (e instanceof DivisionExp) {
             DivisionExp asBinOpExp = (DivisionExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new IntType();
@@ -281,8 +282,8 @@ public class Typechecker {
             }
         } else if (e instanceof GreaterThanExp) {
             GreaterThanExp asBinOpExp = (GreaterThanExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
@@ -291,8 +292,8 @@ public class Typechecker {
             }
         } else if (e instanceof GreaterThanOrEqualExp) {
             GreaterThanOrEqualExp asBinOpExp = (GreaterThanOrEqualExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
@@ -301,8 +302,8 @@ public class Typechecker {
             }
         } else if (e instanceof LessThanExp) {
             LessThanExp asBinOpExp = (LessThanExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
@@ -311,8 +312,8 @@ public class Typechecker {
             }
         } else if (e instanceof LessThanOrEqualExp) {// <,<=
             LessThanOrEqualExp asBinOpExp = (LessThanOrEqualExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
@@ -321,8 +322,8 @@ public class Typechecker {
             }
         } else if (e instanceof EqualEqualExp) {
             EqualEqualExp asBinOpExp = (EqualEqualExp) e;
-            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
-            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
                 return new BoolType();
@@ -368,7 +369,7 @@ public class Typechecker {
         throw new IllTypedException("unrecognized expression");
         
 
-    } // typeOfExpression
+    } // typecheckExp
 
     private void checkParams(final Map<String, Type> gamma,
                                    final List<VariableDeclarationStmt> formalParams,
@@ -380,7 +381,7 @@ public class Typechecker {
             while (formalIterator.hasNext() && actualIterator.hasNext()) {
                 final VariableDeclarationStmt formalParam = formalIterator.next();
                 final Expression actualParam = actualIterator.next();
-                final Type actualType = typeOfExpression(gamma, classMethods, actualParam);
+                final Type actualType = typecheckExp(gamma, classMethods, actualParam);
                 if (!actualType.equals(convertStringToType( formalParam.type))) {
                     throw new IllTypedException("Parameter type mismatch");
                 }
@@ -391,4 +392,5 @@ public class Typechecker {
         } else {
             throw new IllTypedException("wrong number of arguments");
         }
+    }
 }
