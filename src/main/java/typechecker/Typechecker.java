@@ -136,7 +136,8 @@ public class Typechecker {
         throws IllTypedException {
         // x
         if (s instanceof BlockStmt) {
-
+            final BlockStmt asFor = (BlockStmt)s;
+            typecheckStmts(newGamma, true, asFor.body);
         } else if (s instanceof ForStmt) {
             // for(int x = 0; x < 10; x++) { s* }
             // gamma: []
@@ -146,20 +147,19 @@ public class Typechecker {
             //   int z = x + y;
             //   [x -> int, y -> int, z -> int]
             // }
-            // final ForStmt asFor = (ForStmt)s;
-            // final Map<String, Type> newGamma = typecheckStmt(gamma, breakAndContinueOk, asFor.initializer);
-            // final Type guardType = typeof(newGamma, asFor.guard);
-            // if (guardType instanceof BoolType) {
-            //     typecheckStmt(newGamma, breakAndContinueOk, asFor.update);
-            //     typecheckStmts(newGamma, true, asFor.body);
-            // } else {
-            //     throw new IllTypedException("Guard in for must be boolean");
-            // }
-            // return gamma;
-        } else if (s instanceof IfElseStmt) {
-   
-        } else if (s instanceof IfStmt) {
-            // 
+            final ForStmt asFor = (ForStmt)s;
+            final Map<String, Type> newGamma = typecheckStmt(gamma, breakAndContinueOk, asFor.initializer);
+            final Type guardType = typeof(newGamma, asFor.condition);
+            if (guardType instanceof BoolType) {
+                typecheckStmt(newGamma, breakAndContinueOk, asFor.incrementor);
+                typecheckStmts(newGamma, true, asFor.body);
+            } else {
+                throw new IllTypedException("Guard in for must be boolean");
+            }
+            return gamma;
+        } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
+            final IfElseStmt asFor = (IfElseStmt)s;
+            
         } else if (s instanceof PrintlnStmt) {
             // Check expression inside
         } else if (s instanceof ReturnStmt) {
@@ -173,7 +173,7 @@ public class Typechecker {
             throw new IllTypedException("Unrecognized statement");
         }
     } // typecheckStmt
-    public Type typeof(final Map<String, Type> gamma, final Exp e)
+    public Type typeof(final Map<String, Type> gamma, final Expression e)
         throws IllTypedException {
         if (e instanceof IntegerExp) {
             return new IntType();
