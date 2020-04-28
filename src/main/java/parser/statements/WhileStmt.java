@@ -5,9 +5,9 @@ import parser.expressions.Expression;
 public class WhileStmt implements Statement {
 
     public final Expression condition;
-    public final Statement body;
+    public final BlockStmt body;
 
-    public WhileStmt(Expression condition, Statement body) {
+    public WhileStmt(Expression condition, BlockStmt body) {
         this.condition = condition;
         this.body = body;
     }

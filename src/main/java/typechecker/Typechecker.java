@@ -94,7 +94,7 @@ public class Typechecker {
 
         // check constructor statements
         // TO-DO
-        typecheckStmts(variables, classdef.constructor.body);
+        typecheckStmts(variables, methods, classdef.constructor.body);
 
         // check method statements
 
@@ -200,18 +200,23 @@ public class Typechecker {
             }
             return gamma; 
         } else if (s instanceof ReturnVoidStmt) {
-            final VoidType guardType;
+            final VoidType guardType= new VoidType();
             //xxxxxxget type of function return 
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Function must have return value of "+guardType);
             }
             return gamma; 
-        } else if (s instanceof EmptyStmt) {
+        }else if(s instanceof WhileStmt){
+            final WhileStmt asWhile = (WhileStmt)s;
+            final Type guardType = typecheckExp(gamma,classMethods, asWhile.condition);
+            if (guardType instanceof Type) {
+            typecheckStmts(gamma,classMethods, asWhile.body);
+            } else {
+            throw new IllTypedException("Guard in While must be boolean");
+            }
             return gamma;
-        } else {
-            assert (false);
-            throw new IllTypedException("Unrecognized statement");
         }
+        throw new IllTypedException("Unrecognized statement");
     } // typecheckStmt
 
     public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods, final Expression e)
