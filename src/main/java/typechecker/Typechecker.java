@@ -152,22 +152,19 @@ public class Typechecker {
             // int z = x + y;
             // [x -> int, y -> int, z -> int]
             // }
-            // final ForStmt asFor = (ForStmt)s;
-            // final Map<String, Type> newGamma = typecheckStmt(gamma, breakAndContinueOk,
-            // asFor.initializer);
-            // final Type guardType = typeof(newGamma, asFor.guard);
-            // if (guardType instanceof BoolType) {
-            // typecheckStmt(newGamma, breakAndContinueOk, asFor.update);
-            // typecheckStmts(newGamma, true, asFor.body);
-            // } else {
-            // throw new IllTypedException("Guard in for must be boolean");
-            // }
-            // return gamma;
-        } else if (s instanceof IfElseStmt) {
+            final ForStmt asFor = (ForStmt)s;
+            final Map<String, Type> newGamma = typecheckStmt(gamma, breakAndContinueOk,asFor.initializer);
+            final Type guardType = typeof(newGamma, asFor.condition);
+            if (guardType instanceof BoolType) {
+            typecheckStmt(newGamma, breakAndContinueOk, asFor.incrementor);
+            typecheckStmts(newGamma, true, asFor.body);
+            } else {
+            throw new IllTypedException("Guard in for must be boolean");
+            }
+            return gamma;
+        } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
 
-        } else if (s instanceof IfStmt) {
-            //
-        } else if (s instanceof PrintlnStmt) {
+        }  else if (s instanceof PrintlnStmt) {
             // Check expression inside
         } else if (s instanceof ReturnStmt) {
             // Check expression inside
