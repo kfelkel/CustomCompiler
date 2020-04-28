@@ -1,7 +1,10 @@
 package typechecker;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
+
 import typechecker.types.*;
 import parser.*;
 import parser.statements.*;
@@ -80,11 +83,10 @@ public class Typechecker {
             }
         }
         // check methods for duplicates
-        final Map<String, Type> methods = new HashMap<String, Type>();
+        final Map<String, MethodDef> methods = new HashMap<String, MethodDef>();
         for (final MethodDef method : classdef.methods) {
             if (!methods.containsKey(method.name)) {
-                Type paramType = convertStringToType(method.type);
-                methods.put(method.name, paramType);
+                methods.put(method.name, method);
             } else {
                 throw new IllTypedException("Duplicate function name");
             }
@@ -92,6 +94,7 @@ public class Typechecker {
 
         // check constructor statements
         // TO-DO
+        // typecheckStmts(variables, false, function.body) //pass functions
 
         // check method statements
 
@@ -101,8 +104,8 @@ public class Typechecker {
     }
 
     // add parameters for functions, variables
-    public void typecheckFunction(MethodDef function, Map<String, Type> classMethods, Map<String, Type> classFields)
-            throws IllTypedException {
+    public void typecheckFunction(MethodDef function, Map<String, MethodDef> classMethods,
+            Map<String, Type> classFields) throws IllTypedException {
 
         final Map<String, Type> variables = makeCopy(classFields);// ?
 
@@ -116,8 +119,8 @@ public class Typechecker {
         }
 
         final Map<String, Type> finalGamma = typecheckStmts(variables, false, function.body);
-        final Type actualReturnType = typeof(finalGamma, function.returnExp);
-        if (!actualReturnType.equals(convertStringToType(function.type))) {// need to convert String type to Type
+        final Type actualReturnType = typeOfExpression(finalGamma, function.returnExp);
+        if (!actualReturnType.equals(convertStringToType(function.type))) {
             throw new IllTypedException("return type mismatch");
         }
 
@@ -211,85 +214,181 @@ public class Typechecker {
         }
     } // typecheckStmt
 
-    public Type typeof(final Map<String, Type> gamma, final Expression e) throws IllTypedException {
+    public Type typeOfExpression(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods, final Expression e)
+            throws IllTypedException {
+
+        // Check for integers
         if (e instanceof IntegerExp) {
             return new IntType();
-        }  else if (e instanceof BinopExp) { // /, ==, >, >=, <,<=, -, %, *, +
-            
-         if (asBinop.op instanceof PlusBOP) {
-                final Type leftType = typeof(gamma, asBinop.left);
-                final Type rightType = typeof(gamma, asBinop.right);
+        }
+        if (e instanceof StringExp) {
+            return new StringType();
+        }
+        if (e instanceof VariableExp) {
+            VariableExp asVar = (VariableExp)e;
+            return gamma.get(asVar.name);
+        }
+        // Check for Binary Operators
+        else if (e instanceof PlusExp) {
+            PlusExp asBinOpExp = (PlusExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
 
-                if (leftType instanceof IntType && rightType instanceof IntType) {
-                    return new IntType();
-                } else {
-                    throw new IllTypedException("left or right in + is not an int");
-                }
-            } else if (asBinop.op instanceof LessThanBOP) {
-                final Type leftType = typeof(gamma, asBinop.left);
-                final Type rightType = typeof(gamma, asBinop.right);
-
-                if (leftType instanceof IntType && rightType instanceof IntType) {
-                    return new BoolType();
-                } else {
-                    throw new IllTypedException("left or right in < is not an int");
-                }
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new BoolType();
             } else {
-                assert (false);
-                throw new IllTypedException("unknown operator");
+                throw new IllTypedException("left or right in Plus is not an int");
             }
+        } else if (e instanceof MinusExp) {
+            MinusExp asBinOpExp = (MinusExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
 
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new IntType();
+            } else {
+                throw new IllTypedException("left or right in minus is not an int");
+            }
+        } else if (e instanceof ModulusExp) {
+            ModulusExp asBinOpExp = (ModulusExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
 
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new IntType();
+            } else {
+                throw new IllTypedException("left or right in Modulus is not an int");
+            }
+        } else if (e instanceof MultiplicationExp) {
+            MultiplicationExp asBinOpExp = (MultiplicationExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
 
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new IntType();
+            } else {
+                throw new IllTypedException("left or right in Multiplication is not an int");
+            }
+        } else if (e instanceof DivisionExp) {
+            DivisionExp asBinOpExp = (DivisionExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
 
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new IntType();
+            } else {
+                throw new IllTypedException("left or right in Division is not an int");
+            }
+        } else if (e instanceof GreaterThanExp) {
+            GreaterThanExp asBinOpExp = (GreaterThanExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
 
-        } else if (e instanceof VariableExp) {
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new BoolType();
+            } else {
+                throw new IllTypedException("left or right in GreaterThan is not an int");
+            }
+        } else if (e instanceof GreaterThanOrEqualExp) {
+            GreaterThanOrEqualExp asBinOpExp = (GreaterThanOrEqualExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new BoolType();
+            } else {
+                throw new IllTypedException("left or right in GreaterThanOrEqual is not an int");
+            }
+        } else if (e instanceof LessThanExp) {
+            LessThanExp asBinOpExp = (LessThanExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new BoolType();
+            } else {
+                throw new IllTypedException("left or right in LessThan is not an int");
+            }
+        } else if (e instanceof LessThanOrEqualExp) {// <,<=
+            LessThanOrEqualExp asBinOpExp = (LessThanOrEqualExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new BoolType();
+            } else {
+                throw new IllTypedException("left or right in LessThanOrEqual is not an int");
+            }
+        } else if (e instanceof EqualEqualExp) {
+            EqualEqualExp asBinOpExp = (EqualEqualExp) e;
+            final Type leftType = typeOfExpression(gamma, classMethods, asBinOpExp.exp1);
+            final Type rightType = typeOfExpression(gamma, classMethods, asBinOpExp.exp2);
+
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                return new BoolType();
+            } else {
+                throw new IllTypedException("left or right in EqualEqual is not an int");
+            }
+        }
+        // Check for Variables
+        else if (e instanceof VariableExp) {
             // final Map<Variable, Type> gamma
             final VariableExp asVar = (VariableExp) e;
-            if (gamma.containsKey(asVar.x)) {
-                final Type tau = gamma.get(asVar.x);
+            if (gamma.containsKey(asVar.name)) {
+                final Type tau = gamma.get(asVar.name);
                 return tau;
             } else {
-                throw new IllTypedException("Not in scope: " + asVar.x);
+                throw new IllTypedException("Not in scope: " + asVar.name);
             }
-        } else if (e instanceof HigherOrderFunctionDef) {
-            // (x: Int) => x + 1
-            // Int => Int
-            final HigherOrderFunctionDef asFunc = (HigherOrderFunctionDef) e;
-            final Map<Variable, Type> copy = makeCopy(gamma);
-            copy.put(asFunc.paramName, asFunc.paramType);
-            final Type bodyType = typeof(copy, asFunc.body);
-            return new FunctionType(asFunc.paramType, bodyType);
-        } else if (e instanceof CallHigherOrderFunction) {
-            // e1(e2)
-            // e1: (x: Int) => x + 1 [Int => Int]
-            // e2: 7 [Int]
-            // e1(e2): [Int]
-            final CallHigherOrderFunction asCall = (CallHigherOrderFunction) e;
-            final Type hopefullyFunction = typeof(gamma, asCall.theFunction);
-            final Type hopefullyParameter = typeof(gamma, asCall.theParameter);
-            if (hopefullyFunction instanceof FunctionType) {
-                final FunctionType asFunc = (FunctionType) hopefullyFunction;
-                if (asFunc.paramType.equals(hopefullyParameter)) {
-                    return asFunc.returnType;
-                } else {
+        }
+        // Check for MethodCall
+        else if (e instanceof MethodCallExp) {
+            final MethodCallExp asCall = (MethodCallExp) e;
+            String objectName = asCall.objectName;
+            if (objectName == "this" && classMethods.containsKey(asCall.name)) {
+                final MethodDef fdef = classMethods.get(objectName);
+                checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);
+                return convertStringToType(fdef.type);
+            } else if (classDefinitions.containsKey(objectName)) {
+                // TO-DO
+            } else {
+                throw new IllTypedException("function does not exist: " + asCall.name);
+            }
+        }else if(e instanceof NewExp){
+            NewExp asNewExp = (NewExp)e;
+            if(classDefinitions.containsKey(asNewExp.classname)){
+                return convertStringToType(asNewExp.classname);
+            }
+            else {
+                throw new IllTypedException("unrecognized classname in 'new' expression");
+            }
+                
+        } 
+
+        throw new IllTypedException("unrecognized expression");
+        
+
+    } // typeOfExpression
+
+    private void checkParams(final Map<String, Type> gamma,
+                                   final List<VariableDeclarationStmt> formalParams,
+                                   final List<Expression> actualParams,final Map<String, MethodDef> classMethods )
+        throws IllTypedException {
+        if (formalParams.size() == actualParams.size()) {
+            final Iterator<VariableDeclarationStmt> formalIterator = formalParams.iterator();
+            final Iterator<Expression> actualIterator = actualParams.iterator();
+            while (formalIterator.hasNext() && actualIterator.hasNext()) {
+                final VariableDeclarationStmt formalParam = formalIterator.next();
+                final Expression actualParam = actualIterator.next();
+                final Type actualType = typeOfExpression(gamma, classMethods, actualParam);
+                if (!actualType.equals(convertStringToType( formalParam.type))) {
                     throw new IllTypedException("Parameter type mismatch");
                 }
-            } else {
-                throw new IllTypedException("call of non-function");
             }
-        } else if (e instanceof CallFirstOrderFunction) {
-            final CallFirstOrderFunction asCall = (CallFirstOrderFunction) e;
-            if (functionDefinitions.containsKey(asCall.functionName)) {
-                final FirstOrderFunctionDefinition fdef = functionDefinitions.get(asCall.functionName);
-                checkFormalParams(gamma, fdef.formalParams, asCall.actualParams);
-                return fdef.returnType;
-            } else {
-                throw new IllTypedException("function does not exist: " + asCall.functionName);
-            }
+
+            assert(!formalIterator.hasNext());
+            assert(!actualIterator.hasNext());
         } else {
-            assert (false);
-            throw new IllTypedException("unrecognized expression");
+            throw new IllTypedException("wrong number of arguments");
         }
-    } // typeof
 }
