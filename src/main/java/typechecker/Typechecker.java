@@ -135,7 +135,7 @@ public class Typechecker {
             // int x = 7; [x -> int]
             // int y = x + 3; [x -> int, y -> int]
             // int z = y + x; [x -> int, y -> int, z -> int]
-            gamma = typecheckStmt(gamma, s);
+            gamma = typecheckStmt(gamma, classMethods,s);
         }
 
         return gamma;
@@ -146,7 +146,7 @@ public class Typechecker {
         // x
         if (s instanceof BlockStmt) {
             final BlockStmt asBlock = (BlockStmt)s;
-            typecheckStmts(gamma,classMethods, asBlock.body);
+            typecheckStmts(gamma,classMethods, new BlockStmt(asBlock.body));
         } else if (s instanceof ForStmt) {
             // for(int x = 0; x < 10; x++) { s* }
             // gamma: []

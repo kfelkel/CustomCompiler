@@ -12,7 +12,7 @@ public class MethodDef {
     public final String name;
     public final ArrayList<VariableDeclarationStmt> parameters;
     public final BlockStmt body;
-    //public final Expression returnExp; //need to adjust constructor and Parser.java
+    public Expression returnExp; //need to adjust constructor and Parser.java
 
     public MethodDef(final String type, final String name, 
             final ArrayList<VariableDeclarationStmt> parameters, final BlockStmt body){//}, Expression returnExp)  {
