@@ -176,16 +176,16 @@ public class Parser {
         }
         return null;
     }
-    // public static void main(String [] args) throws TokenizationException, ParseException {
-    //     String mystring;
-    //     Token[] tokens;
-    //     Parser myparser;
+    public static void main(String [] args) throws TokenizationException, ParseException {
+        String mystring;
+        Token[] tokens;
+        Parser myparser;
         
-    //     mystring = "-2--3+4;";
-    //     tokens = Lexer.lex(mystring).toArray(new Token[0]);
-    //     myparser = new Parser(tokens);
-    //     System.out.println(myparser.parseExp(0).result);
-    // }
+        mystring = "Int foo(){return x;}";
+        tokens = Lexer.lex(mystring).toArray(new Token[0]);
+        myparser = new Parser(tokens);
+        System.out.println(myparser.parseMethodDef(0).result);
+    }
 
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
@@ -231,22 +231,6 @@ public class Parser {
             } else {
                 throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
             }
-        } else if (tokens[nextPos] instanceof ReturnToken) {
-            nextPos++;
-            if (tokens[nextPos] instanceof SemicolonToken) {
-                nextPos++;
-                myStmt = new ReturnVoidStmt();
-                //methodDef.returnlist.add(mystmt);
-            } else {
-                ParseResult<Expression> expressionResult = parseExp(nextPos);
-                myStmt = new ReturnStmt(expressionResult.result);
-                nextPos = expressionResult.nextPos;
-                if (tokens[nextPos] instanceof SemicolonToken) {
-                    nextPos++;
-                } else {
-                    throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
-                }
-            }
         } else if (tokens[nextPos] instanceof ForToken) {
             ParseResult<ForStmt> result = parseForStmt(nextPos);
             myStmt = result.result;
@@ -290,6 +274,8 @@ public class Parser {
                 // Not sure how much I should write here, and how much I should pass off to
                 // another method
             }
+        }else if(tokens[nextPos] instanceof ReturnToken){
+            return new ParseResult<Statement>(myStmt, nextPos);
         } else {
             throw new ParseException(
                     "Unexpected Token " + tokens[nextPos].toString() + " received while parsing a statement.");
@@ -582,11 +568,28 @@ public class Parser {
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
-        // get body
+        // get body/////////////////////////////////////////////////////////////////////////
         ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
         body = result.result;
         nextPos = result.nextPos;
-
+        Statement myStmt = null;
+        if (tokens[nextPos] instanceof ReturnToken) {
+            nextPos++;
+            if (tokens[nextPos] instanceof SemicolonToken) {
+                nextPos++;
+                myStmt = new ReturnVoidStmt();
+                //methodDef.returnlist.add(mystmt);
+            } else {System.out.println("hello");
+                ParseResult<Expression> expressionResult = parseExp(nextPos);
+                myStmt = new ReturnStmt(expressionResult.result);
+                nextPos = expressionResult.nextPos;
+                if (tokens[nextPos] instanceof SemicolonToken) {
+                    nextPos++;
+                } else {
+                    throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+                }
+            }
+        } 
         return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, body), nextPos);
     }
 
