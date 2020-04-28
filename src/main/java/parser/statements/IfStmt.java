@@ -5,9 +5,9 @@ import parser.expressions.Expression;
 public class IfStmt implements Statement {
 
     public final Expression condition;
-    public final Statement trueBranch;
+    public final BlockStmt trueBranch;
 
-    public IfStmt(Expression condition, Statement trueBranch) {
+    public IfStmt(Expression condition, BlockStmt trueBranch) {
         this.condition = condition;
         this.trueBranch = trueBranch;
     }

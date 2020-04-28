@@ -135,7 +135,7 @@ public class Typechecker {
             // int x = 7; [x -> int]
             // int y = x + 3; [x -> int, y -> int]
             // int z = y + x; [x -> int, y -> int, z -> int]
-            gamma = typecheckStmt(gamma,classMethods, s);
+            gamma = typecheckStmt(gamma, classMethods,s);
         }
         return gamma;
     } // typecheckStmts

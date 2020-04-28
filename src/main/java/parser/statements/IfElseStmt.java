@@ -5,10 +5,10 @@ import parser.expressions.Expression;
 public class IfElseStmt implements Statement {
 
     public final Expression condition;
-    public final Statement trueBranch;
-    public final Statement falseBranch;
+    public final BlockStmt trueBranch;
+    public final BlockStmt falseBranch;
 
-    public IfElseStmt(Expression condition, Statement trueBranch, Statement falseBranch) {
+    public IfElseStmt(Expression condition, BlockStmt trueBranch, BlockStmt falseBranch) {
 
         this.condition = condition;
         this.trueBranch = trueBranch;
