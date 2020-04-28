@@ -141,8 +141,8 @@ public class Typechecker {
             final Statement s) throws IllTypedException {
         // x
         if (s instanceof BlockStmt) {
-            final BlockStmt asFor = (BlockStmt)s;
-            typecheckStmts(newGamma, true, asFor.body);
+            final BlockStmt asBlock = (BlockStmt)s;
+            typecheckStmts(gamma, true, asBlock.body);
         } else if (s instanceof ForStmt) {
             // for(int x = 0; x < 10; x++) { s* }
             // gamma: []
@@ -163,13 +163,46 @@ public class Typechecker {
             }
             return gamma;
         } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
-
-        }  else if (s instanceof PrintlnStmt) {
-            // Check expression inside
+            final IfElseStmt asIf = (IfElseStmt)s;
+            final Type guardType = typeof(gamma, asIf.condition);
+            if (guardType instanceof BoolType && asIf.falseBranch!=null ) {
+                typecheckStmts(gamma, true, asIf.trueBranch);
+                typecheckStmts(gamma, true, asIf.falseBranch);
+            }else if(guardType instanceof BoolType){
+                typecheckStmts(gamma, true, asIf.trueBranch);
+            } else {
+                throw new IllTypedException("Guard in If must be boolean");
+            }
+            return gamma;
+        } else if (s instanceof PrintlnStmt) {
+            final PrintlnStmt asPrintln = (PrintlnStmt)s;
+            final Type guardType = typeof(newGamma, asPrintln.output);
+            if (!(guardType instanceof Type)) {
+                throw new IllTypedException("Println must have Expression");
+            } 
+            return gamma;
+        } else if (s instanceof PrintStmt) {
+            final PrintStmt asPrint = (PrintStmt)s;
+            final Type guardType = typeof(newGamma, asPrint.output);
+            if (!(guardType instanceof Type)) {
+                throw new IllTypedException("Print must have Expression");
+            } 
+            return gamma;
         } else if (s instanceof ReturnStmt) {
-            // Check expression inside
+            final ReturnStmt asReturn = (ReturnStmt)s;
+            final Type guardType = typeof(newGamma, asReturn.value);
+            //xxxxxxget type of function return 
+            if (!(guardType instanceof Type)) {
+                throw new IllTypedException("Function must have return value of "+guardType);
+            }
+            return gamma; 
         } else if (s instanceof ReturnVoidStmt) {
-            // Check expression inside
+            final VoidType guardType;
+            //xxxxxxget type of function return 
+            if (!(guardType instanceof Type)) {
+                throw new IllTypedException("Function must have return value of "+guardType);
+            }
+            return gamma; 
         } else if (s instanceof EmptyStmt) {
             return gamma;
         } else {
@@ -178,7 +211,7 @@ public class Typechecker {
         }
     } // typecheckStmt
 
-    public Type typeof(final Map<String, Type> gamma, final Exp e) throws IllTypedException {
+    public Type typeof(final Map<String, Type> gamma, final Expression e) throws IllTypedException {
         if (e instanceof IntegerExp) {
             return new IntType();
         }  else if (e instanceof BinopExp) { // /, ==, >, >=, <,<=, -, %, *, +
