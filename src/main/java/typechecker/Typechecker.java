@@ -214,7 +214,28 @@ public class Typechecker {
                 if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
                     newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
                     return newgamma;
+                }             else {
+                    throw new IllTypedException("Assigning invalid type to variable");
                 }
+            }
+            else {
+                throw new IllTypedException("Declaring a variable twice");
+            }
+            
+        }
+        else if (s instanceof VariableAssignmentStmt) {
+            VariableAssignmentStmt asVarDec = (VariableAssignmentStmt) s;
+            Type varType = gamma.get(asVarDec.name);
+            if (gamma.containsKey(asVarDec.name)) {
+                if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
+                    return gamma;
+                }
+                else {
+                    throw new IllTypedException("Assigning invalid type to variable");
+                }
+            }
+            else {
+                throw new IllTypedException("Assigning value to nonexistent variable");
             }
         }
         throw new IllTypedException("Unrecognized statement");
