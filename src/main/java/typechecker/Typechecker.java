@@ -94,7 +94,7 @@ public class Typechecker {
 
         // check constructor statements
         // TO-DO
-        typecheckStmts(variables, classdef.constructor.body);
+        typecheckStmts(variables, methods, classdef.constructor.body);
 
         // check method statements
 
@@ -118,8 +118,8 @@ public class Typechecker {
             }
         }
 
-        //TO-DO
-        final Map<String, Type> finalGamma = typecheckStmts(variables,classMethods, function.body);
+        // TO-DO
+        final Map<String, Type> finalGamma = typecheckStmts(variables, classMethods, function.body);
         final Type actualReturnType = typecheckExp(finalGamma, classMethods, function.returnExp);
         if (!actualReturnType.equals(convertStringToType(function.type))) {
             throw new IllTypedException("return type mismatch");
@@ -127,7 +127,7 @@ public class Typechecker {
 
     }
 
-    public Map<String, Type> typecheckStmts(Map<String, Type> gamma,Map<String, MethodDef> classMethods,
+    public Map<String, Type> typecheckStmts(Map<String, Type> gamma, Map<String, MethodDef> classMethods,
             final BlockStmt body) throws IllTypedException {
         for (final Statement s : body.body) {
             // result gamma
@@ -135,17 +135,17 @@ public class Typechecker {
             // int x = 7; [x -> int]
             // int y = x + 3; [x -> int, y -> int]
             // int z = y + x; [x -> int, y -> int, z -> int]
-            gamma = typecheckStmt(gamma, classMethods,s);
+            gamma = typecheckStmt(gamma, classMethods, s);
         }
         return gamma;
     } // typecheckStmts
 
-    public Map<String, Type> typecheckStmt(final Map<String, Type> gamma,Map<String, MethodDef> classMethods,
+    public Map<String, Type> typecheckStmt(final Map<String, Type> gamma, Map<String, MethodDef> classMethods,
             final Statement s) throws IllTypedException {
         // x
         if (s instanceof BlockStmt) {
-            final BlockStmt asBlock = (BlockStmt)s;
-            typecheckStmts(gamma,classMethods, new BlockStmt(asBlock.body));
+            final BlockStmt asBlock = (BlockStmt) s;
+            typecheckStmts(gamma, classMethods, new BlockStmt(asBlock.body));
         } else if (s instanceof ForStmt) {
             // for(int x = 0; x < 10; x++) { s* }
             // gamma: []
@@ -155,67 +155,73 @@ public class Typechecker {
             // int z = x + y;
             // [x -> int, y -> int, z -> int]
             // }
-            final ForStmt asFor = (ForStmt)s;
-            final Map<String, Type> newGamma = typecheckStmt(gamma,classMethods, asFor.initializer);
-            final Type guardType = typecheckExp(newGamma,classMethods, asFor.condition);
+            final ForStmt asFor = (ForStmt) s;
+            final Map<String, Type> newGamma = typecheckStmt(gamma, classMethods, asFor.initializer);
+            final Type guardType = typecheckExp(newGamma, classMethods, asFor.condition);
             if (guardType instanceof BoolType) {
-            typecheckStmt(newGamma,classMethods, asFor.incrementor);
-            typecheckStmts(newGamma,classMethods, asFor.body);
+                typecheckStmt(newGamma, classMethods, asFor.incrementor);
+                typecheckStmts(newGamma, classMethods, asFor.body);
             } else {
-            throw new IllTypedException("Guard in for must be boolean");
+                throw new IllTypedException("Guard in for must be boolean");
             }
             return gamma;
         } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
-            final IfElseStmt asIf = (IfElseStmt)s;
-            final Type guardType = typecheckExp(gamma,classMethods, asIf.condition);
-            if (guardType instanceof BoolType && asIf.falseBranch!=null ) {
-                typecheckStmts(gamma,classMethods,  asIf.trueBranch);
-                typecheckStmts(gamma,classMethods,  asIf.falseBranch);
-            }else if(guardType instanceof BoolType){
-                typecheckStmts(gamma,classMethods, asIf.trueBranch);
+            final IfElseStmt asIf = (IfElseStmt) s;
+            final Type guardType = typecheckExp(gamma, classMethods, asIf.condition);
+            if (guardType instanceof BoolType && asIf.falseBranch != null) {
+                typecheckStmts(gamma, classMethods, asIf.trueBranch);
+                typecheckStmts(gamma, classMethods, asIf.falseBranch);
+            } else if (guardType instanceof BoolType) {
+                typecheckStmts(gamma, classMethods, asIf.trueBranch);
             } else {
                 throw new IllTypedException("Guard in If must be boolean");
             }
             return gamma;
         } else if (s instanceof PrintlnStmt) {
-            final PrintlnStmt asPrintln = (PrintlnStmt)s;
-            final Type guardType = typecheckExp(gamma,classMethods, asPrintln.output);
+            final PrintlnStmt asPrintln = (PrintlnStmt) s;
+            final Type guardType = typecheckExp(gamma, classMethods, asPrintln.output);
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Println must have Expression");
-            } 
+            }
             return gamma;
         } else if (s instanceof PrintStmt) {
-            final PrintStmt asPrint = (PrintStmt)s;
-            final Type guardType = typecheckExp(gamma,classMethods, asPrint.output);
+            final PrintStmt asPrint = (PrintStmt) s;
+            final Type guardType = typecheckExp(gamma, classMethods, asPrint.output);
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Print must have Expression");
-            } 
+            }
             return gamma;
         } else if (s instanceof ReturnStmt) {
-            final ReturnStmt asReturn = (ReturnStmt)s;
-            final Type guardType = typecheckExp(gamma,classMethods, asReturn.value);
-            //xxxxxxget type of function return 
+            final ReturnStmt asReturn = (ReturnStmt) s;
+            final Type guardType = typecheckExp(gamma, classMethods, asReturn.value);
+            // xxxxxxget type of function return
             if (!(guardType instanceof Type)) {
-                throw new IllTypedException("Function must have return value of "+guardType);
+                throw new IllTypedException("Function must have return value of " + guardType);
             }
-            return gamma; 
-        } else if (s instanceof ReturnVoidStmt) {
-            final VoidType guardType;
-            //xxxxxxget type of function return 
-            if (!(guardType instanceof Type)) {
-                throw new IllTypedException("Function must have return value of "+guardType);
-            }
-            return gamma; 
-        } else if (s instanceof EmptyStmt) {
             return gamma;
-        } else {
-            assert (false);
-            throw new IllTypedException("Unrecognized statement");
+        } else if (s instanceof ReturnVoidStmt) {
+            final VoidType guardType = new VoidType();
+            // xxxxxxget type of function return
+            if (!(guardType instanceof Type)) {
+                throw new IllTypedException("Function must have return value of " + guardType);
+            }
+            return gamma;
+        } else if (s instanceof VariableDeclarationStmt) {
+            VariableDeclarationStmt asVarDec = (VariableDeclarationStmt) s;
+            final Map<String, Type> newgamma = makeCopy(gamma);
+            Type varType = convertStringToType(asVarDec.type);
+            if (!newgamma.containsKey(asVarDec.name)) {
+                if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
+                    newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
+                    return newgamma;
+                }
+            }
         }
+        throw new IllTypedException("Unrecognized statement");
     } // typecheckStmt
 
-    public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods, final Expression e)
-            throws IllTypedException {
+    public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods,
+            final Expression e) throws IllTypedException {
 
         // Check for integers
         if (e instanceof IntegerExp) {
@@ -225,7 +231,7 @@ public class Typechecker {
             return new StringType();
         }
         if (e instanceof VariableExp) {
-            VariableExp asVar = (VariableExp)e;
+            VariableExp asVar = (VariableExp) e;
             return gamma.get(asVar.name);
         }
         // Check for Binary Operators
@@ -354,26 +360,22 @@ public class Typechecker {
             } else {
                 throw new IllTypedException("function does not exist: " + asCall.name);
             }
-        }else if(e instanceof NewExp){
-            NewExp asNewExp = (NewExp)e;
-            if(classDefinitions.containsKey(asNewExp.classname)){
+        } else if (e instanceof NewExp) {
+            NewExp asNewExp = (NewExp) e;
+            if (classDefinitions.containsKey(asNewExp.classname)) {
                 return convertStringToType(asNewExp.classname);
-            }
-            else {
+            } else {
                 throw new IllTypedException("unrecognized classname in 'new' expression");
             }
-                
-        } 
+
+        }
 
         throw new IllTypedException("unrecognized expression");
-        
 
     } // typecheckExp
 
-    private void checkParams(final Map<String, Type> gamma,
-                                   final List<VariableDeclarationStmt> formalParams,
-                                   final List<Expression> actualParams,final Map<String, MethodDef> classMethods )
-        throws IllTypedException {
+    private void checkParams(final Map<String, Type> gamma, final List<VariableDeclarationStmt> formalParams,
+            final List<Expression> actualParams, final Map<String, MethodDef> classMethods) throws IllTypedException {
         if (formalParams.size() == actualParams.size()) {
             final Iterator<VariableDeclarationStmt> formalIterator = formalParams.iterator();
             final Iterator<Expression> actualIterator = actualParams.iterator();
@@ -381,13 +383,13 @@ public class Typechecker {
                 final VariableDeclarationStmt formalParam = formalIterator.next();
                 final Expression actualParam = actualIterator.next();
                 final Type actualType = typecheckExp(gamma, classMethods, actualParam);
-                if (!actualType.equals(convertStringToType( formalParam.type))) {
+                if (!actualType.equals(convertStringToType(formalParam.type))) {
                     throw new IllTypedException("Parameter type mismatch");
                 }
             }
 
-            assert(!formalIterator.hasNext());
-            assert(!actualIterator.hasNext());
+            assert (!formalIterator.hasNext());
+            assert (!actualIterator.hasNext());
         } else {
             throw new IllTypedException("wrong number of arguments");
         }
