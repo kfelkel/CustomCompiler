@@ -37,15 +37,20 @@ public class Typechecker {
             return null; // add objects
     }
 
+    public static Map<String, Type> makeCopy(final Map<String, Type> gamma) {
+        final Map<String, Type> copy = new HashMap<String, Type>();
+        copy.putAll(gamma);
+        return copy;
+    }
+
     public void typecheckProgram(final Program program) throws IllTypedException {
         for (final ClassDef classdef : program.classDefs) {
             typecheckClass(classdef);
         }
-        //typecheckMain(program.entryPoint);
+        // typecheckMain(program.entryPoint);
     } // typecheckProgram
 
     public void typecheckClass(final ClassDef classdef) throws IllTypedException {
-        // To-Do
         // typecheck fields (no duplicates)
         final Map<String, Type> variables = new HashMap<String, Type>();
 
@@ -74,11 +79,8 @@ public class Typechecker {
                 throw new IllTypedException("Duplicate parameter name");
             }
         }
-        //check constructor statements 
-        //TO-DO
-
-        //check methods for duplicates
-        final Map<String, Type> methods = new HashMap<String, Type>()
+        // check methods for duplicates
+        final Map<String, Type> methods = new HashMap<String, Type>();
         for (final MethodDef method : classdef.methods) {
             if (!methods.containsKey(method.name)) {
                 Type paramType = convertStringToType(method.type);
@@ -87,53 +89,56 @@ public class Typechecker {
                 throw new IllTypedException("Duplicate function name");
             }
         }
-        //check method statements 
-        //TO-DO
+
+        // check constructor statements
+        // TO-DO
+
+        // check method statements
+
         for (final MethodDef method : classdef.methods) {
-        typecheckFunction(method, methods, variables);
+            typecheckFunction(method, methods, variables);
         }
     }
 
-    //add parameters for functions, variables
-    public void typecheckFunction(MethodDef function, Map<String, Type> classMethods, Map<String, Type> classFields) throws IllTypedException {
+    // add parameters for functions, variables
+    public void typecheckFunction(MethodDef function, Map<String, Type> classMethods, Map<String, Type> classFields)
+            throws IllTypedException {
 
-        final Map<String, Type> gamma = new HashMap<String, Type>();//?
+        final Map<String, Type> variables = makeCopy(classFields);// ?
 
         for (final VariableDeclarationStmt parameter : function.parameters) {
-            if (!gamma.containsKey(parameter.name)) {
+            if (!variables.containsKey(parameter.name)) {
                 Type paramType = convertStringToType(parameter.type);
-                gamma.put(parameter.name, paramType);
+                variables.put(parameter.name, paramType);
             } else {
                 throw new IllTypedException("Duplicate parameter name");
             }
         }
 
-        final Map<String, Type> finalGamma = typecheckStmts(gamma, false, function.body);
+        final Map<String, Type> finalGamma = typecheckStmts(variables, false, function.body);
         final Type actualReturnType = typeof(finalGamma, function.returnExp);
-        if (!actualReturnType.equals(function.type)) {// need to convert String type to Type
+        if (!actualReturnType.equals(convertStringToType(function.type))) {// need to convert String type to Type
             throw new IllTypedException("return type mismatch");
         }
 
     }
-    public Map<String, Type> typecheckStmts(Map<String, Type> gamma,
-                                              final boolean breakAndContinueOk,
-                                              final BlockStmt body)
-        throws IllTypedException {
+
+    public Map<String, Type> typecheckStmts(Map<String, Type> gamma, final boolean breakAndContinueOk,
+            final BlockStmt body) throws IllTypedException {
         for (final Statement s : body.body) {
-            //                  result gamma
-            // initial          []
-            // int x = 7;       [x -> int]
-            // int y = x + 3;   [x -> int, y -> int]
-            // int z = y + x;   [x -> int, y -> int, z -> int]
+            // result gamma
+            // initial []
+            // int x = 7; [x -> int]
+            // int y = x + 3; [x -> int, y -> int]
+            // int z = y + x; [x -> int, y -> int, z -> int]
             gamma = typecheckStmt(gamma, breakAndContinueOk, s);
         }
-    
+
         return gamma;
     } // typecheckStmts
-    public Map<String, Type> typecheckStmt(final Map<String, Type> gamma,
-                                             final boolean breakAndContinueOk,
-                                             final Statement s)
-        throws IllTypedException {
+
+    public Map<String, Type> typecheckStmt(final Map<String, Type> gamma, final boolean breakAndContinueOk,
+            final Statement s) throws IllTypedException {
         // x
         if (s instanceof BlockStmt) {
             final BlockStmt asFor = (BlockStmt)s;
@@ -143,23 +148,25 @@ public class Typechecker {
             // gamma: []
             // newGamma: [x -> int]
             // for(int x = 0; x < 10; int y = 10) {
-            //   int y = 0;
-            //   int z = x + y;
-            //   [x -> int, y -> int, z -> int]
+            // int y = 0;
+            // int z = x + y;
+            // [x -> int, y -> int, z -> int]
             // }
-            final ForStmt asFor = (ForStmt)s;
-            final Map<String, Type> newGamma = typecheckStmt(gamma, breakAndContinueOk, asFor.initializer);
-            final Type guardType = typeof(newGamma, asFor.condition);
-            if (guardType instanceof BoolType) {
-                typecheckStmt(newGamma, breakAndContinueOk, asFor.incrementor);
-                typecheckStmts(newGamma, true, asFor.body);
-            } else {
-                throw new IllTypedException("Guard in for must be boolean");
-            }
-            return gamma;
-        } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
-            final IfElseStmt asFor = (IfElseStmt)s;
-            
+            // final ForStmt asFor = (ForStmt)s;
+            // final Map<String, Type> newGamma = typecheckStmt(gamma, breakAndContinueOk,
+            // asFor.initializer);
+            // final Type guardType = typeof(newGamma, asFor.guard);
+            // if (guardType instanceof BoolType) {
+            // typecheckStmt(newGamma, breakAndContinueOk, asFor.update);
+            // typecheckStmts(newGamma, true, asFor.body);
+            // } else {
+            // throw new IllTypedException("Guard in for must be boolean");
+            // }
+            // return gamma;
+        } else if (s instanceof IfElseStmt) {
+
+        } else if (s instanceof IfStmt) {
+            //
         } else if (s instanceof PrintlnStmt) {
             // Check expression inside
         } else if (s instanceof ReturnStmt) {
@@ -169,34 +176,21 @@ public class Typechecker {
         } else if (s instanceof EmptyStmt) {
             return gamma;
         } else {
-            assert(false);
+            assert (false);
             throw new IllTypedException("Unrecognized statement");
         }
     } // typecheckStmt
-    public Type typeof(final Map<String, Type> gamma, final Expression e)
-        throws IllTypedException {
+
+    public Type typeof(final Map<String, Type> gamma, final Exp e) throws IllTypedException {
         if (e instanceof IntegerExp) {
             return new IntType();
-        } else if (e instanceof BooleanExp) {
-            return new BoolType();
-        } else if (e instanceof BinopExp) { // &&, +, or <
-            final BinopExp asBinop = (BinopExp)e;
-            if (asBinop.op instanceof AndBOP) {
+        }  else if (e instanceof BinopExp) { // /, ==, >, >=, <,<=, -, %, *, +
+            
+         if (asBinop.op instanceof PlusBOP) {
                 final Type leftType = typeof(gamma, asBinop.left);
                 final Type rightType = typeof(gamma, asBinop.right);
 
-                if (leftType instanceof BoolType &&
-                    rightType instanceof BoolType) {
-                    return new BoolType();
-                } else {
-                    throw new IllTypedException("left or right in && is not a boolean");
-                }
-            } else if (asBinop.op instanceof PlusBOP) {
-                final Type leftType = typeof(gamma, asBinop.left);
-                final Type rightType = typeof(gamma, asBinop.right);
-
-                if (leftType instanceof IntType &&
-                    rightType instanceof IntType) {
+                if (leftType instanceof IntType && rightType instanceof IntType) {
                     return new IntType();
                 } else {
                     throw new IllTypedException("left or right in + is not an int");
@@ -204,20 +198,24 @@ public class Typechecker {
             } else if (asBinop.op instanceof LessThanBOP) {
                 final Type leftType = typeof(gamma, asBinop.left);
                 final Type rightType = typeof(gamma, asBinop.right);
-                
-                if (leftType instanceof IntType &&
-                    rightType instanceof IntType) {
+
+                if (leftType instanceof IntType && rightType instanceof IntType) {
                     return new BoolType();
                 } else {
                     throw new IllTypedException("left or right in < is not an int");
                 }
             } else {
-                assert(false);
-                throw new IllTypedException("should be unreachable; unknown operator");
+                assert (false);
+                throw new IllTypedException("unknown operator");
             }
+
+
+
+
+
         } else if (e instanceof VariableExp) {
             // final Map<Variable, Type> gamma
-            final VariableExp asVar = (VariableExp)e;
+            final VariableExp asVar = (VariableExp) e;
             if (gamma.containsKey(asVar.x)) {
                 final Type tau = gamma.get(asVar.x);
                 return tau;
@@ -227,7 +225,7 @@ public class Typechecker {
         } else if (e instanceof HigherOrderFunctionDef) {
             // (x: Int) => x + 1
             // Int => Int
-            final HigherOrderFunctionDef asFunc = (HigherOrderFunctionDef)e;
+            final HigherOrderFunctionDef asFunc = (HigherOrderFunctionDef) e;
             final Map<Variable, Type> copy = makeCopy(gamma);
             copy.put(asFunc.paramName, asFunc.paramType);
             final Type bodyType = typeof(copy, asFunc.body);
@@ -237,11 +235,11 @@ public class Typechecker {
             // e1: (x: Int) => x + 1 [Int => Int]
             // e2: 7 [Int]
             // e1(e2): [Int]
-            final CallHigherOrderFunction asCall = (CallHigherOrderFunction)e;
+            final CallHigherOrderFunction asCall = (CallHigherOrderFunction) e;
             final Type hopefullyFunction = typeof(gamma, asCall.theFunction);
             final Type hopefullyParameter = typeof(gamma, asCall.theParameter);
             if (hopefullyFunction instanceof FunctionType) {
-                final FunctionType asFunc = (FunctionType)hopefullyFunction;
+                final FunctionType asFunc = (FunctionType) hopefullyFunction;
                 if (asFunc.paramType.equals(hopefullyParameter)) {
                     return asFunc.returnType;
                 } else {
@@ -251,7 +249,7 @@ public class Typechecker {
                 throw new IllTypedException("call of non-function");
             }
         } else if (e instanceof CallFirstOrderFunction) {
-            final CallFirstOrderFunction asCall = (CallFirstOrderFunction)e;
+            final CallFirstOrderFunction asCall = (CallFirstOrderFunction) e;
             if (functionDefinitions.containsKey(asCall.functionName)) {
                 final FirstOrderFunctionDefinition fdef = functionDefinitions.get(asCall.functionName);
                 checkFormalParams(gamma, fdef.formalParams, asCall.actualParams);
@@ -260,7 +258,7 @@ public class Typechecker {
                 throw new IllTypedException("function does not exist: " + asCall.functionName);
             }
         } else {
-            assert(false);
+            assert (false);
             throw new IllTypedException("unrecognized expression");
         }
     } // typeof
