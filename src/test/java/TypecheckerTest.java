@@ -43,7 +43,7 @@ public class TypecheckerTest {
                 List<Statement> mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("Int", "a"));
                 mainStatements.add(new VariableDeclarationStmt("Int", "b", new IntegerExp(1)));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -55,7 +55,7 @@ public class TypecheckerTest {
                 mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("String", "a"));
                 mainStatements.add(new VariableDeclarationStmt("String", "b", new StringExp("text")));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -68,7 +68,7 @@ public class TypecheckerTest {
                 mainStatements.add(new VariableDeclarationStmt("Bool", "a"));
                 mainStatements.add(new VariableDeclarationStmt("Bool", "b",
                                 new EqualEqualExp(new IntegerExp(1), new IntegerExp(1))));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -82,7 +82,7 @@ public class TypecheckerTest {
                  */
                 List<Statement> mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("Int", "a", new StringExp("text")));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -98,7 +98,7 @@ public class TypecheckerTest {
                  */
                 mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("String", "a", new IntegerExp(1)));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -117,7 +117,7 @@ public class TypecheckerTest {
                 List<Statement> mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("Int", "a"));
                 mainStatements.add(new VariableAssignmentStmt("a", new IntegerExp(1)));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -129,7 +129,7 @@ public class TypecheckerTest {
                 mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("String", "a"));
                 mainStatements.add(new VariableAssignmentStmt("a", new StringExp("text")));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -142,7 +142,7 @@ public class TypecheckerTest {
                 mainStatements.add(new VariableDeclarationStmt("Bool", "a"));
                 mainStatements.add(new VariableAssignmentStmt("a",
                                 new EqualEqualExp(new IntegerExp(1), new IntegerExp(1))));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -157,7 +157,7 @@ public class TypecheckerTest {
                 List<Statement> mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("Int", "a"));
                 mainStatements.add(new VariableAssignmentStmt("a", new StringExp("text")));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -173,7 +173,7 @@ public class TypecheckerTest {
                 mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new VariableDeclarationStmt("String", "a"));
                 mainStatements.add(new VariableAssignmentStmt("a", new IntegerExp(1)));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -194,7 +194,7 @@ public class TypecheckerTest {
                 mainStatements.add(new PrintStmt(new StringExp("text")));
                 mainStatements.add(new PrintlnStmt(new IntegerExp(1)));
                 mainStatements.add(new PrintlnStmt(new StringExp("text")));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
@@ -202,6 +202,7 @@ public class TypecheckerTest {
                 Typechecker myTypechecker = new Typechecker(myProgram);
         }
 
+        @Test
         public void testWhileLoops() throws IllTypedException {
                 /*
                  * Int main(){ while(1 == 1){} return 0;}
@@ -209,13 +210,14 @@ public class TypecheckerTest {
                 List<Statement> mainStatements = new ArrayList<Statement>();
                 mainStatements.add(new WhileStmt(new EqualEqualExp(new IntegerExp(1), new IntegerExp(1)),
                                 new BlockStmt(new ArrayList<Statement>())));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
                 Typechecker myTypechecker = new Typechecker(myProgram);
         }
 
+        @Test
         public void testForLoops() throws IllTypedException {
                 /*
                  * Int main(){ for(Int i = 0; i < 1; i = i + 1){} return 0;}
@@ -225,10 +227,34 @@ public class TypecheckerTest {
                                 new LessThanExp(new VariableExp("i"), new IntegerExp(1)),
                                 new VariableAssignmentStmt("i", new PlusExp(new VariableExp("i"), new IntegerExp(1))),
                                 new BlockStmt(new ArrayList<Statement>())));
-                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+
                 Program myProgram = new Program(new ArrayList<ClassDef>(),
                                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
                 Typechecker myTypechecker = new Typechecker(myProgram);
+        }
+
+        @Test
+        public void testIfElse() throws IllTypedException {
+                /*
+                 * Int main(){ if(1 == 1){} return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new IfStmt(new EqualEqualExp(new IntegerExp(1), new IntegerExp(1)),
+                                new BlockStmt(new ArrayList<Statement>())));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+                /*
+                 * Int main(){ if(1 == 1){} else {} return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new IfElseStmt(new EqualEqualExp(new IntegerExp(1), new IntegerExp(1)),
+                                new BlockStmt(new ArrayList<Statement>()), new BlockStmt(new ArrayList<Statement>())));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                myTypechecker = new Typechecker(myProgram);
         }
 }
