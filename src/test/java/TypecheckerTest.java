@@ -15,177 +15,220 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TypecheckerTest {
-    @Test
-    public void testInherit() {
-        Type mytype = new IntType();
-        assertTrue(mytype instanceof IntType);
 
-    }
-
-    @Test
-    public void testSimplestProgram() throws IllTypedException {
-        // Note: Don't need an assert if the test is expected to pass
-
-        // "Int main(){return 0;}"
-        List<Statement> mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        Program myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        Typechecker myTypechecker = new Typechecker(myProgram);
-    }
-
-    @Test
-    public void testValidPrimitiveDeclaration() throws IllTypedException {
-        /*
-         * Int main(){ Int a; Int b = 1; return 0;}
-         */
-        List<Statement> mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("Int", "a"));
-        mainStatements.add(new VariableDeclarationStmt("Int", "b", new IntegerExp(1)));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        Program myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        Typechecker myTypechecker = new Typechecker(myProgram);
-
-        /*
-         * Int main(){ String a; String b = "text"; return 0;}
-         */
-        mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("String", "a"));
-        mainStatements.add(new VariableDeclarationStmt("String", "b", new StringExp("text")));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        myTypechecker = new Typechecker(myProgram);
-
-        /*
-         * Int main(){ Bool a; Bool b = 1 == 1; return 0;}
-         */
-        mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("Bool", "a"));
-        mainStatements
-                .add(new VariableDeclarationStmt("Bool", "b", new EqualEqualExp(new IntegerExp(1), new IntegerExp(1))));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        myTypechecker = new Typechecker(myProgram);
-    }
-
-    @Test
-    public void testInvalidPrimitiveDeclaration() throws IllTypedException {
-        /*
-         * Int main(){ Int a = "text"; return 0;}
-         */
-        List<Statement> mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("Int", "a", new StringExp("text")));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        Program myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-
-        try {
-            Typechecker myTypechecker = new Typechecker(myProgram);
-            fail("IllTypedException should have been thrown");
-        } catch (IllTypedException e) {
+        @Test
+        public void testInherit() {
+                Type mytype = new IntType();
+                assertTrue(mytype instanceof IntType);
         }
 
-        /*
-         * Int main(){ String a = 1; return 0;}
-         */
-        mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("String", "a", new IntegerExp(1)));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        try {
-            Typechecker myTypechecker = new Typechecker(myProgram);
-            fail("IllTypedException should have been thrown");
-        } catch (IllTypedException e) {
-        }
-    }
+        @Test
+        public void testSimplestProgram() throws IllTypedException {
+                // Note: Don't need an assert if the test is expected to pass
 
-    @Test
-    public void testValidPrimitiveAssignment() throws IllTypedException {
-        /*
-         * Int main(){ Int a; a = 1; return 0;}
-         */
-        List<Statement> mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("Int", "a"));
-        mainStatements.add(new VariableAssignmentStmt("a", new IntegerExp(1)));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        Program myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        Typechecker myTypechecker = new Typechecker(myProgram);
-
-        /*
-         * Int main(){ String a; a = "text"; return 0;}
-         */
-        mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("String", "a"));
-        mainStatements.add(new VariableAssignmentStmt("a", new StringExp("text")));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        myTypechecker = new Typechecker(myProgram);
-
-        /*
-         * Int main(){ Bool a; a = 1 == 1; return 0;}
-         */
-        mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("Bool", "a"));
-        mainStatements.add(new VariableAssignmentStmt("a", new EqualEqualExp(new IntegerExp(1), new IntegerExp(1))));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        myTypechecker = new Typechecker(myProgram);
-    }
-
-    @Test
-    public void testInvalidPrimitiveAssignment() throws IllTypedException {
-        /*
-         * Int main(){ Int a; a = "text"; return 0;}
-         */
-        List<Statement> mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("Int", "a"));
-        mainStatements.add(new VariableAssignmentStmt("a", new StringExp("text")));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        Program myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        try {
-            Typechecker myTypechecker = new Typechecker(myProgram);
-            fail("IllTypedException should have been thrown");
-        } catch (IllTypedException e) {
+                // "Int main(){return 0;}"
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                // mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
         }
 
-        /*
-         * Int main(){ String a; a = 1; return 0;}
-         */
-        mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new VariableDeclarationStmt("String", "a"));
-        mainStatements.add(new VariableAssignmentStmt("a", new IntegerExp(1)));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
-        try {
-            Typechecker myTypechecker = new Typechecker(myProgram);
-            fail("IllTypedException should have been thrown");
-        } catch (IllTypedException e) {
+        @Test
+        public void testValidPrimitiveDeclaration() throws IllTypedException {
+                /*
+                 * Int main(){ Int a; Int b = 1; return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("Int", "a"));
+                mainStatements.add(new VariableDeclarationStmt("Int", "b", new IntegerExp(1)));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+
+                /*
+                 * Int main(){ String a; String b = "text"; return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("String", "a"));
+                mainStatements.add(new VariableDeclarationStmt("String", "b", new StringExp("text")));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                myTypechecker = new Typechecker(myProgram);
+
+                /*
+                 * Int main(){ Bool a; Bool b = 1 == 1; return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("Bool", "a"));
+                mainStatements.add(new VariableDeclarationStmt("Bool", "b",
+                                new EqualEqualExp(new IntegerExp(1), new IntegerExp(1))));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                myTypechecker = new Typechecker(myProgram);
         }
-    }
 
-    @Test
-    public void testPrintStatements() throws IllTypedException {
-        /*
-         * Int main(){ print(1); print("text"); println(1); println("text"); return 0;}
-         */
-        List<Statement> mainStatements = new ArrayList<Statement>();
-        mainStatements.add(new PrintStmt(new IntegerExp(1)));
-        mainStatements.add(new PrintStmt(new StringExp("text")));
-        mainStatements.add(new PrintlnStmt(new IntegerExp(1)));
-        mainStatements.add(new PrintlnStmt(new StringExp("text")));
-        mainStatements.add(new ReturnStmt(new IntegerExp(0)));
-        Program myProgram = new Program(new ArrayList<ClassDef>(),
-                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements)));
+        @Test
+        public void testInvalidPrimitiveDeclaration() throws IllTypedException {
+                /*
+                 * Int main(){ Int a = "text"; return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("Int", "a", new StringExp("text")));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
 
-        Typechecker myTypechecker = new Typechecker(myProgram);
-    }
+                try {
+                        Typechecker myTypechecker = new Typechecker(myProgram);
+                        fail("IllTypedException should have been thrown");
+                } catch (IllTypedException e) {
+                }
+
+                /*
+                 * Int main(){ String a = 1; return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("String", "a", new IntegerExp(1)));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                try {
+                        Typechecker myTypechecker = new Typechecker(myProgram);
+                        fail("IllTypedException should have been thrown");
+                } catch (IllTypedException e) {
+                }
+        }
+
+        @Test
+        public void testValidPrimitiveAssignment() throws IllTypedException {
+                /*
+                 * Int main(){ Int a; a = 1; return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("Int", "a"));
+                mainStatements.add(new VariableAssignmentStmt("a", new IntegerExp(1)));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+
+                /*
+                 * Int main(){ String a; a = "text"; return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("String", "a"));
+                mainStatements.add(new VariableAssignmentStmt("a", new StringExp("text")));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                myTypechecker = new Typechecker(myProgram);
+
+                /*
+                 * Int main(){ Bool a; a = 1 == 1; return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("Bool", "a"));
+                mainStatements.add(new VariableAssignmentStmt("a",
+                                new EqualEqualExp(new IntegerExp(1), new IntegerExp(1))));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                myTypechecker = new Typechecker(myProgram);
+        }
+
+        @Test
+        public void testInvalidPrimitiveAssignment() throws IllTypedException {
+                /*
+                 * Int main(){ Int a; a = "text"; return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("Int", "a"));
+                mainStatements.add(new VariableAssignmentStmt("a", new StringExp("text")));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                try {
+                        Typechecker myTypechecker = new Typechecker(myProgram);
+                        fail("IllTypedException should have been thrown");
+                } catch (IllTypedException e) {
+                }
+
+                /*
+                 * Int main(){ String a; a = 1; return 0;}
+                 */
+                mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("String", "a"));
+                mainStatements.add(new VariableAssignmentStmt("a", new IntegerExp(1)));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                try {
+                        Typechecker myTypechecker = new Typechecker(myProgram);
+                        fail("IllTypedException should have been thrown");
+                } catch (IllTypedException e) {
+                }
+        }
+
+        @Test
+        public void testPrintStatements() throws IllTypedException {
+                /*
+                 * Int main(){ print(1); print("text"); println(1); println("text"); return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new PrintStmt(new IntegerExp(1)));
+                mainStatements.add(new PrintStmt(new StringExp("text")));
+                mainStatements.add(new PrintlnStmt(new IntegerExp(1)));
+                mainStatements.add(new PrintlnStmt(new StringExp("text")));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+
+                Typechecker myTypechecker = new Typechecker(myProgram);
+        }
+
+        public void testWhileLoops() throws IllTypedException {
+                /*
+                 * Int main(){ while(1 == 1){} return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new WhileStmt(new EqualEqualExp(new IntegerExp(1), new IntegerExp(1)),
+                                new BlockStmt(new ArrayList<Statement>())));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+        }
+
+        public void testForLoops() throws IllTypedException {
+                /*
+                 * Int main(){ for(Int i = 0; i < 1; i = i + 1){} return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new ForStmt(new VariableDeclarationStmt("Int", "i", new IntegerExp(0)),
+                                new LessThanExp(new VariableExp("i"), new IntegerExp(1)),
+                                new VariableAssignmentStmt("i", new PlusExp(new VariableExp("i"), new IntegerExp(1))),
+                                new BlockStmt(new ArrayList<Statement>())));
+                mainStatements.add(new ReturnStmt(new IntegerExp(0)));
+                Program myProgram = new Program(new ArrayList<ClassDef>(),
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+        }
 }

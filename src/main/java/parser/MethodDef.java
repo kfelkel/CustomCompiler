@@ -12,32 +12,32 @@ public class MethodDef {
     public final String name;
     public final ArrayList<VariableDeclarationStmt> parameters;
     public final BlockStmt body;
-    public Expression returnExp; //need to adjust constructor and Parser.java
+    public Expression returnExp; // need to adjust constructor and Parser.java
 
-    public MethodDef(final String type, final String name, 
-            final ArrayList<VariableDeclarationStmt> parameters, final BlockStmt body){//}, Expression returnExp)  {
+    public MethodDef(final String type, final String name, final ArrayList<VariableDeclarationStmt> parameters,
+            final BlockStmt body, Expression returnExp) {
         this.type = type;
         this.name = name;
         this.parameters = parameters;
         this.body = body;
-        //this.returnExp = returnExp;
-    }
-    
-    public String toString() {
-        return "MethodDef(" + type + ", " + name + ", " + parametersString() + ", " + body + ")";
+        this.returnExp = returnExp;
     }
 
-    private String parametersString(){
+    public String toString() {
+        return "MethodDef(" + type + ", " + name + ", " + parametersString() + ", " + body + ", " + returnExp + ")";
+    }
+
+    private String parametersString() {
         String ret = "";
-        if(parameters.size() >= 1){
+        if (parameters.size() >= 1) {
             ret += parameters.get(0).toString();
         }
-        for(int i = 1; i < parameters.size(); i++){
+        for (int i = 1; i < parameters.size(); i++) {
             ret += ", " + parameters.get(i).toString();
         }
         return ret;
     }
-    
+
     public boolean equals(MethodDef def) {
         return (toString()).equals(def.toString());
     }
