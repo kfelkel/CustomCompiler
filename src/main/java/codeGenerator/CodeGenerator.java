@@ -116,7 +116,17 @@ public class CodeGenerator {
             generateExpressionCode(lessThanorEqual.exp2,currentList);
             currentList.add(")");
         } else if (exp instanceof MethodCallExp){
-            
+            MethodCallExp method =(MethodCallExp) exp;
+            currentList.add(method.objectName);
+            currentList.add("_");
+            currentList.add(method.name);
+            currentList.add("(");
+            List<Expression> paramStmtList = method.parameters;
+            for (int i = 0; i < paramStmtList.size(); i++) {
+                generateExpressionCode(paramStmtList.get(i),currentList);
+                currentList.add(",");
+            }
+            currentList.add(")");
         } else if (exp instanceof MinusExp){
             MinusExp min =(MinusExp) exp;
             currentList.add("(");
@@ -139,7 +149,16 @@ public class CodeGenerator {
             generateExpressionCode(mult.exp2,currentList);
             currentList.add(")");
         } else if (exp instanceof NewExp){
-
+            NewExp neww =(NewExp) exp;
+            currentList.add(neww.classname);
+            currentList.add("_Constructor");
+            currentList.add("(");
+            List<Expression> paramStmtList = neww.parameters;
+            for (int i = 0; i < paramStmtList.size(); i++) {
+                generateExpressionCode(paramStmtList.get(i),currentList);
+                currentList.add(",");
+            }
+            currentList.add(")");
         } else if (exp instanceof ParenthesizedExp){
             ParenthesizedExp paren =(ParenthesizedExp) exp;
             currentList.add("(");
