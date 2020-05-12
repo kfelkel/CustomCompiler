@@ -25,11 +25,24 @@ public class CodeGeneratorTest {
         ArrayList<String> list = new ArrayList<String>();
         CodeGenerator.generateExpressionCode(exp, list);
         String actual = "";
-        actual += list.get(0);
-        for(int i = 1; i<list.size(); i++){
-            actual += " ";
+        for(int i = 0; i<list.size(); i++){
             actual += list.get(i);
+            if(i<list.size() - 1)
+                actual += " ";
         }
+        assertEquals(expected, actual);
+    }
+    public void statementHelper(final Statement stmt, final String expected) throws CodeGeneratorException{
+        ArrayList<String> list = new ArrayList<String>();
+        CodeGenerator.generateStatementCode(stmt, list);
+        String actual = "";
+        for(int i = 0; i<list.size(); i++){
+            actual += list.get(i);
+            if(i<list.size() - 1)
+                actual += " ";
+        }
+       // System.out.println(expected);
+       // System.out.println(actual);
         assertEquals(expected, actual);
     }
 
@@ -136,5 +149,107 @@ public class CodeGeneratorTest {
         Expression exp = new VariableExp("myvarx");
         String expectedString = "( myvarx )";
         expressionHelper(exp, expectedString);
+    }//End Expression Tests
+
+    //Statement Tests
+    @Test 
+    public void testEmptyBlockStmt() throws CodeGeneratorException{
+        Statement stmt = new BlockStmt(new ArrayList<Statement>());
+        String expectedString = "{ }";
+        statementHelper(stmt, expectedString);
     }
+    @Test
+    public void testBlockStmt() throws CodeGeneratorException{
+        Statement vardec = new VariableDeclarationStmt("int", "a", new IntegerExp(7));
+        ArrayList<Statement> body = new ArrayList<Statement>();
+        body.add(vardec);
+        Statement stmt = new BlockStmt(body);
+        String expectedString = "{ int a = ( 7 ) ; }";
+        statementHelper(stmt, expectedString);
+    }
+    @Test 
+    public void testForStmt() throws CodeGeneratorException{
+        Statement initializer = new VariableDeclarationStmt("int", "i", new IntegerExp(0));
+        Expression condition = new LessThanExp(new VariableExp("i"), new IntegerExp(10));
+        Statement incrementor = new VariableAssignmentStmt("i", new PlusExp(new VariableExp("i"), new IntegerExp(1)));
+        BlockStmt body = new BlockStmt(new ArrayList<Statement>());
+
+        Statement stmt = new ForStmt(initializer, condition, incrementor, body);
+        String expectedString = "for ( int i = ( 0 ) ; ( ( i ) < ( 10 ) ) ; i = ( ( i ) + ( 1 ) ) ) { }";
+        statementHelper(stmt, expectedString);
+    }
+    @Test 
+    public void testIfElseStmt() throws CodeGeneratorException{
+        Expression condition = new GreaterThanExp(new VariableExp("x"), new IntegerExp(5));
+        BlockStmt trueBranch =  new BlockStmt(new ArrayList<Statement>());
+        BlockStmt falseBranch =  new BlockStmt(new ArrayList<Statement>());
+
+        Statement stmt = new IfElseStmt(condition, trueBranch, falseBranch);
+        String expectedString = "if ( ( ( x ) > ( 5 ) ) ) { } else { }";
+        statementHelper(stmt, expectedString);
+    }
+    @Test
+    public void testIfStmt() throws CodeGeneratorException{
+        Expression condition = new GreaterThanExp(new VariableExp("x"), new IntegerExp(5));
+        BlockStmt trueBranch =  new BlockStmt(new ArrayList<Statement>());
+
+        Statement stmt = new IfStmt(condition, trueBranch);
+        String expectedString = "if ( ( ( x ) > ( 5 ) ) ) { }";
+        statementHelper(stmt, expectedString);
+    }
+    @Test
+    public void testPrintlnStmt() throws CodeGeneratorException{
+        Expression output = new StringExp("hello world");
+
+        Statement stmt = new PrintlnStmt(output);
+        String expectedString = "printf ( \"hello world\" ) ; printf(\"\\n\");";
+        statementHelper(stmt, expectedString);
+    }
+    @Test
+    public void testPrintStmt() throws CodeGeneratorException{
+        Expression output = new StringExp("hello world");
+
+        Statement stmt = new PrintStmt(output);
+        String expectedString = "printf ( \"hello world\" ) ;";
+        statementHelper(stmt, expectedString);
+    }
+    @Test
+    public void testReturnStmt() throws CodeGeneratorException{
+        Expression exp = new IntegerExp(0);
+
+        Statement stmt = new ReturnStmt(exp);
+        String expectedString = "return ( 0 ) ;";
+        statementHelper(stmt, expectedString);
+    }
+    @Test
+    public void testReturnVoidStmt() throws CodeGeneratorException{
+        Statement stmt = new ReturnVoidStmt();
+        String expectedString = "";
+        statementHelper(stmt, expectedString);
+    }
+
+    @Test
+    public void testWhileStnt() throws CodeGeneratorException{
+        Expression condition = new LessThanExp(new VariableExp("x"), new IntegerExp(5));
+        BlockStmt body =  new BlockStmt(new ArrayList<Statement>());
+
+        Statement stmt = new WhileStmt(condition, body);
+        String expectedString = "while ( ( ( x ) < ( 5 ) ) ) { }";
+        statementHelper(stmt, expectedString);
+    }
+
+    @Test
+    public void testVariableDeclarationStmt() throws CodeGeneratorException{
+        Statement stmt = new VariableDeclarationStmt("int", "x", new IntegerExp(10));
+        String expectedString = "int x = ( 10 ) ;";
+        statementHelper(stmt, expectedString);
+    }
+    @Test
+    public void testVariableAssignmentStmt() throws CodeGeneratorException{
+        Statement stmt = new VariableAssignmentStmt("x", new IntegerExp(10));
+        String expectedString = "x = ( 10 ) ;";
+        statementHelper(stmt, expectedString);
+    }//End Statement Tests
+
+
 }

@@ -265,10 +265,11 @@ public class CodeGenerator {
             currentList.add("for");
             currentList.add("(");
             generateStatementCode(stmt.initializer, currentList);
-            currentList.add(";");
+
             generateExpressionCode(stmt.condition, currentList);
             currentList.add(";");
             generateStatementCode(stmt.incrementor, currentList);
+            currentList.remove(currentList.size()-1);//remove extra semicolon
             currentList.add(")");
             generateStatementCode(stmt.body, currentList);
         } else if (s instanceof IfElseStmt) {
@@ -289,12 +290,20 @@ public class CodeGenerator {
             generateStatementCode(stmt.trueBranch, currentList);
         } else if (s instanceof PrintlnStmt) {
             PrintlnStmt stmt = (PrintlnStmt) s;
+            currentList.add("printf");
+            currentList.add("(");
             generateExpressionCode(stmt.output, currentList);
+            currentList.add(")");
+            currentList.add(";");
             //currentList.add(generatePrintf(stmt.output, currentList));
             currentList.add("printf(\"\\n\");");
         } else if (s instanceof PrintStmt) {
             PrintStmt stmt = (PrintStmt) s;
+            currentList.add("printf");
+            currentList.add("(");
             generateExpressionCode(stmt.output, currentList);
+            currentList.add(")");
+            currentList.add(";");
             //currentList.add(generatePrintf(stmt.output, currentList));
         } else if (s instanceof ReturnStmt) {
             ReturnStmt stmt = (ReturnStmt) s;
@@ -310,7 +319,6 @@ public class CodeGenerator {
             generateExpressionCode(stmt.condition, currentList);
             currentList.add(")");
             generateStatementCode(stmt.body, currentList);
-
         } else if (s instanceof VariableDeclarationStmt) {
             VariableDeclarationStmt stmt = (VariableDeclarationStmt) s;
             currentList.add(stmt.type);
