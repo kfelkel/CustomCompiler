@@ -33,6 +33,7 @@ public class CodeGenerator {
     }
 
     private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
+        //header?
         Classes.add("struct");
         Classes.add(myClass.className);
         Classes.add("{");
@@ -41,13 +42,30 @@ public class CodeGenerator {
         }
         //TO-DO: Deal with parent class
         Classes.add("}");
-        //TO-DO: Deal with constructor
+
+        //Constructor
+        //add header
+        Classes.add(myClass.className);
+        Classes.add(myClass.className + "_Constructor(");
+        Classes.add("(");
+        Classes.add(myClass.className);
+        Classes.add("this");
+        for (int i = 0; i < myClass.constructor.parameters.size(); i++) {
+            Classes.add(",");
+            generateStatementCode(myClass.constructor.parameters.get(i), Classes);
+        }
+        generateStatementCode(myClass.constructor.body, Classes);
+
+
+
         for (int i = 0; i < myClass.methods.size(); i++) {
             generateMethodDefCode(myClass.methods.get(i), myClass.className);
         }
     }
 
     private void generateMethodDefCode(MethodDef method, String classname) throws CodeGeneratorException {
+        //header
+
         Classes.add(classname + method.name);
         Classes.add("(");
         Classes.add(classname);
@@ -67,7 +85,7 @@ public class CodeGenerator {
         generateStatementCode(mymain.body, Main);
         // handle returns?
     }
-    private void generateExpressionCode(Expression exp, ArrayList<String> currentList){
+    private void generateExpressionCode(Expression exp, ArrayList<String> currentList) throws CodeGeneratorException{
         if (exp instanceof DivisionExp){
             DivisionExp div =(DivisionExp) exp;
             currentList.add("(");
@@ -165,8 +183,10 @@ public class CodeGenerator {
             currentList.add(var.name);
             currentList.add(")");
         } else {
-            throws codeGeneratorException
+            throw new CodeGeneratorException("Unknown expression: " + exp.toString());
         }
+    }
+
     public void generateStatementCode(Statement s, ArrayList<String> currentList) throws CodeGeneratorException{
 
         if (s instanceof BlockStmt) {
@@ -247,9 +267,5 @@ public class CodeGenerator {
         // TO-DO
         output += "\"):";
         return output;
-    }
-
-    public void generateExpressionCode(Expression e, ArrayList<String> currentList) {
-
     }
 }
