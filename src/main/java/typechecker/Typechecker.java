@@ -3,6 +3,9 @@ package typechecker;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.sound.sampled.SourceDataLine;
+
 import java.util.Iterator;
 
 import typechecker.types.*;
@@ -24,7 +27,7 @@ public class Typechecker {
                 throw new IllTypedException("Duplicate class name: " + classdef.className);
             }
         }
-
+        typecheckProgram(program);
     } // Typechecker
 
     public Type convertStringToType(String stringtype) {
@@ -50,7 +53,7 @@ public class Typechecker {
         for (final ClassDef classdef : program.classDefs) {
             typecheckClass(classdef);
         }
-        // typecheckMain(program.entryPoint);
+        typecheckFunction(program.entryPoint, new HashMap<String, MethodDef>(),new HashMap<String, Type>());
     } // typecheckProgram
 
     public void typecheckClass(final ClassDef classdef) throws IllTypedException {
@@ -116,7 +119,7 @@ public class Typechecker {
             } else {
                 throw new IllTypedException("Duplicate parameter name");
             }
-        }
+        } // add check for bad type declaration
 
         // TO-DO
         final Map<String, Type> finalGamma = typecheckStmts(variables, classMethods, function.body);
@@ -124,7 +127,7 @@ public class Typechecker {
         if (!actualReturnType.equals(convertStringToType(function.type))) {
             throw new IllTypedException("return type mismatch");
         }
-
+        System.out.println("33333333");
     }
 
     public Map<String, Type> typecheckStmts(Map<String, Type> gamma, Map<String, MethodDef> classMethods,
@@ -205,14 +208,14 @@ public class Typechecker {
             if (!(guardType instanceof Type)) {
                 throw new IllTypedException("Function must have return value of " + guardType);
             }
-            return gamma; 
-        }else if(s instanceof WhileStmt){
-            final WhileStmt asWhile = (WhileStmt)s;
-            final Type guardType = typecheckExp(gamma,classMethods, asWhile.condition);
+            return gamma;
+        } else if (s instanceof WhileStmt) {
+            final WhileStmt asWhile = (WhileStmt) s;
+            final Type guardType = typecheckExp(gamma, classMethods, asWhile.condition);
             if (guardType instanceof Type) {
-            typecheckStmts(gamma,classMethods, asWhile.body);
+                typecheckStmts(gamma, classMethods, asWhile.body);
             } else {
-            throw new IllTypedException("Guard in While must be boolean");
+                throw new IllTypedException("Guard in While must be boolean");
             }
             return gamma;
         } else if (s instanceof VariableDeclarationStmt) {
@@ -220,39 +223,40 @@ public class Typechecker {
             final Map<String, Type> newgamma = makeCopy(gamma);
             Type varType = convertStringToType(asVarDec.type);
             if (!newgamma.containsKey(asVarDec.name)) {
-                if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
+                if(asVarDec.value == null){
+                    newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
+                }
+                else if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
+                   
                     newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
                     return newgamma;
-                }             else {
+                } else {
                     throw new IllTypedException("Assigning invalid type to variable");
                 }
-            }
-            else {
+            } else {
                 throw new IllTypedException("Declaring a variable twice");
             }
-            
-        }
-        else if (s instanceof VariableAssignmentStmt) {
+
+        } else if (s instanceof VariableAssignmentStmt) {
             VariableAssignmentStmt asVarDec = (VariableAssignmentStmt) s;
             Type varType = gamma.get(asVarDec.name);
             if (gamma.containsKey(asVarDec.name)) {
                 if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
                     return gamma;
-                }
-                else {
+                } else {
                     throw new IllTypedException("Assigning invalid type to variable");
                 }
-            }
-            else {
+            } else {
                 throw new IllTypedException("Assigning value to nonexistent variable");
             }
-        }
-        throw new IllTypedException("Unrecognized statement");
+        }else{
+        throw new IllTypedException("Unrecognized statement");}
+            return gamma;
     } // typecheckStmt
 
     public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods,
             final Expression e) throws IllTypedException {
-
+                System.out.println(e);
         // Check for integers
         if (e instanceof IntegerExp) {
             return new IntType();
@@ -399,8 +403,8 @@ public class Typechecker {
             }
 
         }
-
-        throw new IllTypedException("unrecognized expression");
+        throw new IllTypedException("unrecognized expression" + e);
+        
 
     } // typecheckExp
 
