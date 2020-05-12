@@ -131,14 +131,14 @@ public class CodeGenerator {
             currentList.add(string.value);
             currentList.add("\"");
         } else if (exp instanceof ThisExp){
-
+            currentList.add("this.");
         } else if (exp instanceof VariableExp){
             VariableExp var =(VariableExp) exp;
             currentList.add("(");
             currentList.add(var.name);
             currentList.add(")");
         } else {
-            throws codeGeneratorException
+            throw new CodeGeneratorException("Unknown expression: " + exp.toString())
         }
     public void generateStatementCode(Statement s, ArrayList<String> currentList) throws CodeGeneratorException{
 
