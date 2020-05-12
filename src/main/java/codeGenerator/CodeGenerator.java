@@ -9,6 +9,7 @@ import java.util.*;
 
 public class CodeGenerator {
     // private static ArrayList<String> INCLUDE = new ArrayList<String>(); //holds
+    private ArrayList<String> StructHeaders = new ArrayList<String>();
     private ArrayList<String> FunctionHeaders = new ArrayList<String>();
     private ArrayList<String> Classes = new ArrayList<String>();
     private ArrayList<String> Main = new ArrayList<String>();
@@ -21,7 +22,22 @@ public class CodeGenerator {
     public String getCode() throws CodeGeneratorException {
         generateProgramCode();
         String completeCode = "";
-        // TO-DO
+        for(int i = 0; i<StructHeaders.size(); i++){
+            completeCode += StructHeaders.get(i);
+            completeCode += " ";
+        }
+        for(int i = 0; i<FunctionHeaders.size(); i++){
+            completeCode += FunctionHeaders.get(i);
+            completeCode += " ";
+        }
+        for(int i = 0; i<Classes.size(); i++){
+            completeCode += Classes.get(i);
+            completeCode += " ";
+        }
+        for(int i = 0; i<Main.size(); i++){
+            completeCode += Main.get(i);
+            completeCode += " ";
+        }
         return completeCode;
     }
 
@@ -33,6 +49,12 @@ public class CodeGenerator {
     }
 
     private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
+        //header
+        StructHeaders.add("struct");
+        StructHeaders.add(myClass.className);
+        StructHeaders.add(";");
+
+
         Classes.add("struct");
         Classes.add(myClass.className);
         Classes.add("{");
@@ -41,13 +63,51 @@ public class CodeGenerator {
         }
         //TO-DO: Deal with parent class
         Classes.add("}");
-        //TO-DO: Deal with constructor
+
+        //Constructor
+        //header
+        FunctionHeaders.add(myClass.className);
+        FunctionHeaders.add(myClass.className + "_Constructor(");
+        FunctionHeaders.add("(");
+        FunctionHeaders.add(myClass.className);
+        FunctionHeaders.add("this");
+        for (int i = 0; i < myClass.constructor.parameters.size(); i++) {
+            FunctionHeaders.add(",");
+            generateStatementCode(myClass.constructor.parameters.get(i), FunctionHeaders);
+        }
+        generateStatementCode(myClass.constructor.body, FunctionHeaders);
+
+
+        Classes.add(myClass.className);
+        Classes.add(myClass.className + "_Constructor(");
+        Classes.add(myClass.className);
+        Classes.add("this");
+        for (int i = 0; i < myClass.constructor.parameters.size(); i++) {
+            Classes.add(",");
+            generateStatementCode(myClass.constructor.parameters.get(i), Classes);
+        }
+        Classes.add(")");
+        generateStatementCode(myClass.constructor.body, Classes);
+
+
+
         for (int i = 0; i < myClass.methods.size(); i++) {
             generateMethodDefCode(myClass.methods.get(i), myClass.className);
         }
     }
 
     private void generateMethodDefCode(MethodDef method, String classname) throws CodeGeneratorException {
+        //header
+        FunctionHeaders.add(classname + method.name);
+        FunctionHeaders.add("(");
+        FunctionHeaders.add(classname);
+        FunctionHeaders.add("this");
+        for (int i = 0; i < method.parameters.size(); i++) {
+            FunctionHeaders.add(",");
+            generateStatementCode(method.parameters.get(i), FunctionHeaders);
+        }
+        FunctionHeaders.add(")");
+
         Classes.add(classname + method.name);
         Classes.add("(");
         Classes.add(classname);
@@ -67,7 +127,7 @@ public class CodeGenerator {
         generateStatementCode(mymain.body, Main);
         // handle returns?
     }
-    private void generateExpressionCode(Expression exp, ArrayList<String> currentList){
+    private void generateExpressionCode(Expression exp, ArrayList<String> currentList) throws CodeGeneratorException{
         if (exp instanceof DivisionExp){
             DivisionExp div =(DivisionExp) exp;
             currentList.add("(");
@@ -184,8 +244,10 @@ public class CodeGenerator {
             currentList.add(var.name);
             currentList.add(")");
         } else {
-            throw new CodeGeneratorException("Unknown expression: " + exp.toString())
+            throw new CodeGeneratorException("Unknown expression: " + exp.toString());
         }
+    }
+
     public void generateStatementCode(Statement s, ArrayList<String> currentList) throws CodeGeneratorException{
 
         if (s instanceof BlockStmt) {
@@ -266,9 +328,5 @@ public class CodeGenerator {
         // TO-DO
         output += "\"):";
         return output;
-    }
-
-    public void generateExpressionCode(Expression e, ArrayList<String> currentList) {
-
     }
 }
