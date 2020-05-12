@@ -45,11 +45,13 @@
 	    <param>tokenizer.*</param>
       <param>parser.*</param>
       <param>typechecker.*</param>
+      <param>codeGenerator.*</param>
 	  </targetClasses>
 	  <targetTests>
 	    <param>tokenizer.LexerTest</param>
       <param>parser.ParserTest</param>
       <param>typechecker.TypecheckerTest</param>
+      <param>codeGenerator.CodeGeneratorTest</param>
 	  </targetTests>
 	</configuration>
       </plugin>

@@ -1,9 +1,3 @@
-parser\Parser.class
-parser\Program.class
-parser\Parser$ParseResult.class
 tokenizer\Lexer.class
-parser\ClassDef.class
 parser\ParseException.class
 tokenizer\TokenizationException.class
-parser\Constructor.class
-parser\MethodDef.class
