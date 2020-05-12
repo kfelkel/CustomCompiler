@@ -9,6 +9,7 @@ import java.util.*;
 
 public class CodeGenerator {
     // private static ArrayList<String> INCLUDE = new ArrayList<String>(); //holds
+    private ArrayList<String> StructHeaders = new ArrayList<String>();
     private ArrayList<String> FunctionHeaders = new ArrayList<String>();
     private ArrayList<String> Classes = new ArrayList<String>();
     private ArrayList<String> Main = new ArrayList<String>();
@@ -21,7 +22,22 @@ public class CodeGenerator {
     public String getCode() throws CodeGeneratorException {
         generateProgramCode();
         String completeCode = "";
-        // TO-DO
+        for(int i = 0; i<StructHeaders.size(); i++){
+            completeCode += StructHeaders.get(i);
+            completeCode += " ";
+        }
+        for(int i = 0; i<FunctionHeaders.size(); i++){
+            completeCode += FunctionHeaders.get(i);
+            completeCode += " ";
+        }
+        for(int i = 0; i<Classes.size(); i++){
+            completeCode += Classes.get(i);
+            completeCode += " ";
+        }
+        for(int i = 0; i<Main.size(); i++){
+            completeCode += Main.get(i);
+            completeCode += " ";
+        }
         return completeCode;
     }
 
@@ -33,7 +49,12 @@ public class CodeGenerator {
     }
 
     private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
-        //header?
+        //header
+        StructHeaders.add("struct");
+        StructHeaders.add(myClass.className);
+        StructHeaders.add(";");
+
+
         Classes.add("struct");
         Classes.add(myClass.className);
         Classes.add("{");
@@ -44,16 +65,28 @@ public class CodeGenerator {
         Classes.add("}");
 
         //Constructor
-        //add header
+        //header
+        FunctionHeaders.add(myClass.className);
+        FunctionHeaders.add(myClass.className + "_Constructor(");
+        FunctionHeaders.add("(");
+        FunctionHeaders.add(myClass.className);
+        FunctionHeaders.add("this");
+        for (int i = 0; i < myClass.constructor.parameters.size(); i++) {
+            FunctionHeaders.add(",");
+            generateStatementCode(myClass.constructor.parameters.get(i), FunctionHeaders);
+        }
+        generateStatementCode(myClass.constructor.body, FunctionHeaders);
+
+
         Classes.add(myClass.className);
         Classes.add(myClass.className + "_Constructor(");
-        Classes.add("(");
         Classes.add(myClass.className);
         Classes.add("this");
         for (int i = 0; i < myClass.constructor.parameters.size(); i++) {
             Classes.add(",");
             generateStatementCode(myClass.constructor.parameters.get(i), Classes);
         }
+        Classes.add(")");
         generateStatementCode(myClass.constructor.body, Classes);
 
 
@@ -65,6 +98,15 @@ public class CodeGenerator {
 
     private void generateMethodDefCode(MethodDef method, String classname) throws CodeGeneratorException {
         //header
+        FunctionHeaders.add(classname + method.name);
+        FunctionHeaders.add("(");
+        FunctionHeaders.add(classname);
+        FunctionHeaders.add("this");
+        for (int i = 0; i < method.parameters.size(); i++) {
+            FunctionHeaders.add(",");
+            generateStatementCode(method.parameters.get(i), FunctionHeaders);
+        }
+        FunctionHeaders.add(")");
 
         Classes.add(classname + method.name);
         Classes.add("(");
