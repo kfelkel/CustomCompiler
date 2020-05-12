@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassDef.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tokenizer</a> &gt; <a href="index.source.html" class="el_package">parser</a> &gt; <span class="el_source">ClassDef.java</span></div><h1>ClassDef.java</h1><pre class="source lang-java linenums">package parser;
+
+import java.util.ArrayList;
+//import parser.statements.Statement;
+import parser.statements.VariableDeclarationStmt;
+
+public class ClassDef {
+
+    public final String className;
+    public final String parent;
+    public final ArrayList&lt;VariableDeclarationStmt&gt; fields;
+    public final Constructor constructor;
+    public final ArrayList&lt;MethodDef&gt; methods;
+
+    public ClassDef(final String className, final String parent, final ArrayList&lt;VariableDeclarationStmt&gt; fields,
+<span class="nc" id="L16">            final Constructor constructor, final ArrayList&lt;MethodDef&gt; methods) {</span>
+<span class="nc" id="L17">        this.className = className;</span>
+<span class="nc" id="L18">        this.parent = parent;</span>
+<span class="nc" id="L19">        this.fields = fields;</span>
+<span class="nc" id="L20">        this.constructor = constructor;</span>
+<span class="nc" id="L21">        this.methods = methods;</span>
+<span class="nc" id="L22">    }</span>
+
+    public ClassDef(final String className, final ArrayList&lt;VariableDeclarationStmt&gt; fields, final Constructor constructor,
+<span class="nc" id="L25">            final ArrayList&lt;MethodDef&gt; methods) {</span>
+<span class="nc" id="L26">        this.className = className;</span>
+<span class="nc" id="L27">        this.parent = &quot;&quot;;</span>
+<span class="nc" id="L28">        this.fields = fields;</span>
+<span class="nc" id="L29">        this.constructor = constructor;</span>
+<span class="nc" id="L30">        this.methods = methods;</span>
+<span class="nc" id="L31">    }</span>
+
+    public String toString() {
+<span class="nc" id="L34">        return &quot;ClassDef(&quot; + className + &quot;, &quot; + parent + &quot;, &quot; + fieldsString() + &quot;, &quot; + constructor + &quot;, &quot;</span>
+<span class="nc" id="L35">                + methodsString() + &quot;)&quot;;</span>
+    }
+
+    private String fieldsString() {
+<span class="nc" id="L39">        String ret = &quot;&quot;;</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (fields.size() &gt;= 1) {</span>
+<span class="nc" id="L41">            ret += fields.get(0).toString();</span>
+        }
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        for (int i = 1; i &lt; fields.size(); i++) {</span>
+<span class="nc" id="L44">            ret += &quot;, &quot; + fields.get(i).toString();</span>
+        }
+<span class="nc" id="L46">        return ret;</span>
+    }
+
+    private String methodsString() {
+<span class="nc" id="L50">        String ret = &quot;&quot;;</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (methods.size() &gt;= 1) {</span>
+<span class="nc" id="L52">            ret += methods.get(0).toString();</span>
+        }
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (int i = 1; i &lt; methods.size(); i++) {</span>
+<span class="nc" id="L55">            ret += &quot;, &quot; + methods.get(i).toString();</span>
+        }
+<span class="nc" id="L57">        return ret;</span>
+    }
+
+    public boolean equals(ClassDef classDef) {
+<span class="nc" id="L61">        return (this.toString()).equals(classDef.toString());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

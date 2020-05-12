@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="7" failures="0" name="LexerTest" time="0.027" errors="0" skipped="0">
+<testsuite tests="7" failures="0" name="LexerTest" time="0.017" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="D:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
@@ -29,7 +29,7 @@
     <property name="os.name" value="Windows 10"/>
     <property name="classworlds.conf" value="D:\Program Files\apache-maven-3.6.3\bin\..\bin\m2.conf"/>
     <property name="sun.jnu.encoding" value="Cp1252"/>
-    <property name="java.library.path" value="D:\Program Files\Java\jdk1.8.0_181\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;D:\Program Files\Git\cmd;D:\Program Files\apache-maven-3.6.3\bin;D:\Program Files\Java\jdk1.8.0_181;C:\Program Files\dotnet\;D:\Program Files\Java\jre1.8.0_181;D:\Program Files\nodejs\;C:\Users\Kyle\AppData\Local\Microsoft\WindowsApps;;D:\Users\Kyle\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Kyle\AppData\Roaming\npm;."/>
+    <property name="java.library.path" value="D:\Program Files\Java\jdk1.8.0_181\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;D:\Program Files\Git\cmd;D:\Program Files\apache-maven-3.6.3\bin;D:\Program Files\Java\jdk1.8.0_181;C:\Program Files\dotnet\;D:\Program Files\Java\jre1.8.0_181;C:\Program Files\nodejs\;C:\Users\Kyle\AppData\Local\Microsoft\WindowsApps;;D:\Users\Kyle\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Kyle\AppData\Roaming\npm;."/>
     <property name="maven.conf" value="D:\Program Files\apache-maven-3.6.3\bin\../conf"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
@@ -65,11 +65,11 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="LexerTest" name="testStringLiterals" time="0.005"/>
-  <testcase classname="LexerTest" name="TestOtherTokensIndividually" time="0.004"/>
-  <testcase classname="LexerTest" name="testIdentifiers" time="0.001"/>
-  <testcase classname="LexerTest" name="testIntegers" time="0.001"/>
+  <testcase classname="LexerTest" name="testStringLiterals" time="0"/>
+  <testcase classname="LexerTest" name="TestOtherTokensIndividually" time="0"/>
+  <testcase classname="LexerTest" name="testIdentifiers" time="0"/>
+  <testcase classname="LexerTest" name="testIntegers" time="0.003"/>
   <testcase classname="LexerTest" name="TestMultipleTokens" time="0.002"/>
-  <testcase classname="LexerTest" name="testOperatorTokensIndividually" time="0.007"/>
-  <testcase classname="LexerTest" name="testAllKeywordsIndividually" time="0.007"/>
+  <testcase classname="LexerTest" name="testOperatorTokensIndividually" time="0.004"/>
+  <testcase classname="LexerTest" name="testAllKeywordsIndividually" time="0.008"/>
 </testsuite>

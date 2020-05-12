@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tokenizer</a> &gt; <a href="index.source.html" class="el_package">codeGenerator</a> &gt; <span class="el_source">CodeGenerator.java</span></div><h1>CodeGenerator.java</h1><pre class="source lang-java linenums">package codeGenerator;
+
+import typechecker.types.*;
+import parser.*;
+import parser.statements.*;
+import parser.expressions.*;
+
+import java.util.*;
+
+public class CodeGenerator {
+    // private static ArrayList&lt;String&gt; INCLUDE = new ArrayList&lt;String&gt;(); //holds
+<span class="nc" id="L12">    private ArrayList&lt;String&gt; StructHeaders = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L13">    private ArrayList&lt;String&gt; FunctionHeaders = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L14">    private ArrayList&lt;String&gt; Classes = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L15">    private ArrayList&lt;String&gt; Main = new ArrayList&lt;String&gt;();</span>
+    private Program myProgram;
+
+<span class="nc" id="L18">    public CodeGenerator(Program myProgram) {</span>
+<span class="nc" id="L19">        this.myProgram = myProgram;</span>
+<span class="nc" id="L20">    }</span>
+
+    public String getCode() throws CodeGeneratorException {
+<span class="nc" id="L23">        generateProgramCode();</span>
+<span class="nc" id="L24">        String completeCode = &quot;&quot;;</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        for(int i = 0; i&lt;StructHeaders.size(); i++){</span>
+<span class="nc" id="L26">            completeCode += StructHeaders.get(i);</span>
+<span class="nc" id="L27">            completeCode += &quot; &quot;;</span>
+        }
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        for(int i = 0; i&lt;FunctionHeaders.size(); i++){</span>
+<span class="nc" id="L30">            completeCode += FunctionHeaders.get(i);</span>
+<span class="nc" id="L31">            completeCode += &quot; &quot;;</span>
+        }
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        for(int i = 0; i&lt;Classes.size(); i++){</span>
+<span class="nc" id="L34">            completeCode += Classes.get(i);</span>
+<span class="nc" id="L35">            completeCode += &quot; &quot;;</span>
+        }
+<span class="nc" id="L37">        completeCode += Main.get(0);</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        for(int i = 1; i&lt;Main.size(); i++){</span>
+<span class="nc" id="L39">            completeCode += &quot; &quot;;</span>
+<span class="nc" id="L40">            completeCode += Main.get(i);</span>
+        }
+<span class="nc" id="L42">        return completeCode;</span>
+    }
+
+    private void generateProgramCode() throws CodeGeneratorException {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        for (int i = 0; i &lt; myProgram.classDefs.size(); i++) {</span>
+<span class="nc" id="L47">            generateClassCode(myProgram.classDefs.get(i));</span>
+        }
+<span class="nc" id="L49">        generateMainCode();</span>
+<span class="nc" id="L50">    }</span>
+
+    private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
+        //header
+<span class="nc" id="L54">        StructHeaders.add(&quot;struct&quot;);</span>
+<span class="nc" id="L55">        StructHeaders.add(myClass.className);</span>
+<span class="nc" id="L56">        StructHeaders.add(&quot;;&quot;);</span>
+
+
+<span class="nc" id="L59">        Classes.add(&quot;struct&quot;);</span>
+<span class="nc" id="L60">        Classes.add(myClass.className);</span>
+<span class="nc" id="L61">        Classes.add(&quot;{&quot;);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (int i = 0; i &lt; myClass.fields.size(); i++) {</span>
+<span class="nc" id="L63">            generateStatementCode(myClass.fields.get(i), Classes);</span>
+        }
+        //TO-DO: Deal with parent class
+<span class="nc" id="L66">        Classes.add(&quot;}&quot;);</span>
+
+        //Constructor
+        //header
+<span class="nc" id="L70">        FunctionHeaders.add(myClass.className);</span>
+<span class="nc" id="L71">        FunctionHeaders.add(myClass.className + &quot;_Constructor&quot;);</span>
+<span class="nc" id="L72">        FunctionHeaders.add(&quot;(&quot;);</span>
+<span class="nc" id="L73">        FunctionHeaders.add(myClass.className);</span>
+<span class="nc" id="L74">        FunctionHeaders.add(&quot;this&quot;);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for (int i = 0; i &lt; myClass.constructor.parameters.size(); i++) {</span>
+<span class="nc" id="L76">            FunctionHeaders.add(&quot;,&quot;);</span>
+<span class="nc" id="L77">            generateStatementCode(myClass.constructor.parameters.get(i), FunctionHeaders);</span>
+        }
+<span class="nc" id="L79">        generateStatementCode(myClass.constructor.body, FunctionHeaders);</span>
+
+
+<span class="nc" id="L82">        Classes.add(myClass.className);</span>
+<span class="nc" id="L83">        Classes.add(myClass.className + &quot;_Constructor&quot;);</span>
+<span class="nc" id="L84">        Classes.add(&quot;(&quot;);</span>
+<span class="nc" id="L85">        Classes.add(myClass.className);</span>
+<span class="nc" id="L86">        Classes.add(&quot;this&quot;);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (int i = 0; i &lt; myClass.constructor.parameters.size(); i++) {</span>
+<span class="nc" id="L88">            Classes.add(&quot;,&quot;);</span>
+<span class="nc" id="L89">            generateStatementCode(myClass.constructor.parameters.get(i), Classes);</span>
+        }
+<span class="nc" id="L91">        Classes.add(&quot;)&quot;);</span>
+<span class="nc" id="L92">        generateStatementCode(myClass.constructor.body, Classes);</span>
+
+
+
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        for (int i = 0; i &lt; myClass.methods.size(); i++) {</span>
+<span class="nc" id="L97">            generateMethodDefCode(myClass.methods.get(i), myClass.className);</span>
+        }
+<span class="nc" id="L99">    }</span>
+
+    private void generateMethodDefCode(MethodDef method, String classname) throws CodeGeneratorException {
+        //header
+<span class="nc" id="L103">        FunctionHeaders.add(classname + &quot;_&quot; + method.name);</span>
+<span class="nc" id="L104">        FunctionHeaders.add(&quot;(&quot;);</span>
+<span class="nc" id="L105">        FunctionHeaders.add(classname);</span>
+<span class="nc" id="L106">        FunctionHeaders.add(&quot;this&quot;);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        for (int i = 0; i &lt; method.parameters.size(); i++) {</span>
+<span class="nc" id="L108">            FunctionHeaders.add(&quot;,&quot;);</span>
+<span class="nc" id="L109">            generateStatementCode(method.parameters.get(i), FunctionHeaders);</span>
+        }
+<span class="nc" id="L111">        FunctionHeaders.add(&quot;)&quot;);</span>
+
+<span class="nc" id="L113">        Classes.add(classname + &quot;_&quot; + method.name);</span>
+<span class="nc" id="L114">        Classes.add(&quot;(&quot;);</span>
+<span class="nc" id="L115">        Classes.add(classname);</span>
+<span class="nc" id="L116">        Classes.add(&quot;this&quot;);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        for (int i = 0; i &lt; method.parameters.size(); i++) {</span>
+<span class="nc" id="L118">            Classes.add(&quot;,&quot;);</span>
+<span class="nc" id="L119">            generateStatementCode(method.parameters.get(i), Classes);</span>
+        }
+<span class="nc" id="L121">        Classes.add(&quot;)&quot;);</span>
+<span class="nc" id="L122">        generateStatementCode(method.body, Classes);</span>
+        //handle returns?
+<span class="nc" id="L124">    }</span>
+
+    private void generateMainCode() throws CodeGeneratorException {
+<span class="nc" id="L127">        MethodDef mymain = myProgram.entryPoint;</span>
+<span class="nc" id="L128">        Main.add(&quot;int&quot;);</span>
+<span class="nc" id="L129">        Main.add(&quot;main&quot;);</span>
+<span class="nc" id="L130">        Main.add(&quot;(&quot;);</span>
+<span class="nc" id="L131">        Main.add(&quot;)&quot;);</span>
+<span class="nc" id="L132">        generateStatementCode(mymain.body, Main);</span>
+        // handle returns?
+<span class="nc" id="L134">    }</span>
+    public static void generateExpressionCode(Expression exp, ArrayList&lt;String&gt; currentList) throws CodeGeneratorException{
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (exp instanceof DivisionExp){</span>
+<span class="fc" id="L137">            DivisionExp div =(DivisionExp) exp;</span>
+<span class="fc" id="L138">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L139">            generateExpressionCode(div.exp1,currentList);</span>
+<span class="fc" id="L140">            currentList.add(&quot;/&quot;);</span>
+<span class="fc" id="L141">            generateExpressionCode(div.exp2,currentList);</span>
+<span class="fc" id="L142">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        } else if (exp instanceof EqualEqualExp){</span>
+<span class="fc" id="L144">            EqualEqualExp equalEqual =(EqualEqualExp) exp;</span>
+<span class="fc" id="L145">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L146">            generateExpressionCode(equalEqual.exp1,currentList);</span>
+<span class="fc" id="L147">            currentList.add(&quot;==&quot;);</span>
+<span class="fc" id="L148">            generateExpressionCode(equalEqual.exp2,currentList);</span>
+<span class="fc" id="L149">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        } else if (exp instanceof GreaterThanExp){</span>
+<span class="fc" id="L151">            GreaterThanExp greaterThan =(GreaterThanExp) exp;</span>
+<span class="fc" id="L152">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L153">            generateExpressionCode(greaterThan.exp1,currentList);</span>
+<span class="fc" id="L154">            currentList.add(&quot;&gt;&quot;);</span>
+<span class="fc" id="L155">            generateExpressionCode(greaterThan.exp2,currentList);</span>
+<span class="fc" id="L156">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        } else if (exp instanceof GreaterThanOrEqualExp){</span>
+<span class="fc" id="L158">            GreaterThanOrEqualExp greaterThanorEqual =(GreaterThanOrEqualExp) exp;</span>
+<span class="fc" id="L159">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L160">            generateExpressionCode(greaterThanorEqual.exp1,currentList);</span>
+<span class="fc" id="L161">            currentList.add(&quot;&gt;=&quot;);</span>
+<span class="fc" id="L162">            generateExpressionCode(greaterThanorEqual.exp2,currentList);</span>
+<span class="fc" id="L163">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        } else if (exp instanceof IntegerExp){</span>
+<span class="fc" id="L165">            IntegerExp integer =(IntegerExp) exp;</span>
+<span class="fc" id="L166">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L167">            currentList.add(Integer.toString(integer.value));</span>
+<span class="fc" id="L168">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        } else if (exp instanceof LessThanExp){</span>
+<span class="fc" id="L170">            LessThanExp lessThan =(LessThanExp) exp;</span>
+<span class="fc" id="L171">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L172">            generateExpressionCode(lessThan.exp1,currentList);</span>
+<span class="fc" id="L173">            currentList.add(&quot;&lt;&quot;);</span>
+<span class="fc" id="L174">            generateExpressionCode(lessThan.exp2,currentList);</span>
+<span class="fc" id="L175">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        } else if (exp instanceof LessThanOrEqualExp){</span>
+<span class="fc" id="L177">            LessThanOrEqualExp lessThanorEqual =(LessThanOrEqualExp) exp;</span>
+<span class="fc" id="L178">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L179">            generateExpressionCode(lessThanorEqual.exp1,currentList);</span>
+<span class="fc" id="L180">            currentList.add(&quot;&lt;=&quot;);</span>
+<span class="fc" id="L181">            generateExpressionCode(lessThanorEqual.exp2,currentList);</span>
+<span class="fc" id="L182">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        } else if (exp instanceof MethodCallExp){</span>
+<span class="fc" id="L184">            MethodCallExp method =(MethodCallExp) exp;</span>
+<span class="fc" id="L185">            currentList.add(method.objectName + &quot;_&quot; + method.name);</span>
+<span class="fc" id="L186">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L187">            List&lt;Expression&gt; paramStmtList = method.parameters;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">            for (int i = 0; i &lt; paramStmtList.size(); i++) {</span>
+<span class="fc" id="L189">                generateExpressionCode(paramStmtList.get(i),currentList);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                if(i&lt;paramStmtList.size()-1)//if not the last parameter</span>
+<span class="fc" id="L191">                    currentList.add(&quot;,&quot;);</span>
+            }
+<span class="fc" id="L193">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        } else if (exp instanceof MinusExp){</span>
+<span class="fc" id="L195">            MinusExp min =(MinusExp) exp;</span>
+<span class="fc" id="L196">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L197">            generateExpressionCode(min.exp1,currentList);</span>
+<span class="fc" id="L198">            currentList.add(&quot;-&quot;);</span>
+<span class="fc" id="L199">            generateExpressionCode(min.exp2,currentList);</span>
+<span class="fc" id="L200">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        } else if (exp instanceof ModulusExp){</span>
+<span class="fc" id="L202">            ModulusExp mod =(ModulusExp) exp;</span>
+<span class="fc" id="L203">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L204">            generateExpressionCode(mod.exp1,currentList);</span>
+<span class="fc" id="L205">            currentList.add(&quot;%&quot;);</span>
+<span class="fc" id="L206">            generateExpressionCode(mod.exp2,currentList);</span>
+<span class="fc" id="L207">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        } else if (exp instanceof MultiplicationExp){</span>
+<span class="fc" id="L209">            MultiplicationExp mult =(MultiplicationExp) exp;</span>
+<span class="fc" id="L210">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L211">            generateExpressionCode(mult.exp1,currentList);</span>
+<span class="fc" id="L212">            currentList.add(&quot;*&quot;);</span>
+<span class="fc" id="L213">            generateExpressionCode(mult.exp2,currentList);</span>
+<span class="fc" id="L214">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        } else if (exp instanceof NewExp){</span>
+<span class="fc" id="L216">            NewExp neww =(NewExp) exp;</span>
+<span class="fc" id="L217">            currentList.add(neww.classname+&quot;_Constructor&quot;);</span>
+<span class="fc" id="L218">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L219">            List&lt;Expression&gt; paramStmtList = neww.parameters;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">            for (int i = 0; i &lt; paramStmtList.size(); i++) {</span>
+<span class="fc" id="L221">                generateExpressionCode(paramStmtList.get(i),currentList);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">                if(i&lt;paramStmtList.size()-1)//if not the last parameter</span>
+<span class="fc" id="L223">                    currentList.add(&quot;,&quot;);</span>
+            }
+<span class="fc" id="L225">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        } else if (exp instanceof ParenthesizedExp){</span>
+<span class="fc" id="L227">            ParenthesizedExp paren =(ParenthesizedExp) exp;</span>
+<span class="fc" id="L228">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L229">            generateExpressionCode(paren.body,currentList);</span>
+<span class="fc" id="L230">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        } else if (exp instanceof PlusExp){</span>
+<span class="fc" id="L232">            PlusExp plus =(PlusExp) exp;</span>
+<span class="fc" id="L233">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L234">            generateExpressionCode(plus.exp1,currentList);</span>
+<span class="fc" id="L235">            currentList.add(&quot;+&quot;);</span>
+<span class="fc" id="L236">            generateExpressionCode(plus.exp2,currentList);</span>
+<span class="fc" id="L237">            currentList.add(&quot;)&quot;);</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        } else if (exp instanceof StringExp){</span>
+<span class="fc" id="L239">            StringExp string =(StringExp) exp;</span>
+<span class="fc" id="L240">            currentList.add(&quot;\&quot;&quot;+string.value+&quot;\&quot;&quot;);</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        } else if (exp instanceof ThisExp){</span>
+<span class="fc" id="L242">            currentList.add(&quot;this.&quot;);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        } else if (exp instanceof VariableExp){</span>
+<span class="fc" id="L244">            VariableExp var =(VariableExp) exp;</span>
+<span class="fc" id="L245">            currentList.add(&quot;(&quot;);</span>
+<span class="fc" id="L246">            currentList.add(var.name);</span>
+<span class="fc" id="L247">            currentList.add(&quot;)&quot;);</span>
+<span class="fc" id="L248">        } else {</span>
+<span class="nc" id="L249">            throw new CodeGeneratorException(&quot;Unknown expression: &quot; + exp.toString());</span>
+        }
+<span class="fc" id="L251">    }</span>
+
+    public static void generateStatementCode(Statement s, ArrayList&lt;String&gt; currentList) throws CodeGeneratorException{
+
+<span class="nc bnc" id="L255" title="All 2 branches missed.">        if (s instanceof BlockStmt) {</span>
+<span class="nc" id="L256">            BlockStmt stmt = (BlockStmt) s;</span>
+<span class="nc" id="L257">            currentList.add(&quot;{&quot;);</span>
+<span class="nc" id="L258">            List&lt;Statement&gt; bodyStmtList = stmt.body;</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">            for (int i = 0; i &lt; bodyStmtList.size(); i++) {</span>
+<span class="nc" id="L260">                generateStatementCode(bodyStmtList.get(i), currentList);</span>
+            }
+<span class="nc" id="L262">            currentList.add(&quot;}&quot;);</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">        } else if (s instanceof ForStmt) {</span>
+<span class="nc" id="L264">            ForStmt stmt = (ForStmt) s;</span>
+<span class="nc" id="L265">            currentList.add(&quot;for&quot;);</span>
+<span class="nc" id="L266">            currentList.add(&quot;(&quot;);</span>
+<span class="nc" id="L267">            generateStatementCode(stmt.initializer, currentList);</span>
+<span class="nc" id="L268">            currentList.add(&quot;;&quot;);</span>
+<span class="nc" id="L269">            generateExpressionCode(stmt.condition, currentList);</span>
+<span class="nc" id="L270">            currentList.add(&quot;;&quot;);</span>
+<span class="nc" id="L271">            generateStatementCode(stmt.incrementor, currentList);</span>
+<span class="nc" id="L272">            currentList.add(&quot;)&quot;);</span>
+<span class="nc" id="L273">            generateStatementCode(stmt.body, currentList);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        } else if (s instanceof IfElseStmt) {</span>
+<span class="nc" id="L275">            IfElseStmt stmt = (IfElseStmt) s;</span>
+<span class="nc" id="L276">            currentList.add(&quot;if&quot;);</span>
+<span class="nc" id="L277">            currentList.add(&quot;(&quot;);</span>
+<span class="nc" id="L278">            generateExpressionCode(stmt.condition, currentList);</span>
+<span class="nc" id="L279">            currentList.add(&quot;)&quot;);</span>
+<span class="nc" id="L280">            generateStatementCode(stmt.trueBranch, currentList);</span>
+<span class="nc" id="L281">            currentList.add(&quot;else&quot;);</span>
+<span class="nc" id="L282">            generateStatementCode(stmt.falseBranch, currentList);</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">        } else if (s instanceof IfStmt) {</span>
+<span class="nc" id="L284">            IfStmt stmt = (IfStmt) s;</span>
+<span class="nc" id="L285">            currentList.add(&quot;if&quot;);</span>
+<span class="nc" id="L286">            currentList.add(&quot;(&quot;);</span>
+<span class="nc" id="L287">            generateExpressionCode(stmt.condition, currentList);</span>
+<span class="nc" id="L288">            currentList.add(&quot;)&quot;);</span>
+<span class="nc" id="L289">            generateStatementCode(stmt.trueBranch, currentList);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">        } else if (s instanceof PrintlnStmt) {</span>
+<span class="nc" id="L291">            PrintlnStmt stmt = (PrintlnStmt) s;</span>
+<span class="nc" id="L292">            generateExpressionCode(stmt.output, currentList);</span>
+            //currentList.add(generatePrintf(stmt.output, currentList));
+<span class="nc" id="L294">            currentList.add(&quot;printf(\&quot;\\n\&quot;);&quot;);</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">        } else if (s instanceof PrintStmt) {</span>
+<span class="nc" id="L296">            PrintStmt stmt = (PrintStmt) s;</span>
+<span class="nc" id="L297">            generateExpressionCode(stmt.output, currentList);</span>
+            //currentList.add(generatePrintf(stmt.output, currentList));
+<span class="nc bnc" id="L299" title="All 2 branches missed.">        } else if (s instanceof ReturnStmt) {</span>
+<span class="nc" id="L300">            ReturnStmt stmt = (ReturnStmt) s;</span>
+<span class="nc" id="L301">            currentList.add(&quot;return&quot;);</span>
+<span class="nc" id="L302">            generateExpressionCode(stmt.value, currentList);</span>
+<span class="nc" id="L303">            currentList.add(&quot;;&quot;);</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        } else if (s instanceof ReturnVoidStmt) {</span>
+            // Do nothing, no return void in C
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        } else if (s instanceof WhileStmt) {</span>
+<span class="nc" id="L307">            WhileStmt stmt = (WhileStmt) s;</span>
+<span class="nc" id="L308">            currentList.add(&quot;while&quot;);</span>
+<span class="nc" id="L309">            currentList.add(&quot;(&quot;);</span>
+<span class="nc" id="L310">            generateExpressionCode(stmt.condition, currentList);</span>
+<span class="nc" id="L311">            currentList.add(&quot;)&quot;);</span>
+<span class="nc" id="L312">            generateStatementCode(stmt.body, currentList);</span>
+
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        } else if (s instanceof VariableDeclarationStmt) {</span>
+<span class="nc" id="L315">            VariableDeclarationStmt stmt = (VariableDeclarationStmt) s;</span>
+<span class="nc" id="L316">            currentList.add(stmt.type);</span>
+<span class="nc" id="L317">            currentList.add(stmt.name);</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            if (stmt.value != null) {</span>
+<span class="nc" id="L319">                currentList.add(&quot;=&quot;);</span>
+<span class="nc" id="L320">                generateExpressionCode(stmt.value, currentList);</span>
+<span class="nc" id="L321">                currentList.add(&quot;;&quot;);</span>
+            }
+<span class="nc bnc" id="L323" title="All 2 branches missed.">        } else if (s instanceof VariableAssignmentStmt) {</span>
+<span class="nc" id="L324">            VariableAssignmentStmt stmt = (VariableAssignmentStmt) s;</span>
+<span class="nc" id="L325">            currentList.add(stmt.name);</span>
+<span class="nc" id="L326">            currentList.add(&quot;=&quot;);</span>
+<span class="nc" id="L327">            generateExpressionCode(stmt.value, currentList);</span>
+<span class="nc" id="L328">            currentList.add(&quot;;&quot;);</span>
+<span class="nc" id="L329">        } else {</span>
+<span class="nc" id="L330">            throw new CodeGeneratorException(&quot;Unknown statement: &quot; + s.toString());</span>
+        }
+<span class="nc" id="L332">    }</span>
+
+    // public static String generatePrintf(Expression e, ArrayList&lt;String&gt; currentList) {
+    //     String output = &quot;printf(\&quot;&quot;;
+    //     // TO-DO
+    //     output += &quot;\&quot;):&quot;;
+    //     return output;
+    // }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MethodDef.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tokenizer</a> &gt; <a href="index.source.html" class="el_package">parser</a> &gt; <span class="el_source">MethodDef.java</span></div><h1>MethodDef.java</h1><pre class="source lang-java linenums">package parser;
+
+import java.util.ArrayList;
+import parser.statements.VariableDeclarationStmt;
+import parser.statements.BlockStmt;
+import parser.statements.ReturnStmt;
+import parser.expressions.Expression;
+
+public class MethodDef {
+
+    public final String type;
+    public final String name;
+    public final ArrayList&lt;VariableDeclarationStmt&gt; parameters;
+    public final BlockStmt body;
+    public Expression returnExp; // need to adjust constructor and Parser.java
+
+    public MethodDef(final String type, final String name, final ArrayList&lt;VariableDeclarationStmt&gt; parameters,
+<span class="nc" id="L18">            final BlockStmt body, Expression returnExp) {</span>
+<span class="nc" id="L19">        this.type = type;</span>
+<span class="nc" id="L20">        this.name = name;</span>
+<span class="nc" id="L21">        this.parameters = parameters;</span>
+<span class="nc" id="L22">        this.body = body;</span>
+<span class="nc" id="L23">        this.returnExp = returnExp;</span>
+<span class="nc" id="L24">    }</span>
+
+    public String toString() {
+<span class="nc" id="L27">        return &quot;MethodDef(&quot; + type + &quot;, &quot; + name + &quot;, &quot; + parametersString() + &quot;, &quot; + body + &quot;, &quot; + returnExp + &quot;)&quot;;</span>
+    }
+
+    private String parametersString() {
+<span class="nc" id="L31">        String ret = &quot;&quot;;</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (parameters.size() &gt;= 1) {</span>
+<span class="nc" id="L33">            ret += parameters.get(0).toString();</span>
+        }
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (int i = 1; i &lt; parameters.size(); i++) {</span>
+<span class="nc" id="L36">            ret += &quot;, &quot; + parameters.get(i).toString();</span>
+        }
+<span class="nc" id="L38">        return ret;</span>
+    }
+
+    public boolean equals(MethodDef def) {
+<span class="nc" id="L42">        return (toString()).equals(def.toString());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

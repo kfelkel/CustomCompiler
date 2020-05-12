@@ -34,9 +34,10 @@ public class CodeGenerator {
             completeCode += Classes.get(i);
             completeCode += " ";
         }
-        for(int i = 0; i<Main.size(); i++){
-            completeCode += Main.get(i);
+        completeCode += Main.get(0);
+        for(int i = 1; i<Main.size(); i++){
             completeCode += " ";
+            completeCode += Main.get(i);
         }
         return completeCode;
     }
@@ -67,7 +68,7 @@ public class CodeGenerator {
         //Constructor
         //header
         FunctionHeaders.add(myClass.className);
-        FunctionHeaders.add(myClass.className + "_Constructor(");
+        FunctionHeaders.add(myClass.className + "_Constructor");
         FunctionHeaders.add("(");
         FunctionHeaders.add(myClass.className);
         FunctionHeaders.add("this");
@@ -79,7 +80,8 @@ public class CodeGenerator {
 
 
         Classes.add(myClass.className);
-        Classes.add(myClass.className + "_Constructor(");
+        Classes.add(myClass.className + "_Constructor");
+        Classes.add("(");
         Classes.add(myClass.className);
         Classes.add("this");
         for (int i = 0; i < myClass.constructor.parameters.size(); i++) {
@@ -123,7 +125,10 @@ public class CodeGenerator {
 
     private void generateMainCode() throws CodeGeneratorException {
         MethodDef mymain = myProgram.entryPoint;
-        Main.add("int main()");
+        Main.add("int");
+        Main.add("main");
+        Main.add("(");
+        Main.add(")");
         generateStatementCode(mymain.body, Main);
         // handle returns?
     }
@@ -177,14 +182,13 @@ public class CodeGenerator {
             currentList.add(")");
         } else if (exp instanceof MethodCallExp){
             MethodCallExp method =(MethodCallExp) exp;
-            currentList.add(method.objectName);
-            currentList.add("_");
-            currentList.add(method.name);
+            currentList.add(method.objectName + "_" + method.name);
             currentList.add("(");
             List<Expression> paramStmtList = method.parameters;
             for (int i = 0; i < paramStmtList.size(); i++) {
                 generateExpressionCode(paramStmtList.get(i),currentList);
-                currentList.add(",");
+                if(i<paramStmtList.size()-1)//if not the last parameter
+                    currentList.add(",");
             }
             currentList.add(")");
         } else if (exp instanceof MinusExp){
@@ -210,13 +214,13 @@ public class CodeGenerator {
             currentList.add(")");
         } else if (exp instanceof NewExp){
             NewExp neww =(NewExp) exp;
-            currentList.add(neww.classname);
-            currentList.add("_Constructor");
+            currentList.add(neww.classname+"_Constructor");
             currentList.add("(");
             List<Expression> paramStmtList = neww.parameters;
             for (int i = 0; i < paramStmtList.size(); i++) {
                 generateExpressionCode(paramStmtList.get(i),currentList);
-                currentList.add(",");
+                if(i<paramStmtList.size()-1)//if not the last parameter
+                    currentList.add(",");
             }
             currentList.add(")");
         } else if (exp instanceof ParenthesizedExp){
@@ -233,9 +237,7 @@ public class CodeGenerator {
             currentList.add(")");
         } else if (exp instanceof StringExp){
             StringExp string =(StringExp) exp;
-            currentList.add("\"");
-            currentList.add(string.value);
-            currentList.add("\"");
+            currentList.add("\""+string.value+"\"");
         } else if (exp instanceof ThisExp){
             currentList.add("this.");
         } else if (exp instanceof VariableExp){
@@ -260,7 +262,8 @@ public class CodeGenerator {
             currentList.add("}");
         } else if (s instanceof ForStmt) {
             ForStmt stmt = (ForStmt) s;
-            currentList.add("for(");
+            currentList.add("for");
+            currentList.add("(");
             generateStatementCode(stmt.initializer, currentList);
             currentList.add(";");
             generateExpressionCode(stmt.condition, currentList);
@@ -270,7 +273,8 @@ public class CodeGenerator {
             generateStatementCode(stmt.body, currentList);
         } else if (s instanceof IfElseStmt) {
             IfElseStmt stmt = (IfElseStmt) s;
-            currentList.add("if(");
+            currentList.add("if");
+            currentList.add("(");
             generateExpressionCode(stmt.condition, currentList);
             currentList.add(")");
             generateStatementCode(stmt.trueBranch, currentList);
@@ -278,17 +282,20 @@ public class CodeGenerator {
             generateStatementCode(stmt.falseBranch, currentList);
         } else if (s instanceof IfStmt) {
             IfStmt stmt = (IfStmt) s;
-            currentList.add("if(");
+            currentList.add("if");
+            currentList.add("(");
             generateExpressionCode(stmt.condition, currentList);
             currentList.add(")");
             generateStatementCode(stmt.trueBranch, currentList);
         } else if (s instanceof PrintlnStmt) {
             PrintlnStmt stmt = (PrintlnStmt) s;
-            currentList.add(generatePrintf(stmt.output, currentList));
+            generateExpressionCode(stmt.output, currentList);
+            //currentList.add(generatePrintf(stmt.output, currentList));
             currentList.add("printf(\"\\n\");");
         } else if (s instanceof PrintStmt) {
             PrintStmt stmt = (PrintStmt) s;
-            currentList.add(generatePrintf(stmt.output, currentList));
+            generateExpressionCode(stmt.output, currentList);
+            //currentList.add(generatePrintf(stmt.output, currentList));
         } else if (s instanceof ReturnStmt) {
             ReturnStmt stmt = (ReturnStmt) s;
             currentList.add("return");
@@ -298,7 +305,8 @@ public class CodeGenerator {
             // Do nothing, no return void in C
         } else if (s instanceof WhileStmt) {
             WhileStmt stmt = (WhileStmt) s;
-            currentList.add("while(");
+            currentList.add("while");
+            currentList.add("(");
             generateExpressionCode(stmt.condition, currentList);
             currentList.add(")");
             generateStatementCode(stmt.body, currentList);
@@ -323,10 +331,10 @@ public class CodeGenerator {
         }
     }
 
-    public static String generatePrintf(Expression e, ArrayList<String> currentList) {
-        String output = "printf(\"";
-        // TO-DO
-        output += "\"):";
-        return output;
-    }
+    // public static String generatePrintf(Expression e, ArrayList<String> currentList) {
+    //     String output = "printf(\"";
+    //     // TO-DO
+    //     output += "\"):";
+    //     return output;
+    // }
 }
