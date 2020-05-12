@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sound.sampled.SourceDataLine;
-
 import java.util.Iterator;
 
 import typechecker.types.*;
@@ -127,7 +125,6 @@ public class Typechecker {
         if (!actualReturnType.equals(convertStringToType(function.type))) {
             throw new IllTypedException("return type mismatch");
         }
-        System.out.println("33333333");
     }
 
     public Map<String, Type> typecheckStmts(Map<String, Type> gamma, Map<String, MethodDef> classMethods,
@@ -224,7 +221,9 @@ public class Typechecker {
             Type varType = convertStringToType(asVarDec.type);
             if (!newgamma.containsKey(asVarDec.name)) {
                 if(asVarDec.value == null){
+                    System.out.println(asVarDec.name);
                     newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
+                    return newgamma;
                 }
                 else if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
                    
@@ -256,7 +255,6 @@ public class Typechecker {
 
     public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods,
             final Expression e) throws IllTypedException {
-                System.out.println(e);
         // Check for integers
         if (e instanceof IntegerExp) {
             return new IntType();
