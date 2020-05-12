@@ -15,7 +15,7 @@ public class CodeGenerator {
     private ArrayList<String> Main = new ArrayList<String>();
     private Program myProgram;
 
-    CodeGenerator(Program myProgram) {
+    public CodeGenerator(Program myProgram) {
         this.myProgram = myProgram;
     }
 
@@ -98,7 +98,7 @@ public class CodeGenerator {
 
     private void generateMethodDefCode(MethodDef method, String classname) throws CodeGeneratorException {
         //header
-        FunctionHeaders.add(classname + method.name);
+        FunctionHeaders.add(classname + "_" + method.name);
         FunctionHeaders.add("(");
         FunctionHeaders.add(classname);
         FunctionHeaders.add("this");
@@ -108,7 +108,7 @@ public class CodeGenerator {
         }
         FunctionHeaders.add(")");
 
-        Classes.add(classname + method.name);
+        Classes.add(classname + "_" + method.name);
         Classes.add("(");
         Classes.add(classname);
         Classes.add("this");
@@ -127,7 +127,7 @@ public class CodeGenerator {
         generateStatementCode(mymain.body, Main);
         // handle returns?
     }
-    private void generateExpressionCode(Expression exp, ArrayList<String> currentList) throws CodeGeneratorException{
+    public static void generateExpressionCode(Expression exp, ArrayList<String> currentList) throws CodeGeneratorException{
         if (exp instanceof DivisionExp){
             DivisionExp div =(DivisionExp) exp;
             currentList.add("(");
@@ -229,7 +229,7 @@ public class CodeGenerator {
         }
     }
 
-    public void generateStatementCode(Statement s, ArrayList<String> currentList) throws CodeGeneratorException{
+    public static void generateStatementCode(Statement s, ArrayList<String> currentList) throws CodeGeneratorException{
 
         if (s instanceof BlockStmt) {
             BlockStmt stmt = (BlockStmt) s;
@@ -304,7 +304,7 @@ public class CodeGenerator {
         }
     }
 
-    public String generatePrintf(Expression e, ArrayList<String> currentList) {
+    public static String generatePrintf(Expression e, ArrayList<String> currentList) {
         String output = "printf(\"";
         // TO-DO
         output += "\"):";
