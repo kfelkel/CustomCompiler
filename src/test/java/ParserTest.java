@@ -34,7 +34,7 @@ public class ParserTest {
         // no class defs
         String programString = "Int main(){}";
         Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("Int", "main",
-                new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())));
+                new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
 
         // one class def
@@ -44,7 +44,7 @@ public class ParserTest {
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 new ArrayList<MethodDef>()));
         expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
 
         // two class defs
@@ -57,7 +57,7 @@ public class ParserTest {
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 new ArrayList<MethodDef>()));
         expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
     }
 
@@ -69,7 +69,7 @@ public class ParserTest {
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 new ArrayList<MethodDef>()));
         Program expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
     }
 
@@ -80,26 +80,26 @@ public class ParserTest {
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         ArrayList<MethodDef> methodDefs = new ArrayList<MethodDef>();
         methodDefs.add(new MethodDef("Int", "methodTest", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 methodDefs));
         Program expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
         // two methods
         programString = "class TestClass{constructor(){} Int methodA(){} TestClass methodB(){}} " + "Int main(){}";
         classDefs = new ArrayList<ClassDef>();
         methodDefs = new ArrayList<MethodDef>();
         methodDefs.add(new MethodDef("Int", "methodA", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         methodDefs.add(new MethodDef("TestClass", "methodB", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 methodDefs));
         expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>())));
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
     }
 
