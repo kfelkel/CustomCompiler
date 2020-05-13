@@ -28,17 +28,19 @@ public class Typechecker {
         typecheckProgram(program);
     } // Typechecker
 
-    public Type convertStringToType(String stringtype) {
+    public Type convertStringToType(String stringtype) throws IllTypedException {
         if (stringtype.equals("Int"))
             return new IntType();
-        if (stringtype.equals("Bool"))
+        else if (stringtype.equals("Bool"))
             return new BoolType();
-        if (stringtype.equals("String"))
+        else if (stringtype.equals("String"))
             return new StringType();
-        if (stringtype.equals("Void"))
+        else if (stringtype.equals("Void"))
             return new VoidType();
+        else if (classDefinitions.containsKey(stringtype))
+            return new ObjectType(stringtype); // add objects
         else
-            return null; // add objects
+            throw new IllTypedException("Unrecognized type: " + stringtype);
     }
 
     public static Map<String, Type> makeCopy(final Map<String, Type> gamma) {
@@ -51,7 +53,7 @@ public class Typechecker {
         for (final ClassDef classdef : program.classDefs) {
             typecheckClass(classdef);
         }
-        typecheckFunction(program.entryPoint, new HashMap<String, MethodDef>(),new HashMap<String, Type>());
+        typecheckFunction(program.entryPoint, new HashMap<String, MethodDef>(), new HashMap<String, Type>());
     } // typecheckProgram
 
     public void typecheckClass(final ClassDef classdef) throws IllTypedException {
@@ -165,13 +167,22 @@ public class Typechecker {
                 throw new IllTypedException("Guard in for must be boolean");
             }
             return gamma;
-        } else if (s instanceof IfElseStmt || s instanceof IfStmt) {
+        } else if (s instanceof IfElseStmt) {
             final IfElseStmt asIf = (IfElseStmt) s;
             final Type guardType = typecheckExp(gamma, classMethods, asIf.condition);
             if (guardType instanceof BoolType && asIf.falseBranch != null) {
                 typecheckStmts(gamma, classMethods, asIf.trueBranch);
                 typecheckStmts(gamma, classMethods, asIf.falseBranch);
             } else if (guardType instanceof BoolType) {
+                typecheckStmts(gamma, classMethods, asIf.trueBranch);
+            } else {
+                throw new IllTypedException("Guard in If must be boolean");
+            }
+            return gamma;
+        } else if (s instanceof IfStmt) {
+            final IfStmt asIf = (IfStmt) s;
+            final Type guardType = typecheckExp(gamma, classMethods, asIf.condition);
+            if (guardType instanceof BoolType) {
                 typecheckStmts(gamma, classMethods, asIf.trueBranch);
             } else {
                 throw new IllTypedException("Guard in If must be boolean");
@@ -220,13 +231,11 @@ public class Typechecker {
             final Map<String, Type> newgamma = makeCopy(gamma);
             Type varType = convertStringToType(asVarDec.type);
             if (!newgamma.containsKey(asVarDec.name)) {
-                if(asVarDec.value == null){
-                    System.out.println(asVarDec.name);
+                if (asVarDec.value == null) {
                     newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
                     return newgamma;
-                }
-                else if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
-                   
+                } else if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
+
                     newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));
                     return newgamma;
                 } else {
@@ -239,18 +248,29 @@ public class Typechecker {
         } else if (s instanceof VariableAssignmentStmt) {
             VariableAssignmentStmt asVarDec = (VariableAssignmentStmt) s;
             Type varType = gamma.get(asVarDec.name);
+            Type valueType = typecheckExp(gamma, classMethods, asVarDec.value);
             if (gamma.containsKey(asVarDec.name)) {
-                if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {
+                if (varType.equals(valueType)) {
                     return gamma;
-                } else {
+                } else if (valueType instanceof ObjectType) {
+                    String parentName = asVarDec.name;
+                    String childName = ((ObjectType) valueType).name;
+                    if (classDefinitions.containsKey(parentName) && classDefinitions.containsKey(childName)) {
+                        String childinheritance = classDefinitions.get(childName).parent;
+                        if (parentName.equals(childinheritance))
+                            return gamma;
+                    }
+                } else
                     throw new IllTypedException("Assigning invalid type to variable");
-                }
+
             } else {
                 throw new IllTypedException("Assigning value to nonexistent variable");
             }
-        }else{
-        throw new IllTypedException("Unrecognized statement");}
-            return gamma;
+        } else
+
+            throw new IllTypedException("Unrecognized statement");
+
+        return gamma;
     } // typecheckStmt
 
     public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods,
@@ -273,7 +293,7 @@ public class Typechecker {
             final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);
 
             if (leftType instanceof IntType && rightType instanceof IntType) {
-                return new BoolType();
+                return new IntType();
             } else {
                 throw new IllTypedException("left or right in Plus is not an int");
             }
@@ -402,7 +422,6 @@ public class Typechecker {
 
         }
         throw new IllTypedException("unrecognized expression" + e);
-        
 
     } // typecheckExp
 

@@ -257,4 +257,31 @@ public class TypecheckerTest {
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
                 myTypechecker = new Typechecker(myProgram);
         }
+
+        @Test
+        public void testSubtypingAssignment() throws IllTypedException {
+                /*
+                 * Int main(){ ParentClass a; a = new ChildClass(); return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("ParentClass", "a"));
+                mainStatements.add(new VariableAssignmentStmt("a", new NewExp("ChildClass", new ArrayList<Expression>())));
+
+                ArrayList<VariableDeclarationStmt> fields = new ArrayList<VariableDeclarationStmt>();
+                Constructor constructor = new Constructor(fields, new BlockStmt(new ArrayList<Statement>()));
+                ArrayList<MethodDef> methods = new ArrayList<MethodDef>();
+                ArrayList<ClassDef> classdefs = new ArrayList<ClassDef>();
+                
+                ClassDef parent = new ClassDef("ParentClass", "", fields, constructor, methods);
+                ClassDef child = new ClassDef("ChildClass", "ParentClass", fields, constructor, methods);
+                classdefs.add(parent);
+                classdefs.add(child);
+
+                Program myProgram = new Program(classdefs,
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+
+            
+        }
 }
