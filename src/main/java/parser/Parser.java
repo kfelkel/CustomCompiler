@@ -36,9 +36,9 @@ public class Parser {
 
     public  ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
-        while ((subtokens.get(nextPos) instanceof IntegerToken || subtokens.get(nextPos) instanceof LeftParenToken
-                || subtokens.get(nextPos) instanceof OperatorToken|| subtokens.get(nextPos) instanceof RightParenToken
-                 || subtokens.get(nextPos) instanceof IdentifierToken) && nextPos!=subtokens.size() ){
+
+        while (!(subtokens.get(nextPos) instanceof SemicolonToken) 
+                 && nextPos!=subtokens.size() ){
             nextPos++;
         }
         return new ParseResult<Expression>(parseSubExp(getExp(startPos, nextPos,subtokens)), nextPos);
@@ -58,8 +58,7 @@ public class Parser {
         int ops=0;
         int neg=0;
         int nums=0;
-        System.out.println(Arrays.asList(array));
-
+        System.out.println(Arrays.asList(array));        
         //Comparison Ops
         for(left=0;left<array.size()-1;left++){
             if(array.get(left) instanceof LessThanToken){
@@ -110,14 +109,13 @@ public class Parser {
             }
             
         }
-        ops=ops-neg;
-        System.out.println(ops);
-        System.out.println(nums);
-        if(ops>=nums){
-            throw new ParseException("Missing Int or Variable");
-        }else if(nums>(ops+1)){
-            throw new ParseException("Missing Operation");
-        }
+        //ops=ops-neg;
+
+        // if(ops>=nums){
+        //     throw new ParseException("Missing Int or Variable");
+        // }else if(nums>(ops+1)){
+        //     throw new ParseException("Missing Operation");
+        // }
         //Plus/Minus
         for(left=array.size()-1;left>=0;left--){
             if(array.get(left) instanceof RightParenToken){
@@ -156,10 +154,79 @@ public class Parser {
                 return new ModulusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
             }
         }
+        //New expression
+        int parsenew=0;
+        if(array.get(parsenew) instanceof NewToken && array.size()-1>parsenew){
+            String classname;
+            List<Expression> parameters=new ArrayList<Expression>();
+            parsenew++;
+            if(array.get(parsenew) instanceof ClassKeywordToken && array.size()-1>parsenew){
+                classname=((ClassKeywordToken)array.get(parsenew)).toString();
+                parsenew++;    
+            }else {
+                throw new ParseException("Missing Classname after new keyword");
+            }
+            if(array.get(parsenew) instanceof LeftParenToken && array.size()-1>parsenew){
+                parsenew++;
+            }else {
+                throw new ParseException("Missing LeftParen after classname");
+            }
+            if(array.get(parsenew) instanceof RightParenToken && array.size()-1>parsenew){
+                return new NewExp(classname, parameters);
+            }else{
+                for(int i=parsenew;i<array.size();i++){
+                   
+                    if(array.get(i) instanceof CommaToken ||array.get(i) instanceof RightParenToken){
+                        parameters.add(parseSubExp(getExp(parsenew, i,array)));
+                        parsenew=i+1;
+                    }
+                }
+            }
+            return new NewExp(classname, parameters);
+        }
+        //Methodcall()
+        int parsemethod=0;
+        if(array.get(parsemethod) instanceof IdentifierToken && array.size()-1>parsemethod){
+            String objectName;
+            String name;
+            List<Expression> parameters=new ArrayList<Expression>();
+            objectName=((IdentifierToken)array.get(parsemethod)).toString();
+            parsemethod++;
+            if(array.get(parsemethod) instanceof DotOperatorToken &&array.size()-1>parsemethod){
+                parsemethod++; 
+                name=((IdentifierToken)array.get(parsemethod)).toString();
+                parsemethod++;    
+            }else {
+                throw new ParseException("Missing Identifier after dot operator");
+            }
+            if(array.get(parsemethod) instanceof LeftParenToken && array.size()-1>parsemethod){
+                parsemethod++;
+            }else {
+                throw new ParseException("Missing LeftParen after identifier");
+            }
+            if(array.get(parsemethod) instanceof RightParenToken && array.size()-1>parsemethod){
+                return new MethodCallExp(objectName, name, parameters);
+            }else{
+                for(int i=parsemethod;i<array.size();i++){
+                   
+                    if(array.get(i) instanceof CommaToken ||array.get(i) instanceof RightParenToken){
+                        parameters.add(parseSubExp(getExp(parsemethod, i,array)));
+                        parsemethod=i+1;
+                    }
+                }
+            }
+            return new MethodCallExp(objectName, name, parameters);
+        }
         //Paren
         for(left=array.size()-1;left>0;left--){
             if(array.get(left) instanceof RightParenToken){
                 return new ParenthesizedExp(parseSubExp(getExp(1, array.size()-1,array)));
+            }
+        }
+        //This
+        if(array.get(0) instanceof ThisToken && array.size()-1>0){
+            if(array.get(1) instanceof DotOperatorToken &&array.size()-1>1){
+                return new ThisExp(parseSubExp(getExp(2, array.size(),array)));
             }
         }
         //Negative Int
@@ -174,6 +241,9 @@ public class Parser {
         if(array.size()==1 && array.get(0) instanceof IdentifierToken){
             return new VariableExp((IdentifierToken)array.get(left));
         }
+        if(array.size()==1 && array.get(0) instanceof StringLiteralToken  ){
+            return new StringExp(((StringLiteralToken)array.get(parsemethod)).toString());
+        }
         return null;
     }
     public static void main(String [] args) throws TokenizationException, ParseException {
@@ -181,10 +251,10 @@ public class Parser {
         Token[] tokens;
         Parser myparser;
         
-        mystring = "Int foo(){return x;}";
+        mystring = "new class(x,y);";
         tokens = Lexer.lex(mystring).toArray(new Token[0]);
         myparser = new Parser(tokens);
-        System.out.println(myparser.parseMethodDef(0).result);
+        System.out.println(myparser.parseExp(0).result);
     }
 
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException, TokenizationException {
