@@ -253,24 +253,30 @@ public class Typechecker {
                 if (varType.equals(valueType)) {
                     return gamma;
                 } else if (valueType instanceof ObjectType) {
-                    String parentName = asVarDec.name;
                     String childName = ((ObjectType) valueType).name;
-                    if (classDefinitions.containsKey(parentName) && classDefinitions.containsKey(childName)) {
+
+                    if (classDefinitions.containsKey(childName)) {
                         String childinheritance = classDefinitions.get(childName).parent;
-                        if (parentName.equals(childinheritance))
-                            return gamma;
-                    }
+                        if (childinheritance.length() > 0) {
+                            Type parentType = convertStringToType(childinheritance);
+                            if (varType.equals(parentType)) {
+                                return gamma;
+                            } else
+                                throw new IllTypedException("Assigning invalid type to variable");
+                        } else
+                            throw new IllTypedException("Assigning invalid type to variable");
+                    } else
+                        throw new IllTypedException("Assigning invalid type to variable");
                 } else
                     throw new IllTypedException("Assigning invalid type to variable");
 
             } else {
                 throw new IllTypedException("Assigning value to nonexistent variable");
             }
-        } else
+        }
 
-            throw new IllTypedException("Unrecognized statement");
+        throw new IllTypedException("Unrecognized statement");
 
-        return gamma;
     } // typecheckStmt
 
     public Type typecheckExp(final Map<String, Type> gamma, final Map<String, MethodDef> classMethods,
