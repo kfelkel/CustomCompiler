@@ -58,7 +58,7 @@ public class Parser {
         int ops=0;
         int neg=0;
         int nums=0;
-        System.out.println(Arrays.asList(array));        
+               
         //Comparison Ops
         for(left=0;left<array.size()-1;left++){
             if(array.get(left) instanceof LessThanToken){
@@ -97,10 +97,8 @@ public class Parser {
             if((array.get(i) instanceof MinusToken)){
                 if(i==0){
                     neg++;
-                    System.out.println("Negative token");
                 }else if(array.get(i-1) instanceof OperatorToken){
                     neg++;
-                    System.out.println("Negative token");
                 }
                 
             }
@@ -251,10 +249,10 @@ public class Parser {
         Token[] tokens;
         Parser myparser;
         
-        mystring = "new class(x,y);";
+        mystring = "class TestClass{constructor(){return null;}} Int main(){}";
         tokens = Lexer.lex(mystring).toArray(new Token[0]);
         myparser = new Parser(tokens);
-        System.out.println(myparser.parseExp(0).result);
+        System.out.println(myparser.parseProgram());
     }
 
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException, TokenizationException {
@@ -474,23 +472,27 @@ public class Parser {
         ArrayList<Statement> block = new ArrayList<Statement>();
 
         int nextPos = startPos;
-
+        
         if (tokens[nextPos] instanceof LCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
         }
-        while (!(tokens[nextPos] instanceof RCurlyToken)) {
+        //Something going on here i think
+        while (!(tokens[nextPos] instanceof RCurlyToken)&&!(tokens[nextPos] instanceof ReturnToken)) {
             ParseResult<Statement> result = parseStmt(nextPos);
             block.add(result.result);
             nextPos = result.nextPos;
+        }
+        if(tokens[nextPos] instanceof ReturnToken){
+            return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
         }
         if (tokens[nextPos] instanceof RCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RCurlyToken; received " + tokens[nextPos].toString());
         }
-
+       
         return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
     }
 
@@ -572,6 +574,7 @@ public class Parser {
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
+        
         // get body
         ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
         body = result.result;
@@ -590,6 +593,7 @@ public class Parser {
         Expression returnExp=null;
 
         // get type
+        
         if (tokens[nextPos] instanceof IntKeywordToken) {
             type = "Int";
             nextPos++;
@@ -610,6 +614,7 @@ public class Parser {
                     "Expected token indicating method return type; received " + tokens[nextPos].toString());
         }
         // get method name
+        
         if (tokens[nextPos] instanceof IdentifierToken) {
             name = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
@@ -640,28 +645,34 @@ public class Parser {
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
+        
         // get body/////////////////////////////////////////////////////////////////////////
         ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
         body = result.result;
+        
         nextPos = result.nextPos;
         Statement myStmt = null;
-        if (tokens[nextPos] instanceof ReturnToken) {
-            nextPos++;
-            if (tokens[nextPos] instanceof SemicolonToken) {
+        if(nextPos<tokens.length){
+            
+            if (tokens[nextPos] instanceof ReturnToken) {
                 nextPos++;
-                myStmt = new ReturnVoidStmt();
-                //methodDef.returnlist.add(mystmt);
-            } else {System.out.println("hello");
-                ParseResult<Expression> expressionResult = parseExp(nextPos);
-                returnExp = expressionResult.result;
-                myStmt = new ReturnStmt(expressionResult.result);
-                nextPos = expressionResult.nextPos;
                 if (tokens[nextPos] instanceof SemicolonToken) {
                     nextPos++;
+                    myStmt = new ReturnVoidStmt();
+                    //methodDef.returnlist.add(mystmt);
                 } else {
-                    throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+                    ParseResult<Expression> expressionResult = parseExp(nextPos);
+                    returnExp = expressionResult.result;
+                    myStmt = new ReturnStmt(expressionResult.result);
+                    nextPos = expressionResult.nextPos;
+                    if (tokens[nextPos] instanceof SemicolonToken) {
+                        nextPos++;
+                    } else {
+                        throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+                    }
                 }
             }
+        
         } 
         return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, (BlockStmt)body,returnExp), nextPos);
     }
@@ -723,11 +734,13 @@ public class Parser {
                     "should not have reached here if next token wasn't a ConstructorKeywordToken, but somehow we did");
         }
         // get methods
+        
         while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<MethodDef> result = parseMethodDef(nextPos);
             methods.add(result.result);
             nextPos = result.nextPos;
         }
+        
         if (tokens[nextPos] instanceof RCurlyToken) {
             nextPos++;
         } else {
