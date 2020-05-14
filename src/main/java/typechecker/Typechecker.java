@@ -63,14 +63,6 @@ public class Typechecker {
         ClassDef parentDef = null;
         if (classdef.parent != "") { // Add parent fields to top of class
             parentDef = classDefinitions.get(classdef.parent);
-            for (final VariableDeclarationStmt parameter : parentDef.fields) {
-                if (!variables.containsKey(parameter.name)) {
-                    Type paramType = convertStringToType(parameter.type);
-                    variables.put(parameter.name, paramType);
-                } else {
-                    throw new IllTypedException("Duplicate parameter name");
-                }
-            }
             classdef.fields.addAll(parentDef.fields);
         }
 
@@ -83,7 +75,7 @@ public class Typechecker {
             }
         }
         // check inheritance (child doesnt inherit itself/parent class defined
-        if (classdef.parent != null) {
+        if (classdef.parent != "") {
             if (classdef.className.equals(classdef.parent))
                 throw new IllTypedException("Class inheriting itself");
             if (!classDefinitions.containsKey(classdef.className))
@@ -105,13 +97,6 @@ public class Typechecker {
 
         if (classdef.parent != "") { // Add parent fields to top of class
             parentDef = classDefinitions.get(classdef.parent);
-            for (final MethodDef method : parentDef.methods) {
-                if (!methods.containsKey(method.name)) {
-                    methods.put(method.name, method);
-                } else {
-                    throw new IllTypedException("Duplicate function name");
-                }
-            }
             classdef.methods.addAll(parentDef.methods);
         }
 
@@ -453,6 +438,7 @@ public class Typechecker {
                     }
                     if (fdef != null) {
                         checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);
+                        return convertStringToType(fdef.type);
                     } else {
                         throw new IllTypedException("function does not exist: " + asCall.name);
                     }
