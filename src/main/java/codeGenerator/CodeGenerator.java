@@ -43,7 +43,7 @@ public class CodeGenerator {
         return completeCode;
     }
 
-    private void generateProgramCode() throws CodeGeneratorException {
+    private void generateProgramCode() throws CodeGeneratorException {   
         for (int i = 0; i < myProgram.classDefs.size(); i++) {
             generateClassCode(myProgram.classDefs.get(i));
         }
@@ -51,7 +51,22 @@ public class CodeGenerator {
     }
 
     private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
-        // header
+        for(final ClassDef classdef:Program.classDefs){
+            classDefinitions.put(classdef.className, classdef);
+            if (classdef.parent != "") { // Add parent fields to top of class
+                ClassDef parentDef = classDefinitions.get(classdef.parent);
+                List<VariableDeclarationStmt> childtemp = classdef.fields;
+                classdef.fields = parentDef.fields;
+                classdef.fields.addAll(childtemp);
+            }
+            if(classdef.parent != ""){
+                ClassDef parentDef = classDefinitions.get(classdef.parent);
+                ArrayList<MethodDef> childtemp = classdef.methods;
+                classdef.methods = parentDef.methods;
+                classdef.methods.addAll(childtemp);
+            }
+        }
+        //header
         StructHeaders.add("struct");
         StructHeaders.add(myClass.className);
         StructHeaders.add(";");
@@ -62,22 +77,7 @@ public class CodeGenerator {
             generateStatementCode(myClass.fields.get(i), Classes);
         }
 
-        for (final MethodDef method : myClass.methods) {// add function pointers (type*)(params)
-            Classes.add(method.type);
-            Classes.add("(");
-            Classes.add("*" + myClass.className + "_" + method.name);
-            Classes.add(")");
-            Classes.add("(");
-            Classes.add(myClass.className);
-            Classes.add("this");
-            for (int i = 0; i < method.parameters.size(); i++) {
-                Classes.add(",");
-                generateStatementCode(method.parameters.get(i), Classes);
-            }
-            Classes.add(")");
-        }
-
-        // TO-DO: Deal with parent class
+        //TO-DO: Deal with parent class
         Classes.add("}");
 
         // Constructor
