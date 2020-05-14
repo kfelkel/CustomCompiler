@@ -60,6 +60,20 @@ public class Typechecker {
         // typecheck fields (no duplicates)
         final Map<String, Type> variables = new HashMap<String, Type>();
 
+        ClassDef parentDef = null;
+        if (classdef.parent != "") { // Add parent fields to top of class
+            parentDef = classDefinitions.get(classdef.parent);
+            for (final VariableDeclarationStmt parameter : parentDef.fields) {
+                if (!variables.containsKey(parameter.name)) {
+                    Type paramType = convertStringToType(parameter.type);
+                    variables.put(parameter.name, paramType);
+                } else {
+                    throw new IllTypedException("Duplicate parameter name");
+                }
+            }
+            classdef.fields.addAll(parentDef.fields);
+        }
+
         for (final VariableDeclarationStmt parameter : classdef.fields) {
             if (!variables.containsKey(parameter.name)) {
                 Type paramType = convertStringToType(parameter.type);
@@ -85,8 +99,22 @@ public class Typechecker {
                 throw new IllTypedException("Duplicate parameter name");
             }
         }
+
         // check methods for duplicates
         final Map<String, MethodDef> methods = new HashMap<String, MethodDef>();
+
+        if (classdef.parent != "") { // Add parent fields to top of class
+            parentDef = classDefinitions.get(classdef.parent);
+            for (final MethodDef method : parentDef.methods) {
+                if (!methods.containsKey(method.name)) {
+                    methods.put(method.name, method);
+                } else {
+                    throw new IllTypedException("Duplicate function name");
+                }
+            }
+            classdef.methods.addAll(parentDef.methods);
+        }
+
         for (final MethodDef method : classdef.methods) {
             if (!methods.containsKey(method.name)) {
                 methods.put(method.name, method);
@@ -121,7 +149,6 @@ public class Typechecker {
             }
         } // add check for bad type declaration
 
-        // TO-DO
         final Map<String, Type> finalGamma = typecheckStmts(variables, classMethods, function.body);
         final Type actualReturnType = typecheckExp(finalGamma, classMethods, function.returnExp);
         if (!actualReturnType.equals(convertStringToType(function.type))) {
@@ -413,8 +440,27 @@ public class Typechecker {
                 final MethodDef fdef = classMethods.get(objectName);
                 checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);
                 return convertStringToType(fdef.type);
-            } else if (classDefinitions.containsKey(objectName)) {
-                // TO-DO
+            } else if (gamma.containsKey(objectName)) {
+                final Type tau = gamma.get(objectName);
+                String objectType;
+                if (tau instanceof ObjectType) {
+                    objectType = ((ObjectType) tau).name;
+                    ClassDef classDef = classDefinitions.get(objectType);// use classname to get classdef
+                    MethodDef fdef = null;// verify that classdef contains call
+                    for (final MethodDef method : classDef.methods) {
+                        if (method.name.equals(asCall.name))
+                            fdef = method;
+                    }
+                    if (fdef != null) {
+                        checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);
+                    } else {
+                        throw new IllTypedException("function does not exist: " + asCall.name);
+                    }
+
+                } else {
+                    throw new IllTypedException("function does not exist: " + asCall.name);
+                }
+
             } else {
                 throw new IllTypedException("function does not exist: " + asCall.name);
             }
