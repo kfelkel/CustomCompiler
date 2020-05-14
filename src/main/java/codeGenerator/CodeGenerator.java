@@ -51,19 +51,16 @@ public class CodeGenerator {
     }
 
     private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
-        for(final ClassDef classdef:Program.classDefs){
+        Map<String, ClassDef> classDefinitions = new HashMap<String, ClassDef>();
+        for(final ClassDef classdef : myProgram.classDefs){
             classDefinitions.put(classdef.className, classdef);
             if (classdef.parent != "") { // Add parent fields to top of class
                 ClassDef parentDef = classDefinitions.get(classdef.parent);
-                List<VariableDeclarationStmt> childtemp = classdef.fields;
-                classdef.fields = parentDef.fields;
-                classdef.fields.addAll(childtemp);
+                classdef.fields.addAll(0 , parentDef.fields);
             }
             if(classdef.parent != ""){
                 ClassDef parentDef = classDefinitions.get(classdef.parent);
-                ArrayList<MethodDef> childtemp = classdef.methods;
-                classdef.methods = parentDef.methods;
-                classdef.methods.addAll(childtemp);
+                classdef.methods.addAll(0, parentDef.methods);
             }
         }
         //header
