@@ -307,4 +307,31 @@ public class TypecheckerTest {
                                                 new BlockStmt(mainStatements), new IntegerExp(0)));
                 Typechecker myTypechecker = new Typechecker(myProgram);
         }
+
+        @Test
+        public void testValidPolymorphismMethodCall() throws IllTypedException {
+                /*
+                 * Int main(){ ParentClass a; a = new ChildClass(); return 0;}
+                 */
+                List<Statement> mainStatements = new ArrayList<Statement>();
+                mainStatements.add(new VariableDeclarationStmt("ChildClass", "a", new NewExp("ChildClass", new ArrayList<Expression>())));
+                mainStatements.add(new VariableDeclarationStmt("Int", "x", new MethodCallExp("a", "parentMethod", new ArrayList<Expression>())));
+
+                ArrayList<VariableDeclarationStmt> fields = new ArrayList<VariableDeclarationStmt>();
+                Constructor constructor = new Constructor(fields, new BlockStmt(new ArrayList<Statement>()));
+                ArrayList<MethodDef> methods = new ArrayList<MethodDef>();
+                ArrayList<ClassDef> classdefs = new ArrayList<ClassDef>();
+                ClassDef child = new ClassDef("ChildClass", "ParentClass", fields, constructor, new ArrayList<MethodDef>());
+                MethodDef parentMethod = new MethodDef("Int", "parentMethod", new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0));
+                methods.add(parentMethod);
+                ClassDef parent = new ClassDef("ParentClass", "", fields, constructor, methods);
+
+                classdefs.add(parent);
+                classdefs.add(child);
+
+                Program myProgram = new Program(classdefs,
+                                new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+                                                new BlockStmt(mainStatements), new IntegerExp(0)));
+                Typechecker myTypechecker = new Typechecker(myProgram);
+        }
 }
