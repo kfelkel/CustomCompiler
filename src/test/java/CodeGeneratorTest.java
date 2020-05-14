@@ -3,17 +3,12 @@ import java.util.*;
 import parser.*;
 import parser.statements.*;
 import parser.expressions.*;
-import tokenizer.*;
-import tokenizer.tokens.*;
-import tokenizer.tokens.keywords.*;
-import tokenizer.tokens.operatortokens.*;
+import codeGenerator.*;
 
-import typechecker.*;
-import typechecker.types.*;
+
 import org.junit.Test;
 
-import codeGenerator.CodeGenerator;
-import codeGenerator.CodeGeneratorException;
+
 
 import static org.junit.Assert.*;
 
@@ -140,8 +135,8 @@ public class CodeGeneratorTest {
     }
     @Test
     public void testThisExp() throws CodeGeneratorException{
-        Expression exp = new ThisExp();
-        String expectedString = "this.";
+        Expression exp = new ThisExp(new VariableExp("x"));
+        String expectedString = "this.x";
         expressionHelper(exp, expectedString);
     }
     @Test
