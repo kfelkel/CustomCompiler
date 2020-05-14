@@ -168,8 +168,8 @@ public class Parser {
             String classname;
             List<Expression> parameters = new ArrayList<Expression>();
             parsenew++;
-            if (array.get(parsenew) instanceof ClassKeywordToken && array.size() - 1 > parsenew) {
-                classname = ((ClassKeywordToken) array.get(parsenew)).toString();
+            if (array.get(parsenew) instanceof IdentifierToken && array.size() - 1 > parsenew) {
+                classname = ((IdentifierToken) array.get(parsenew)).name;
                 parsenew++;
             } else {
                 throw new ParseException("Missing Classname after new keyword");
@@ -179,11 +179,10 @@ public class Parser {
             } else {
                 throw new ParseException("Missing LeftParen after classname");
             }
-            if (array.get(parsenew) instanceof RightParenToken && array.size() - 1 > parsenew) {
+            if (array.get(parsenew) instanceof RightParenToken){
                 return new NewExp(classname, parameters);
             } else {
                 for (int i = parsenew; i < array.size(); i++) {
-
                     if (array.get(i) instanceof CommaToken || array.get(i) instanceof RightParenToken) {
                         parameters.add(parseSubExp(getExp(parsenew, i, array)));
                         parsenew = i + 1;
@@ -198,11 +197,11 @@ public class Parser {
             String objectName;
             String name;
             List<Expression> parameters = new ArrayList<Expression>();
-            objectName = ((IdentifierToken) array.get(parsemethod)).toString();
+            objectName = ((IdentifierToken) array.get(parsemethod)).name;
             parsemethod++;
             if (array.get(parsemethod) instanceof DotOperatorToken && array.size() - 1 > parsemethod) {
                 parsemethod++;
-                name = ((IdentifierToken) array.get(parsemethod)).toString();
+                name = ((IdentifierToken) array.get(parsemethod)).name;
                 parsemethod++;
             } else {
                 throw new ParseException("Missing Identifier after dot operator");
@@ -250,20 +249,9 @@ public class Parser {
             return new VariableExp((IdentifierToken) array.get(left));
         }
         if (array.size() == 1 && array.get(0) instanceof StringLiteralToken) {
-            return new StringExp(((StringLiteralToken) array.get(parsemethod)).toString());
+            return new StringExp(((StringLiteralToken) array.get(parsemethod)).string);
         }
         return null;
-    }
-
-    public static void main(String[] args) throws TokenizationException, ParseException {
-        String mystring;
-        Token[] tokens;
-        Parser myparser;
-
-        mystring = "class TestClass{constructor(){return null;}} Int main(){}";
-        tokens = Lexer.lex(mystring).toArray(new Token[0]);
-        myparser = new Parser(tokens);
-        System.out.println(myparser.parseProgram());
     }
 
     public ParseResult<Statement> parseStmt(final int startPos) throws ParseException, TokenizationException {
@@ -528,7 +516,7 @@ public class Parser {
         int nextPos = startPos;
 
         if (tokens[nextPos] instanceof IntKeywordToken) {
-            type = "Int";
+            type = "int";
             nextPos++;
         } else if (tokens[nextPos] instanceof BoolKeywordToken) {
             type = "Bool";
@@ -618,7 +606,7 @@ public class Parser {
         // get type
 
         if (tokens[nextPos] instanceof IntKeywordToken) {
-            type = "Int";
+            type = "int";
             nextPos++;
         } else if (tokens[nextPos] instanceof BoolKeywordToken) {
             type = "Bool";

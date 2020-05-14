@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="5" failures="0" name="ParserTest" time="0.005" errors="0" skipped="0">
+<testsuite tests="20" failures="0" name="ParserTest" time="0.009" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="D:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
@@ -65,9 +65,24 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="ParserTest" name="InheritanceTest" time="0.002"/>
-  <testcase classname="ParserTest" name="MethodDefTest" time="0"/>
+  <testcase classname="ParserTest" name="testLessThanOrEqualExp" time="0.001"/>
+  <testcase classname="ParserTest" name="testModulusExp" time="0"/>
+  <testcase classname="ParserTest" name="testGreaterThanExp" time="0.002"/>
+  <testcase classname="ParserTest" name="testNewExpExceptionMissingParens" time="0"/>
+  <testcase classname="ParserTest" name="testThisMethodCallExp" time="0"/>
+  <testcase classname="ParserTest" name="testGreaterThanOrEqualExp" time="0"/>
+  <testcase classname="ParserTest" name="testNegativeNumberExp" time="0.001"/>
+  <testcase classname="ParserTest" name="InheritanceTest" time="0"/>
+  <testcase classname="ParserTest" name="MethodDefTest" time="0.001"/>
+  <testcase classname="ParserTest" name="testStringExp" time="0"/>
+  <testcase classname="ParserTest" name="testMethodCallExp" time="0.001"/>
+  <testcase classname="ParserTest" name="testNoParenMethodCallExp" time="0"/>
   <testcase classname="ParserTest" name="testMainOnly" time="0"/>
-  <testcase classname="ParserTest" name="testParseExpression" time="0.003"/>
+  <testcase classname="ParserTest" name="testEqualEqualExp" time="0"/>
+  <testcase classname="ParserTest" name="testUnevenParensException" time="0.001"/>
+  <testcase classname="ParserTest" name="testParseExpression" time="0.001"/>
+  <testcase classname="ParserTest" name="testNewExpExceptionMissingName" time="0"/>
+  <testcase classname="ParserTest" name="testNewExp" time="0.001"/>
+  <testcase classname="ParserTest" name="testLessThanExp" time="0"/>
   <testcase classname="ParserTest" name="ClassDefTest" time="0"/>
 </testsuite>

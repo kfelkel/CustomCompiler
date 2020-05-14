@@ -15,18 +15,18 @@ public class MethodCallExp implements Expression{
 <span class="fc" id="L15">    }</span>
 
     public String toString() {
-<span class="nc" id="L18">        return &quot;MethodCallExp(&quot; + objectName + &quot;, &quot; + name + &quot;, &quot; + parametersString() + &quot;)&quot;;     </span>
+<span class="fc" id="L18">        return &quot;MethodCallExp(&quot; + objectName + &quot;, &quot; + name + &quot;, &quot; + parametersString() + &quot;)&quot;;     </span>
     }
 
     private String parametersString(){
-<span class="nc" id="L22">        String ret = &quot;&quot;;</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">        if(parameters.size() &gt;= 1){</span>
-<span class="nc" id="L24">            ret += parameters.get(0).toString();</span>
+<span class="fc" id="L22">        String ret = &quot;&quot;;</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if(parameters.size() &gt;= 1){</span>
+<span class="fc" id="L24">            ret += parameters.get(0).toString();</span>
         }
-<span class="nc bnc" id="L26" title="All 2 branches missed.">        for(int i = 1; i &lt; parameters.size(); i++){</span>
-<span class="nc" id="L27">            ret += &quot;, &quot; + parameters.get(i).toString();</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for(int i = 1; i &lt; parameters.size(); i++){</span>
+<span class="fc" id="L27">            ret += &quot;, &quot; + parameters.get(i).toString();</span>
         }
-<span class="nc" id="L29">        return ret;</span>
+<span class="fc" id="L29">        return ret;</span>
     }
 
     public boolean equals(final Expression exp) {

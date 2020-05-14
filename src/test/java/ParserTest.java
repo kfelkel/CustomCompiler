@@ -20,19 +20,37 @@ public class ParserTest {
         //System.out.println(Arrays.toString(tokenArray));
         Parser myparser = new Parser(tokenArray);
         Program actual = myparser.parseProgram();
-        // for some reason, comparing the toString()s was working, but comparing the
-        // objects themselves was not
-        // even though all the .equals() method is doing for those objects is comparing
-        // the toString()s
-        // assertEquals(expected, actual);
-        //assert(expected.equals(actual));
         assertEquals(expected.toString(), actual.toString());
     }
+
+    public void testStatementParse(String stmtString, Statement expected) throws TokenizationException, ParseException {
+        String programString = "int main(){" + stmtString + " return 0; }";
+        List<Token> tokens = Lexer.lex(programString);
+        Token[] tokenArray = tokens.toArray(new Token[tokens.size()]);
+        //System.out.println(Arrays.toString(tokenArray));
+        Parser myparser = new Parser(tokenArray);
+        Program program = myparser.parseProgram();
+        Statement actual = program.entryPoint.body.body.get(0);
+        assertEquals(expected.toString(), actual.toString());
+    }
+
+    public void testExpressionParse(String expString, Expression expected) throws TokenizationException, ParseException {
+        String programString = "int main(){ return " + expString + "; }";
+        List<Token> tokens = Lexer.lex(programString);
+        Token[] tokenArray = tokens.toArray(new Token[tokens.size()]);
+        //System.out.println(Arrays.toString(tokenArray));
+        Parser myparser = new Parser(tokenArray);
+        Program program = myparser.parseProgram();
+        Expression actual = program.entryPoint.returnExp;
+        assertEquals(expected.toString(), actual.toString());
+    }
+
+
     @Test
     public void testMainOnly()throws TokenizationException, ParseException {
             // no class defs
-            String programString = "Int main(){ return 0;}";
-            Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("Int", "main",
+            String programString = "int main(){ return 0;}";
+            Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("int", "main",
                     new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
             testParse(programString, expected);
     }
@@ -43,17 +61,17 @@ public class ParserTest {
             Program expected;
 
         // one class def
-        programString = "class TestClass{constructor(){}}" + "Int main(){return 0;}";
+        programString = "class TestClass{constructor(){}}" + "int main(){return 0;}";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 new ArrayList<MethodDef>()));
-        expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+        expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
 
         // // two class defs
-        // programString = "class TestClassA{constructor(){}} class TestClassB{constructor(){}} " + "Int main(){return 0;}";
+        // programString = "class TestClassA{constructor(){}} class TestClassB{constructor(){}} " + "int main(){return 0;}";
         // classDefs = new ArrayList<ClassDef>();
         // classDefs.add(new ClassDef("TestClassA", new ArrayList<VariableDeclarationStmt>(),
         //         new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
@@ -61,19 +79,19 @@ public class ParserTest {
         // classDefs.add(new ClassDef("TestClassB", new ArrayList<VariableDeclarationStmt>(),
         //         new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
         //         new ArrayList<MethodDef>()));
-        // expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+        // expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
         //         new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         // testParse(programString, expected);
     }
 
     @Test
     public void InheritanceTest() throws TokenizationException, ParseException {
-        String programString = "class TestClass:ParentClass{constructor(){}} " + "Int main(){ return 0; }";
+        String programString = "class TestClass:ParentClass{constructor(){}} " + "int main(){ return 0; }";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         classDefs.add(new ClassDef("TestClass", "ParentClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 new ArrayList<MethodDef>()));
-        Program expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+        Program expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
     }
@@ -81,36 +99,36 @@ public class ParserTest {
     @Test
     public void MethodDefTest() throws TokenizationException, ParseException {
         // one method
-        String programString = "class TestClass{constructor(){} Int methodTest(){ return 0;}} " + "Int main(){ return 0;}";
+        String programString = "class TestClass{constructor(){} int methodTest(){ return 0;}} " + "int main(){ return 0;}";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         ArrayList<MethodDef> methodDefs = new ArrayList<MethodDef>();
-        methodDefs.add(new MethodDef("Int", "methodTest", new ArrayList<VariableDeclarationStmt>(),
+        methodDefs.add(new MethodDef("int", "methodTest", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 methodDefs));
-        Program expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+        Program expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
         // two methods
-        programString = "class TestClass{constructor(){} Int methodA(){return 0;} TestClass methodB(){return 0;}} " + "Int main(){return 0;}";
+        programString = "class TestClass{constructor(){} int methodA(){return 0;} TestClass methodB(){return 0;}} " + "int main(){return 0;}";
         classDefs = new ArrayList<ClassDef>();
         methodDefs = new ArrayList<MethodDef>();
-        methodDefs.add(new MethodDef("Int", "methodA", new ArrayList<VariableDeclarationStmt>(),
+        methodDefs.add(new MethodDef("int", "methodA", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         methodDefs.add(new MethodDef("TestClass", "methodB", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 methodDefs));
-        expected = new Program(classDefs, new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(),
+        expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
     }
 
 //     @Test
 //     public void HelloWorldTest() throws TokenizationException, ParseException {
-//         String programString = "Int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
+//         String programString = "int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
 //                 + ")";
 //         ArrayList<Statement> stmtList = new ArrayList<Statement>();
 //         stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
@@ -118,7 +136,7 @@ public class ParserTest {
 //         stmtList.add(new ReturnStmt(new IntegerExp(0)));
 //         BlockStmt mainBody = new BlockStmt(stmtList);
 //         Program expected = new Program(new ArrayList<ClassDef>(),
-//                 new MethodDef("Int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
+//                 new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
 
 //         List<Token> tokens = Lexer.lex(programString);
 
@@ -200,4 +218,77 @@ public class ParserTest {
         assert (actual.equals(expected));
         
     }
+
+    @Test(expected = ParseException.class)
+    public void testUnevenParensException()throws TokenizationException, ParseException{
+        testExpressionParse("((5)", null);
+    }
+    @Test
+    public void testLessThanExp()throws TokenizationException, ParseException{
+        testExpressionParse("5<3", new LessThanExp(new IntegerExp(5), new IntegerExp(3)));
+    }
+    @Test
+    public void testLessThanOrEqualExp()throws TokenizationException, ParseException{
+        testExpressionParse("5<=3", new LessThanOrEqualExp(new IntegerExp(5), new IntegerExp(3)));
+    }
+    @Test
+    public void testGreaterThanExp()throws TokenizationException, ParseException{
+        testExpressionParse("5>3", new GreaterThanExp(new IntegerExp(5), new IntegerExp(3)));
+    }
+    @Test
+    public void testGreaterThanOrEqualExp()throws TokenizationException, ParseException{
+        testExpressionParse("5>=3", new GreaterThanOrEqualExp(new IntegerExp(5), new IntegerExp(3)));
+    }
+    @Test
+    public void testEqualEqualExp()throws TokenizationException, ParseException{
+        testExpressionParse("5==3", new EqualEqualExp(new IntegerExp(5), new IntegerExp(3)));
+    }
+    @Test
+    public void testModulusExp()throws TokenizationException, ParseException{
+        testExpressionParse("5%3", new ModulusExp(new IntegerExp(5), new IntegerExp(3)));
+    }
+    @Test
+    public void testNewExp()throws TokenizationException, ParseException{
+        List<Expression> params = new ArrayList<Expression>();
+        params.add(new IntegerExp(5));
+        params.add(new IntegerExp(3));
+        testExpressionParse("new Class(5,3)", new NewExp("Class", params));
+    }
+    @Test(expected = ParseException.class)
+    public void testNewExpExceptionMissingName()throws TokenizationException, ParseException{
+        List<Expression> params = new ArrayList<Expression>();
+        testExpressionParse("new()", new NewExp("Class", params));
+    }
+    @Test(expected = ParseException.class)
+    public void testNewExpExceptionMissingParens() throws TokenizationException, ParseException{
+        testExpressionParse("new Class 5", new NewExp("Class", new ArrayList<Expression>()));
+    }
+    @Test
+    public void testMethodCallExp()throws TokenizationException, ParseException{
+        List<Expression> params = new ArrayList<Expression>();
+        params.add(new IntegerExp(5));
+        MethodCallExp callExp = new MethodCallExp("obj", "method", params);
+        testExpressionParse("obj.method(5)", callExp);
+    }
+    @Test(expected = ParseException.class)
+    public void testNoParenMethodCallExp()throws TokenizationException, ParseException{
+        List<Expression> params = new ArrayList<Expression>();
+        params.add(new IntegerExp(5));
+        MethodCallExp callExp = new MethodCallExp("obj", "method", params);
+        testExpressionParse("obj.method 5)", callExp);
+    }
+    @Test
+    public void testThisMethodCallExp()throws TokenizationException, ParseException{
+        ThisExp callExp = new ThisExp(new VariableExp("name"));
+        testExpressionParse("this.name", callExp);
+    }
+    @Test
+    public void testStringExp()throws TokenizationException, ParseException{
+        testExpressionParse("\"hello\"", new StringExp("hello"));
+    }
+    @Test
+    public void testNegativeNumberExp()throws TokenizationException, ParseException{
+        testExpressionParse("-3", new IntegerExp(-3));
+    }
+
 }

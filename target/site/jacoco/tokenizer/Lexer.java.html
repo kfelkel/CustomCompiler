@@ -99,7 +99,7 @@ import tokenizer.tokens.operatortokens.*;
 <span class="fc" id="L99">                result.add(new ModulusToken());</span>
 <span class="fc" id="L100">                i++;</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">            } else if (input.charAt(i) == '&lt;') {</span>
-<span class="pc bpc" id="L102" title="1 of 4 branches missed.">                if (i + 1 &lt; input.length() &amp;&amp; input.charAt(i + 1) == '=') {</span>
+<span class="fc bfc" id="L102" title="All 4 branches covered.">                if (i + 1 &lt; input.length() &amp;&amp; input.charAt(i + 1) == '=') {</span>
 <span class="fc" id="L103">                    result.add(new LessThanOrEqualToken());</span>
 <span class="fc" id="L104">                    i++;</span>
 <span class="fc" id="L105">                    i++;</span>
@@ -108,7 +108,7 @@ import tokenizer.tokens.operatortokens.*;
 <span class="fc" id="L108">                    i++;</span>
                 }
 <span class="fc bfc" id="L110" title="All 2 branches covered.">            } else if (input.charAt(i) == '&gt;') {</span>
-<span class="pc bpc" id="L111" title="1 of 4 branches missed.">                if (i + 1 &lt; input.length() &amp;&amp; input.charAt(i + 1) == '=') {</span>
+<span class="fc bfc" id="L111" title="All 4 branches covered.">                if (i + 1 &lt; input.length() &amp;&amp; input.charAt(i + 1) == '=') {</span>
 <span class="fc" id="L112">                    result.add(new GreaterThanOrEqualToken());</span>
 <span class="fc" id="L113">                    i++;</span>
 <span class="fc" id="L114">                    i++;</span>

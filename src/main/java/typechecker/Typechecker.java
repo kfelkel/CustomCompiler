@@ -29,7 +29,7 @@ public class Typechecker {
     } // Typechecker
 
     public Type convertStringToType(String stringtype) throws IllTypedException {
-        if (stringtype.equals("Int"))
+        if (stringtype.equals("int"))
             return new IntType();
         else if (stringtype.equals("Bool"))
             return new BoolType();

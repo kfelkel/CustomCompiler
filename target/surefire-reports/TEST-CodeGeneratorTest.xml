@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="29" failures="0" name="CodeGeneratorTest" time="0.03" errors="0" skipped="0">
+<testsuite tests="29" failures="0" name="CodeGeneratorTest" time="0.037" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="D:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
@@ -65,20 +65,20 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="CodeGeneratorTest" name="testLessThanOrEqualExp" time="0.011"/>
-  <testcase classname="CodeGeneratorTest" name="testThisExp" time="0.005"/>
+  <testcase classname="CodeGeneratorTest" name="testLessThanOrEqualExp" time="0.012"/>
+  <testcase classname="CodeGeneratorTest" name="testThisExp" time="0.004"/>
   <testcase classname="CodeGeneratorTest" name="testModulusExp" time="0.001"/>
   <testcase classname="CodeGeneratorTest" name="testWhileStnt" time="0.004"/>
-  <testcase classname="CodeGeneratorTest" name="testPrintStmt" time="0"/>
-  <testcase classname="CodeGeneratorTest" name="testForStmt" time="0.002"/>
-  <testcase classname="CodeGeneratorTest" name="testMultiplicationExp" time="0.001"/>
-  <testcase classname="CodeGeneratorTest" name="testGreaterThanExp" time="0"/>
-  <testcase classname="CodeGeneratorTest" name="testPlusExp" time="0"/>
+  <testcase classname="CodeGeneratorTest" name="testPrintStmt" time="0.001"/>
+  <testcase classname="CodeGeneratorTest" name="testForStmt" time="0.005"/>
+  <testcase classname="CodeGeneratorTest" name="testMultiplicationExp" time="0"/>
+  <testcase classname="CodeGeneratorTest" name="testGreaterThanExp" time="0.001"/>
+  <testcase classname="CodeGeneratorTest" name="testPlusExp" time="0.001"/>
   <testcase classname="CodeGeneratorTest" name="testMinusExp" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testParenthesizedExp" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testGreaterThanOrEqualExp" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testPrintlnStmt" time="0"/>
-  <testcase classname="CodeGeneratorTest" name="testReturnVoidStmt" time="0"/>
+  <testcase classname="CodeGeneratorTest" name="testReturnVoidStmt" time="0.001"/>
   <testcase classname="CodeGeneratorTest" name="TestMethodCallExp" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testStringExp" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testVariableAssignmentStmt" time="0"/>
@@ -88,10 +88,10 @@
   <testcase classname="CodeGeneratorTest" name="testDivExp" time="0.001"/>
   <testcase classname="CodeGeneratorTest" name="testIfStmt" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testEmptyBlockStmt" time="0"/>
-  <testcase classname="CodeGeneratorTest" name="testBlockStmt" time="0.001"/>
+  <testcase classname="CodeGeneratorTest" name="testBlockStmt" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testVariableDeclarationStmt" time="0"/>
   <testcase classname="CodeGeneratorTest" name="testNewExp" time="0"/>
-  <testcase classname="CodeGeneratorTest" name="testLessThanExp" time="0.001"/>
-  <testcase classname="CodeGeneratorTest" name="testVariableExp" time="0"/>
-  <testcase classname="CodeGeneratorTest" name="testPolymorphismMethodCall" time="0.002"/>
+  <testcase classname="CodeGeneratorTest" name="testLessThanExp" time="0"/>
+  <testcase classname="CodeGeneratorTest" name="testVariableExp" time="0.001"/>
+  <testcase classname="CodeGeneratorTest" name="testPolymorphismMethodCall" time="0.004"/>
 </testsuite>

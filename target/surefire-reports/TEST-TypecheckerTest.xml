@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="13" failures="0" name="TypecheckerTest" time="0.006" errors="0" skipped="0">
+<testsuite tests="13" failures="0" name="TypecheckerTest" time="0" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="D:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
@@ -65,9 +65,9 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="TypecheckerTest" name="testValidPrimitiveAssignment" time="0.001"/>
-  <testcase classname="TypecheckerTest" name="testInvalidPrimitiveAssignment" time="0.003"/>
-  <testcase classname="TypecheckerTest" name="testPrintStatements" time="0.001"/>
+  <testcase classname="TypecheckerTest" name="testValidPrimitiveAssignment" time="0"/>
+  <testcase classname="TypecheckerTest" name="testInvalidPrimitiveAssignment" time="0"/>
+  <testcase classname="TypecheckerTest" name="testPrintStatements" time="0"/>
   <testcase classname="TypecheckerTest" name="testSimplestProgram" time="0"/>
   <testcase classname="TypecheckerTest" name="testInvalidPrimitiveDeclaration" time="0"/>
   <testcase classname="TypecheckerTest" name="testValidPolymorphismMethodCall" time="0"/>
@@ -75,7 +75,7 @@
   <testcase classname="TypecheckerTest" name="testForLoops" time="0"/>
   <testcase classname="TypecheckerTest" name="testValidSubtypingAssignment" time="0"/>
   <testcase classname="TypecheckerTest" name="testValidPrimitiveDeclaration" time="0"/>
-  <testcase classname="TypecheckerTest" name="testIfElse" time="0.001"/>
+  <testcase classname="TypecheckerTest" name="testIfElse" time="0"/>
   <testcase classname="TypecheckerTest" name="testInherit" time="0"/>
   <testcase classname="TypecheckerTest" name="testInvalidSubtypingAssignment" time="0"/>
 </testsuite>
