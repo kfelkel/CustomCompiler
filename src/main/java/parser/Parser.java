@@ -15,16 +15,15 @@ import parser.statements.*;
 
 public class Parser {
 
-    private  Token[] tokens;
-    private  List<Token> subtokens;
-    
+    private Token[] tokens;
+    private List<Token> subtokens;
+
     public Parser(Token[] tokens) {
         this.tokens = tokens;
         this.subtokens = new ArrayList<Token>(Arrays.asList(tokens));
     }
 
-
-    public  class ParseResult<A> {
+    public class ParseResult<A> {
         public final A result;
         public final int nextPos;
 
@@ -34,221 +33,233 @@ public class Parser {
         }
     }
 
-    public  ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
+    public ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
 
-        while (!(subtokens.get(nextPos) instanceof SemicolonToken) 
-                 && nextPos!=subtokens.size() ){
+        while (!(subtokens.get(nextPos) instanceof SemicolonToken) && nextPos != subtokens.size()) {
             nextPos++;
         }
-        return new ParseResult<Expression>(parseSubExp(getExp(startPos, nextPos,subtokens)), nextPos);
+        return new ParseResult<Expression>(parseSubExp(getExp(startPos, nextPos, subtokens)), nextPos);
     }
-    public ArrayList<Token> getExp(int left,int right, List<Token> array) {
+
+    public ArrayList<Token> getExp(int left, int right, List<Token> array) {
         ArrayList<Token> subExp = new ArrayList<Token>();
-        while(left!=right){
+        while (left != right) {
             subExp.add(array.get(left));
             left++;
         }
-        return(subExp);
+        return (subExp);
     }
-    public  Expression parseSubExp(ArrayList<Token> array) throws ParseException, TokenizationException {
-        int right = array.size()-1;
-        int left = array.size()-1;
+
+    public Expression parseSubExp(ArrayList<Token> array) throws ParseException, TokenizationException {
+        int right = array.size() - 1;
+        int left = array.size() - 1;
         int paren = 0;
-        int ops=0;
-        int neg=0;
-        int nums=0;
-               
-        //Comparison Ops
-        for(left=0;left<array.size()-1;left++){
-            if(array.get(left) instanceof LessThanToken){
-                return new LessThanExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+        int ops = 0;
+        int neg = 0;
+        int nums = 0;
+
+        // Comparison Ops
+        for (left = 0; left < array.size() - 1; left++) {
+            if (array.get(left) instanceof LessThanToken) {
+                return new LessThanExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof GreaterThanToken){
-                return new GreaterThanExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof GreaterThanToken) {
+                return new GreaterThanExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof LessThanOrEqualToken){
-                return new LessThanOrEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof LessThanOrEqualToken) {
+                return new LessThanOrEqualExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof GreaterThanOrEqualToken){
-                return new GreaterThanOrEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof GreaterThanOrEqualToken) {
+                return new GreaterThanOrEqualExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof EqualEqualToken){
-                return new EqualEqualExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof EqualEqualToken) {
+                return new EqualEqualExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
         }
-        //find even amount of Parens
-        for(int i=array.size()-1;i>=0;i--) {   
-            if(array.get(i) instanceof RightParenToken){
+        // find even amount of Parens
+        for (int i = array.size() - 1; i >= 0; i--) {
+            if (array.get(i) instanceof RightParenToken) {
                 paren++;
             }
-            if(array.get(i) instanceof LeftParenToken){
+            if (array.get(i) instanceof LeftParenToken) {
                 paren--;
             }
         }
-        if(paren%2!=0){
+        if (paren % 2 != 0) {
             throw new ParseException("Missing Parentheses");
         }
-        //Check for missing ops or variables
-        for(int i=array.size()-1;i>=0;i--) {   
-            if(array.get(i) instanceof IntegerToken ||array.get(i) instanceof IdentifierToken){
+        // Check for missing ops or variables
+        for (int i = array.size() - 1; i >= 0; i--) {
+            if (array.get(i) instanceof IntegerToken || array.get(i) instanceof IdentifierToken) {
                 nums++;
             }
-            if((array.get(i) instanceof MinusToken)){
-                if(i==0){
+            if ((array.get(i) instanceof MinusToken)) {
+                if (i == 0) {
                     neg++;
-                }else if(array.get(i-1) instanceof OperatorToken){
+                } else if (array.get(i - 1) instanceof OperatorToken) {
                     neg++;
                 }
-                
+
             }
-            if(array.get(i) instanceof OperatorToken){
+            if (array.get(i) instanceof OperatorToken) {
                 ops++;
             }
-            
+
         }
-        //ops=ops-neg;
+        // ops=ops-neg;
 
         // if(ops>=nums){
-        //     throw new ParseException("Missing Int or Variable");
+        // throw new ParseException("Missing Int or Variable");
         // }else if(nums>(ops+1)){
-        //     throw new ParseException("Missing Operation");
+        // throw new ParseException("Missing Operation");
         // }
-        //Plus/Minus
-        for(left=array.size()-1;left>=0;left--){
-            if(array.get(left) instanceof RightParenToken){
+        // Plus/Minus
+        for (left = array.size() - 1; left >= 0; left--) {
+            if (array.get(left) instanceof RightParenToken) {
                 paren++;
             }
-            if(array.get(left) instanceof LeftParenToken){
+            if (array.get(left) instanceof LeftParenToken) {
                 paren--;
             }
-            if(array.get(left) instanceof PlusToken && paren==0){
-                return new PlusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof PlusToken && paren == 0) {
+                return new PlusExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof MinusToken && paren==0 && left!=0){
-                if(array.get(left-1) instanceof OperatorToken){
-                   
-                }else{
-                    return new MinusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof MinusToken && paren == 0 && left != 0) {
+                if (array.get(left - 1) instanceof OperatorToken) {
+
+                } else {
+                    return new MinusExp(parseSubExp(getExp(0, left, array)),
+                            parseSubExp(getExp(left + 1, right + 1, array)));
                 }
-                
+
             }
         }
-        //Mult/Divide
-        for(left=array.size()-1;left>=0;left--){
-            if(array.get(left) instanceof RightParenToken){
-                paren+=1;
+        // Mult/Divide
+        for (left = array.size() - 1; left >= 0; left--) {
+            if (array.get(left) instanceof RightParenToken) {
+                paren += 1;
             }
-            if(array.get(left) instanceof LeftParenToken){
+            if (array.get(left) instanceof LeftParenToken) {
                 paren--;
             }
-            if(array.get(left) instanceof MultiplicationToken && paren==0 ){
-                return new MultiplicationExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof MultiplicationToken && paren == 0) {
+                return new MultiplicationExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof DivisionToken && paren==0){
-                return new DivisionExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof DivisionToken && paren == 0) {
+                return new DivisionExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
-            if(array.get(left) instanceof ModulusToken && paren==0 ){
-                return new ModulusExp(parseSubExp(getExp(0, left,array)), parseSubExp(getExp(left+1, right+1,array)));
+            if (array.get(left) instanceof ModulusToken && paren == 0) {
+                return new ModulusExp(parseSubExp(getExp(0, left, array)),
+                        parseSubExp(getExp(left + 1, right + 1, array)));
             }
         }
-        //New expression
-        int parsenew=0;
-        if(array.get(parsenew) instanceof NewToken && array.size()-1>parsenew){
+        // New expression
+        int parsenew = 0;
+        if (array.get(parsenew) instanceof NewToken && array.size() - 1 > parsenew) {
             String classname;
-            List<Expression> parameters=new ArrayList<Expression>();
+            List<Expression> parameters = new ArrayList<Expression>();
             parsenew++;
-            if(array.get(parsenew) instanceof ClassKeywordToken && array.size()-1>parsenew){
-                classname=((ClassKeywordToken)array.get(parsenew)).toString();
-                parsenew++;    
-            }else {
+            if (array.get(parsenew) instanceof ClassKeywordToken && array.size() - 1 > parsenew) {
+                classname = ((ClassKeywordToken) array.get(parsenew)).toString();
+                parsenew++;
+            } else {
                 throw new ParseException("Missing Classname after new keyword");
             }
-            if(array.get(parsenew) instanceof LeftParenToken && array.size()-1>parsenew){
+            if (array.get(parsenew) instanceof LeftParenToken && array.size() - 1 > parsenew) {
                 parsenew++;
-            }else {
+            } else {
                 throw new ParseException("Missing LeftParen after classname");
             }
-            if(array.get(parsenew) instanceof RightParenToken && array.size()-1>parsenew){
+            if (array.get(parsenew) instanceof RightParenToken && array.size() - 1 > parsenew) {
                 return new NewExp(classname, parameters);
-            }else{
-                for(int i=parsenew;i<array.size();i++){
-                   
-                    if(array.get(i) instanceof CommaToken ||array.get(i) instanceof RightParenToken){
-                        parameters.add(parseSubExp(getExp(parsenew, i,array)));
-                        parsenew=i+1;
+            } else {
+                for (int i = parsenew; i < array.size(); i++) {
+
+                    if (array.get(i) instanceof CommaToken || array.get(i) instanceof RightParenToken) {
+                        parameters.add(parseSubExp(getExp(parsenew, i, array)));
+                        parsenew = i + 1;
                     }
                 }
             }
             return new NewExp(classname, parameters);
         }
-        //Methodcall()
-        int parsemethod=0;
-        if(array.get(parsemethod) instanceof IdentifierToken && array.size()-1>parsemethod){
+        // Methodcall()
+        int parsemethod = 0;
+        if (array.get(parsemethod) instanceof IdentifierToken && array.size() - 1 > parsemethod) {
             String objectName;
             String name;
-            List<Expression> parameters=new ArrayList<Expression>();
-            objectName=((IdentifierToken)array.get(parsemethod)).toString();
+            List<Expression> parameters = new ArrayList<Expression>();
+            objectName = ((IdentifierToken) array.get(parsemethod)).toString();
             parsemethod++;
-            if(array.get(parsemethod) instanceof DotOperatorToken &&array.size()-1>parsemethod){
-                parsemethod++; 
-                name=((IdentifierToken)array.get(parsemethod)).toString();
-                parsemethod++;    
-            }else {
+            if (array.get(parsemethod) instanceof DotOperatorToken && array.size() - 1 > parsemethod) {
+                parsemethod++;
+                name = ((IdentifierToken) array.get(parsemethod)).toString();
+                parsemethod++;
+            } else {
                 throw new ParseException("Missing Identifier after dot operator");
             }
-            if(array.get(parsemethod) instanceof LeftParenToken && array.size()-1>parsemethod){
+            if (array.get(parsemethod) instanceof LeftParenToken && array.size() - 1 > parsemethod) {
                 parsemethod++;
-            }else {
+            } else {
                 throw new ParseException("Missing LeftParen after identifier");
             }
-            if(array.get(parsemethod) instanceof RightParenToken && array.size()-1>parsemethod){
+            if (array.get(parsemethod) instanceof RightParenToken && array.size() - 1 > parsemethod) {
                 return new MethodCallExp(objectName, name, parameters);
-            }else{
-                for(int i=parsemethod;i<array.size();i++){
-                   
-                    if(array.get(i) instanceof CommaToken ||array.get(i) instanceof RightParenToken){
-                        parameters.add(parseSubExp(getExp(parsemethod, i,array)));
-                        parsemethod=i+1;
+            } else {
+                for (int i = parsemethod; i < array.size(); i++) {
+
+                    if (array.get(i) instanceof CommaToken || array.get(i) instanceof RightParenToken) {
+                        parameters.add(parseSubExp(getExp(parsemethod, i, array)));
+                        parsemethod = i + 1;
                     }
                 }
             }
             return new MethodCallExp(objectName, name, parameters);
         }
-        //Paren
-        for(left=array.size()-1;left>0;left--){
-            if(array.get(left) instanceof RightParenToken){
-                return new ParenthesizedExp(parseSubExp(getExp(1, array.size()-1,array)));
+        // Paren
+        for (left = array.size() - 1; left > 0; left--) {
+            if (array.get(left) instanceof RightParenToken) {
+                return new ParenthesizedExp(parseSubExp(getExp(1, array.size() - 1, array)));
             }
         }
-        //This
-        if(array.get(0) instanceof ThisToken && array.size()-1>0){
-            if(array.get(1) instanceof DotOperatorToken &&array.size()-1>1){
-                return new ThisExp(parseSubExp(getExp(2, array.size(),array)));
+        // This
+        if (array.get(0) instanceof ThisToken && array.size() - 1 > 0) {
+            if (array.get(1) instanceof DotOperatorToken && array.size() - 1 > 1) {
+                return new ThisExp(parseSubExp(getExp(2, array.size(), array)));
             }
         }
-        //Negative Int
-        if(array.size()==2 && array.get(0) instanceof MinusToken){
-            IntegerToken numb =(IntegerToken)array.get(left+1);
-            return new IntegerExp(numb.value*-1);
+        // Negative Int
+        if (array.size() == 2 && array.get(0) instanceof MinusToken) {
+            IntegerToken numb = (IntegerToken) array.get(left + 1);
+            return new IntegerExp(numb.value * -1);
         }
-        //Single int
-        if(array.size()==1 && array.get(0) instanceof IntegerToken){
-            return new IntegerExp((IntegerToken)array.get(left));
+        // Single int
+        if (array.size() == 1 && array.get(0) instanceof IntegerToken) {
+            return new IntegerExp((IntegerToken) array.get(left));
         }
-        if(array.size()==1 && array.get(0) instanceof IdentifierToken){
-            return new VariableExp((IdentifierToken)array.get(left));
+        if (array.size() == 1 && array.get(0) instanceof IdentifierToken) {
+            return new VariableExp((IdentifierToken) array.get(left));
         }
-        if(array.size()==1 && array.get(0) instanceof StringLiteralToken  ){
-            return new StringExp(((StringLiteralToken)array.get(parsemethod)).toString());
+        if (array.size() == 1 && array.get(0) instanceof StringLiteralToken) {
+            return new StringExp(((StringLiteralToken) array.get(parsemethod)).toString());
         }
         return null;
     }
-    public static void main(String [] args) throws TokenizationException, ParseException {
+
+    public static void main(String[] args) throws TokenizationException, ParseException {
         String mystring;
         Token[] tokens;
         Parser myparser;
-        
+
         mystring = "class TestClass{constructor(){return null;}} Int main(){}";
         tokens = Lexer.lex(mystring).toArray(new Token[0]);
         myparser = new Parser(tokens);
@@ -342,8 +353,23 @@ public class Parser {
                 // Not sure how much I should write here, and how much I should pass off to
                 // another method
             }
-        }else if(tokens[nextPos] instanceof ReturnToken){
-            return new ParseResult<Statement>(myStmt, nextPos);
+        } else if (tokens[nextPos] instanceof ReturnToken) {
+            nextPos++;
+            if (tokens[nextPos] instanceof SemicolonToken) {
+                nextPos++;
+                myStmt = new ReturnVoidStmt();
+                // methodDef.returnlist.add(mystmt);
+            } else {
+                ParseResult<Expression> expressionResult = parseExp(nextPos);
+                myStmt = new ReturnStmt(expressionResult.result);
+                nextPos = expressionResult.nextPos;
+                if (tokens[nextPos] instanceof SemicolonToken) {
+                    nextPos++;
+                } else {
+                    throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+                }
+
+            }
         } else {
             throw new ParseException(
                     "Unexpected Token " + tokens[nextPos].toString() + " received while parsing a statement.");
@@ -472,32 +498,29 @@ public class Parser {
         ArrayList<Statement> block = new ArrayList<Statement>();
 
         int nextPos = startPos;
-        
+
         if (tokens[nextPos] instanceof LCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
         }
-        //Something going on here i think
-        while (!(tokens[nextPos] instanceof RCurlyToken)&&!(tokens[nextPos] instanceof ReturnToken)) {
+        // Something going on here i think
+        while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<Statement> result = parseStmt(nextPos);
             block.add(result.result);
             nextPos = result.nextPos;
-        }
-        if(tokens[nextPos] instanceof ReturnToken){
-            return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
         }
         if (tokens[nextPos] instanceof RCurlyToken) {
             nextPos++;
         } else {
             throw new ParseException("Expected RCurlyToken; received " + tokens[nextPos].toString());
         }
-       
+
         return new ParseResult<BlockStmt>(new BlockStmt(block), nextPos);
     }
 
-    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos) throws ParseException,
-            TokenizationException {
+    public ParseResult<VariableDeclarationStmt> parseVarDec(final int startPos)
+            throws ParseException, TokenizationException {
         String type;
         String name;
         Expression value = null;
@@ -574,7 +597,7 @@ public class Parser {
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
-        
+
         // get body
         ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
         body = result.result;
@@ -590,10 +613,10 @@ public class Parser {
         String name;
         ArrayList<VariableDeclarationStmt> parameters = new ArrayList<VariableDeclarationStmt>();
         BlockStmt body;
-        Expression returnExp=null;
+        Expression returnExp = null;
 
         // get type
-        
+
         if (tokens[nextPos] instanceof IntKeywordToken) {
             type = "Int";
             nextPos++;
@@ -614,7 +637,7 @@ public class Parser {
                     "Expected token indicating method return type; received " + tokens[nextPos].toString());
         }
         // get method name
-        
+
         if (tokens[nextPos] instanceof IdentifierToken) {
             name = ((IdentifierToken) tokens[nextPos]).name;
             nextPos++;
@@ -645,36 +668,28 @@ public class Parser {
         } else {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
-        
-        // get body/////////////////////////////////////////////////////////////////////////
+
+        // get
+        // body/////////////////////////////////////////////////////////////////////////
         ParseResult<BlockStmt> result = parseBlockStmt(nextPos);
         body = result.result;
-        
         nextPos = result.nextPos;
-        Statement myStmt = null;
-        if(nextPos<tokens.length){
-            
-            if (tokens[nextPos] instanceof ReturnToken) {
-                nextPos++;
-                if (tokens[nextPos] instanceof SemicolonToken) {
-                    nextPos++;
-                    myStmt = new ReturnVoidStmt();
-                    //methodDef.returnlist.add(mystmt);
-                } else {
-                    ParseResult<Expression> expressionResult = parseExp(nextPos);
-                    returnExp = expressionResult.result;
-                    myStmt = new ReturnStmt(expressionResult.result);
-                    nextPos = expressionResult.nextPos;
-                    if (tokens[nextPos] instanceof SemicolonToken) {
-                        nextPos++;
-                    } else {
-                        throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
-                    }
-                }
+
+        List<Statement> bodyStmts = body.body;
+        if (bodyStmts.size() > 0) {
+            Statement returnStmt = bodyStmts.get(bodyStmts.size() - 1);
+            if (returnStmt instanceof ReturnStmt) {
+                returnExp = ((ReturnStmt) returnStmt).value;
+                bodyStmts.remove(bodyStmts.size() - 1);
+            } else if (returnStmt instanceof ReturnVoidStmt) {
+                bodyStmts.remove(bodyStmts.size() - 1);
+            } else {
+                throw new ParseException("Missing Return statement");
             }
-        
-        } 
-        return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, (BlockStmt)body,returnExp), nextPos);
+        } else {
+            throw new ParseException("Missing Return statement");
+        }
+        return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, (BlockStmt) body, returnExp), nextPos);
     }
 
     public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException, TokenizationException {
@@ -734,13 +749,13 @@ public class Parser {
                     "should not have reached here if next token wasn't a ConstructorKeywordToken, but somehow we did");
         }
         // get methods
-        
+
         while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<MethodDef> result = parseMethodDef(nextPos);
             methods.add(result.result);
             nextPos = result.nextPos;
         }
-        
+
         if (tokens[nextPos] instanceof RCurlyToken) {
             nextPos++;
         } else {

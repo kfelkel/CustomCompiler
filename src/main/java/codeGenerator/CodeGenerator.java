@@ -363,7 +363,7 @@ public class CodeGenerator {
             generateExpressionCode(stmt.condition, currentList);
             currentList.add(")");
             generateStatementCode(stmt.body, currentList);
-        } else if (s instanceof VariableDeclarationStmt) {
+        } else if (s instanceof VariableDeclarationStmt) {//See https://stackoverflow.com/questions/3995940/casting-one-c-structure-into-another
             VariableDeclarationStmt stmt = (VariableDeclarationStmt) s;
             varToTypeMap.put(stmt.name, stmt.type);
             currentList.add(stmt.type);

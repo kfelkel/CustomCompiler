@@ -35,10 +35,10 @@ import tokenizer.tokens.operatortokens.*;
     public static String getInt(String s, int i) {
 <span class="fc" id="L36">        int j = i;</span>
 <span class="fc bfc" id="L37" title="All 2 branches covered.">        for (; j &lt; s.length();) {</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">            if (Character.isDigit(s.charAt(j))) {</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            if (Character.isDigit(s.charAt(j))) {</span>
 <span class="fc" id="L39">                j++;</span>
             } else {
-<span class="nc" id="L41">                return s.substring(i, j);</span>
+<span class="fc" id="L41">                return s.substring(i, j);</span>
             }
         }
 <span class="fc" id="L44">        return s.substring(i, j);</span>

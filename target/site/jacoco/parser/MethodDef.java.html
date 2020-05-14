@@ -15,27 +15,27 @@ public class MethodDef {
     public Expression returnExp; // need to adjust constructor and Parser.java
 
     public MethodDef(final String type, final String name, final ArrayList&lt;VariableDeclarationStmt&gt; parameters,
-<span class="nc" id="L18">            final BlockStmt body, Expression returnExp) {</span>
-<span class="nc" id="L19">        this.type = type;</span>
-<span class="nc" id="L20">        this.name = name;</span>
-<span class="nc" id="L21">        this.parameters = parameters;</span>
-<span class="nc" id="L22">        this.body = body;</span>
-<span class="nc" id="L23">        this.returnExp = returnExp;</span>
-<span class="nc" id="L24">    }</span>
+<span class="fc" id="L18">            final BlockStmt body, Expression returnExp) {</span>
+<span class="fc" id="L19">        this.type = type;</span>
+<span class="fc" id="L20">        this.name = name;</span>
+<span class="fc" id="L21">        this.parameters = parameters;</span>
+<span class="fc" id="L22">        this.body = body;</span>
+<span class="fc" id="L23">        this.returnExp = returnExp;</span>
+<span class="fc" id="L24">    }</span>
 
     public String toString() {
-<span class="nc" id="L27">        return &quot;MethodDef(&quot; + type + &quot;, &quot; + name + &quot;, &quot; + parametersString() + &quot;, &quot; + body + &quot;, &quot; + returnExp + &quot;)&quot;;</span>
+<span class="fc" id="L27">        return &quot;MethodDef(&quot; + type + &quot;, &quot; + name + &quot;, &quot; + parametersString() + &quot;, &quot; + body + &quot;, &quot; + returnExp + &quot;)&quot;;</span>
     }
 
     private String parametersString() {
-<span class="nc" id="L31">        String ret = &quot;&quot;;</span>
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (parameters.size() &gt;= 1) {</span>
+<span class="fc" id="L31">        String ret = &quot;&quot;;</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (parameters.size() &gt;= 1) {</span>
 <span class="nc" id="L33">            ret += parameters.get(0).toString();</span>
         }
-<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (int i = 1; i &lt; parameters.size(); i++) {</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        for (int i = 1; i &lt; parameters.size(); i++) {</span>
 <span class="nc" id="L36">            ret += &quot;, &quot; + parameters.get(i).toString();</span>
         }
-<span class="nc" id="L38">        return ret;</span>
+<span class="fc" id="L38">        return ret;</span>
     }
 
     public boolean equals(MethodDef def) {

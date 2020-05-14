@@ -13,48 +13,48 @@ public class ClassDef {
     public final ArrayList&lt;MethodDef&gt; methods;
 
     public ClassDef(final String className, final String parent, final ArrayList&lt;VariableDeclarationStmt&gt; fields,
-<span class="nc" id="L16">            final Constructor constructor, final ArrayList&lt;MethodDef&gt; methods) {</span>
-<span class="nc" id="L17">        this.className = className;</span>
-<span class="nc" id="L18">        this.parent = parent;</span>
-<span class="nc" id="L19">        this.fields = fields;</span>
-<span class="nc" id="L20">        this.constructor = constructor;</span>
-<span class="nc" id="L21">        this.methods = methods;</span>
-<span class="nc" id="L22">    }</span>
+<span class="fc" id="L16">            final Constructor constructor, final ArrayList&lt;MethodDef&gt; methods) {</span>
+<span class="fc" id="L17">        this.className = className;</span>
+<span class="fc" id="L18">        this.parent = parent;</span>
+<span class="fc" id="L19">        this.fields = fields;</span>
+<span class="fc" id="L20">        this.constructor = constructor;</span>
+<span class="fc" id="L21">        this.methods = methods;</span>
+<span class="fc" id="L22">    }</span>
 
     public ClassDef(final String className, final ArrayList&lt;VariableDeclarationStmt&gt; fields, final Constructor constructor,
-<span class="nc" id="L25">            final ArrayList&lt;MethodDef&gt; methods) {</span>
-<span class="nc" id="L26">        this.className = className;</span>
-<span class="nc" id="L27">        this.parent = &quot;&quot;;</span>
-<span class="nc" id="L28">        this.fields = fields;</span>
-<span class="nc" id="L29">        this.constructor = constructor;</span>
-<span class="nc" id="L30">        this.methods = methods;</span>
-<span class="nc" id="L31">    }</span>
+<span class="fc" id="L25">            final ArrayList&lt;MethodDef&gt; methods) {</span>
+<span class="fc" id="L26">        this.className = className;</span>
+<span class="fc" id="L27">        this.parent = &quot;&quot;;</span>
+<span class="fc" id="L28">        this.fields = fields;</span>
+<span class="fc" id="L29">        this.constructor = constructor;</span>
+<span class="fc" id="L30">        this.methods = methods;</span>
+<span class="fc" id="L31">    }</span>
 
     public String toString() {
-<span class="nc" id="L34">        return &quot;ClassDef(&quot; + className + &quot;, &quot; + parent + &quot;, &quot; + fieldsString() + &quot;, &quot; + constructor + &quot;, &quot;</span>
-<span class="nc" id="L35">                + methodsString() + &quot;)&quot;;</span>
+<span class="fc" id="L34">        return &quot;ClassDef(&quot; + className + &quot;, &quot; + parent + &quot;, &quot; + fieldsString() + &quot;, &quot; + constructor + &quot;, &quot;</span>
+<span class="fc" id="L35">                + methodsString() + &quot;)&quot;;</span>
     }
 
     private String fieldsString() {
-<span class="nc" id="L39">        String ret = &quot;&quot;;</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (fields.size() &gt;= 1) {</span>
+<span class="fc" id="L39">        String ret = &quot;&quot;;</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (fields.size() &gt;= 1) {</span>
 <span class="nc" id="L41">            ret += fields.get(0).toString();</span>
         }
-<span class="nc bnc" id="L43" title="All 2 branches missed.">        for (int i = 1; i &lt; fields.size(); i++) {</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        for (int i = 1; i &lt; fields.size(); i++) {</span>
 <span class="nc" id="L44">            ret += &quot;, &quot; + fields.get(i).toString();</span>
         }
-<span class="nc" id="L46">        return ret;</span>
+<span class="fc" id="L46">        return ret;</span>
     }
 
     private String methodsString() {
-<span class="nc" id="L50">        String ret = &quot;&quot;;</span>
-<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (methods.size() &gt;= 1) {</span>
-<span class="nc" id="L52">            ret += methods.get(0).toString();</span>
+<span class="fc" id="L50">        String ret = &quot;&quot;;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if (methods.size() &gt;= 1) {</span>
+<span class="fc" id="L52">            ret += methods.get(0).toString();</span>
         }
-<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (int i = 1; i &lt; methods.size(); i++) {</span>
-<span class="nc" id="L55">            ret += &quot;, &quot; + methods.get(i).toString();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (int i = 1; i &lt; methods.size(); i++) {</span>
+<span class="fc" id="L55">            ret += &quot;, &quot; + methods.get(i).toString();</span>
         }
-<span class="nc" id="L57">        return ret;</span>
+<span class="fc" id="L57">        return ret;</span>
     }
 
     public boolean equals(ClassDef classDef) {

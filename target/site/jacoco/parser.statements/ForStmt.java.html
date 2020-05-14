@@ -9,12 +9,12 @@ public class ForStmt implements Statement {
     public final Statement incrementor;
     public final BlockStmt body;
     
-<span class="nc" id="L12">    public ForStmt(Statement initializer, Expression condition, Statement incrementor, BlockStmt body) {</span>
-<span class="nc" id="L13">        this.initializer = initializer;</span>
-<span class="nc" id="L14">        this.condition = condition;</span>
-<span class="nc" id="L15">        this.incrementor = incrementor;</span>
-<span class="nc" id="L16">        this.body = body;</span>
-<span class="nc" id="L17">    }</span>
+<span class="fc" id="L12">    public ForStmt(Statement initializer, Expression condition, Statement incrementor, BlockStmt body) {</span>
+<span class="fc" id="L13">        this.initializer = initializer;</span>
+<span class="fc" id="L14">        this.condition = condition;</span>
+<span class="fc" id="L15">        this.incrementor = incrementor;</span>
+<span class="fc" id="L16">        this.body = body;</span>
+<span class="fc" id="L17">    }</span>
     
     public String toString() {
 <span class="nc" id="L20">        return &quot;ForStmt(&quot; + initializer + &quot;, &quot; + condition + &quot;, &quot; + incrementor + &quot;, &quot; + body + &quot;)&quot;;</span>

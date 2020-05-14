@@ -11,142 +11,156 @@ import parser.*;
 import parser.statements.*;
 import parser.expressions.*;
 
-<span class="nc bnc" id="L14" title="All 2 branches missed.">public class Typechecker {</span>
+<span class="pc bpc" id="L14" title="1 of 2 branches missed.">public class Typechecker {</span>
     private final Map&lt;String, ClassDef&gt; classDefinitions;
 
-<span class="nc" id="L17">    public Typechecker(final Program program) throws IllTypedException {</span>
+<span class="fc" id="L17">    public Typechecker(final Program program) throws IllTypedException {</span>
 
-<span class="nc" id="L19">        classDefinitions = new HashMap&lt;String, ClassDef&gt;();</span>
+<span class="fc" id="L19">        classDefinitions = new HashMap&lt;String, ClassDef&gt;();</span>
 
-<span class="nc bnc" id="L21" title="All 2 branches missed.">        for (final ClassDef classdef : program.classDefs) {</span>
-<span class="nc bnc" id="L22" title="All 2 branches missed.">            if (!classDefinitions.containsKey(classdef.className)) {</span>
-<span class="nc" id="L23">                classDefinitions.put(classdef.className, classdef);</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        for (final ClassDef classdef : program.classDefs) {</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">            if (!classDefinitions.containsKey(classdef.className)) {</span>
+<span class="fc" id="L23">                classDefinitions.put(classdef.className, classdef);</span>
             } else {
 <span class="nc" id="L25">                throw new IllTypedException(&quot;Duplicate class name: &quot; + classdef.className);</span>
             }
-<span class="nc" id="L27">        }</span>
-<span class="nc" id="L28">        typecheckProgram(program);</span>
-<span class="nc" id="L29">    } // Typechecker</span>
+<span class="fc" id="L27">        }</span>
+<span class="fc" id="L28">        typecheckProgram(program);</span>
+<span class="fc" id="L29">    } // Typechecker</span>
 
-    public Type convertStringToType(String stringtype) {
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (stringtype.equals(&quot;Int&quot;))</span>
-<span class="nc" id="L33">            return new IntType();</span>
-<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (stringtype.equals(&quot;Bool&quot;))</span>
-<span class="nc" id="L35">            return new BoolType();</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (stringtype.equals(&quot;String&quot;))</span>
-<span class="nc" id="L37">            return new StringType();</span>
-<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (stringtype.equals(&quot;Void&quot;))</span>
+    public Type convertStringToType(String stringtype) throws IllTypedException {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (stringtype.equals(&quot;Int&quot;))</span>
+<span class="fc" id="L33">            return new IntType();</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        else if (stringtype.equals(&quot;Bool&quot;))</span>
+<span class="fc" id="L35">            return new BoolType();</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        else if (stringtype.equals(&quot;String&quot;))</span>
+<span class="fc" id="L37">            return new StringType();</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        else if (stringtype.equals(&quot;Void&quot;))</span>
 <span class="nc" id="L39">            return new VoidType();</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        else if (classDefinitions.containsKey(stringtype))</span>
+<span class="fc" id="L41">            return new ObjectType(stringtype); // add objects</span>
         else
-<span class="nc" id="L41">            return null; // add objects</span>
+<span class="nc" id="L43">            throw new IllTypedException(&quot;Unrecognized type: &quot; + stringtype);</span>
     }
 
     public static Map&lt;String, Type&gt; makeCopy(final Map&lt;String, Type&gt; gamma) {
-<span class="nc" id="L45">        final Map&lt;String, Type&gt; copy = new HashMap&lt;String, Type&gt;();</span>
-<span class="nc" id="L46">        copy.putAll(gamma);</span>
-<span class="nc" id="L47">        return copy;</span>
+<span class="fc" id="L47">        final Map&lt;String, Type&gt; copy = new HashMap&lt;String, Type&gt;();</span>
+<span class="fc" id="L48">        copy.putAll(gamma);</span>
+<span class="fc" id="L49">        return copy;</span>
     }
 
     public void typecheckProgram(final Program program) throws IllTypedException {
-<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (final ClassDef classdef : program.classDefs) {</span>
-<span class="nc" id="L52">            typecheckClass(classdef);</span>
-<span class="nc" id="L53">        }</span>
-<span class="nc" id="L54">        typecheckFunction(program.entryPoint, new HashMap&lt;String, MethodDef&gt;(),new HashMap&lt;String, Type&gt;());</span>
-<span class="nc" id="L55">    } // typecheckProgram</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (final ClassDef classdef : program.classDefs) {</span>
+<span class="fc" id="L54">            typecheckClass(classdef);</span>
+<span class="fc" id="L55">        }</span>
+<span class="fc" id="L56">        typecheckFunction(program.entryPoint, new HashMap&lt;String, MethodDef&gt;(), new HashMap&lt;String, Type&gt;());</span>
+<span class="fc" id="L57">    } // typecheckProgram</span>
 
     public void typecheckClass(final ClassDef classdef) throws IllTypedException {
         // typecheck fields (no duplicates)
-<span class="nc" id="L59">        final Map&lt;String, Type&gt; variables = new HashMap&lt;String, Type&gt;();</span>
+<span class="fc" id="L61">        final Map&lt;String, Type&gt; variables = new HashMap&lt;String, Type&gt;();</span>
 
-<span class="nc bnc" id="L61" title="All 2 branches missed.">        for (final VariableDeclarationStmt parameter : classdef.fields) {</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">            if (!variables.containsKey(parameter.name)) {</span>
-<span class="nc" id="L63">                Type paramType = convertStringToType(parameter.type);</span>
-<span class="nc" id="L64">                variables.put(parameter.name, paramType);</span>
-<span class="nc" id="L65">            } else {</span>
-<span class="nc" id="L66">                throw new IllTypedException(&quot;Duplicate parameter name&quot;);</span>
+<span class="fc" id="L63">        ClassDef parentDef = null;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (classdef.parent != &quot;&quot;) { // Add parent fields to top of class</span>
+<span class="fc" id="L65">            parentDef = classDefinitions.get(classdef.parent);</span>
+<span class="fc" id="L66">            classdef.fields.addAll(parentDef.fields);</span>
+        }
+
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        for (final VariableDeclarationStmt parameter : classdef.fields) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (!variables.containsKey(parameter.name)) {</span>
+<span class="nc" id="L71">                Type paramType = convertStringToType(parameter.type);</span>
+<span class="nc" id="L72">                variables.put(parameter.name, paramType);</span>
+<span class="nc" id="L73">            } else {</span>
+<span class="nc" id="L74">                throw new IllTypedException(&quot;Duplicate parameter name&quot;);</span>
             }
-<span class="nc" id="L68">        }</span>
+<span class="nc" id="L76">        }</span>
         // check inheritance (child doesnt inherit itself/parent class defined
-<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (classdef.parent != null) {</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (classdef.className.equals(classdef.parent))</span>
-<span class="nc" id="L72">                throw new IllTypedException(&quot;Class inheriting itself&quot;);</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">            if (!classDefinitions.containsKey(classdef.className))</span>
-<span class="nc" id="L74">                throw new IllTypedException(&quot;Parent class not defined&quot;);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (classdef.parent != &quot;&quot;) {</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (classdef.className.equals(classdef.parent))</span>
+<span class="nc" id="L80">                throw new IllTypedException(&quot;Class inheriting itself&quot;);</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            if (!classDefinitions.containsKey(classdef.className))</span>
+<span class="nc" id="L82">                throw new IllTypedException(&quot;Parent class not defined&quot;);</span>
         }
         // check constructor parameters
-<span class="nc" id="L77">        final Map&lt;String, Type&gt; constructorParameters = new HashMap&lt;String, Type&gt;();</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">        for (final VariableDeclarationStmt parameter : classdef.constructor.parameters) {</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (!constructorParameters.containsKey(parameter.name)) {</span>
-<span class="nc" id="L80">                Type paramType = convertStringToType(parameter.type);</span>
-<span class="nc" id="L81">                constructorParameters.put(parameter.name, paramType);</span>
-<span class="nc" id="L82">            } else {</span>
-<span class="nc" id="L83">                throw new IllTypedException(&quot;Duplicate parameter name&quot;);</span>
+<span class="fc" id="L85">        final Map&lt;String, Type&gt; constructorParameters = new HashMap&lt;String, Type&gt;();</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        for (final VariableDeclarationStmt parameter : classdef.constructor.parameters) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (!constructorParameters.containsKey(parameter.name)) {</span>
+<span class="nc" id="L88">                Type paramType = convertStringToType(parameter.type);</span>
+<span class="nc" id="L89">                constructorParameters.put(parameter.name, paramType);</span>
+<span class="nc" id="L90">            } else {</span>
+<span class="nc" id="L91">                throw new IllTypedException(&quot;Duplicate parameter name&quot;);</span>
             }
-<span class="nc" id="L85">        }</span>
+<span class="nc" id="L93">        }</span>
+
         // check methods for duplicates
-<span class="nc" id="L87">        final Map&lt;String, MethodDef&gt; methods = new HashMap&lt;String, MethodDef&gt;();</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        for (final MethodDef method : classdef.methods) {</span>
-<span class="nc bnc" id="L89" title="All 2 branches missed.">            if (!methods.containsKey(method.name)) {</span>
-<span class="nc" id="L90">                methods.put(method.name, method);</span>
+<span class="fc" id="L96">        final Map&lt;String, MethodDef&gt; methods = new HashMap&lt;String, MethodDef&gt;();</span>
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (classdef.parent != &quot;&quot;) { // Add parent fields to top of class</span>
+<span class="fc" id="L99">            parentDef = classDefinitions.get(classdef.parent);</span>
+<span class="fc" id="L100">            classdef.methods.addAll(parentDef.methods);</span>
+        }
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (final MethodDef method : classdef.methods) {</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            if (!methods.containsKey(method.name)) {</span>
+<span class="fc" id="L105">                methods.put(method.name, method);</span>
             } else {
-<span class="nc" id="L92">                throw new IllTypedException(&quot;Duplicate function name&quot;);</span>
+<span class="nc" id="L107">                throw new IllTypedException(&quot;Duplicate function name&quot;);</span>
             }
-<span class="nc" id="L94">        }</span>
+<span class="fc" id="L109">        }</span>
 
         // check constructor statements
         // TO-DO
-<span class="nc" id="L98">        typecheckStmts(variables, methods, classdef.constructor.body);</span>
+<span class="fc" id="L113">        typecheckStmts(variables, methods, classdef.constructor.body);</span>
 
         // check method statements
 
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (final MethodDef method : classdef.methods) {</span>
-<span class="nc" id="L103">            typecheckFunction(method, methods, variables);</span>
-<span class="nc" id="L104">        }</span>
-<span class="nc" id="L105">    }</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (final MethodDef method : classdef.methods) {</span>
+<span class="fc" id="L118">            typecheckFunction(method, methods, variables);</span>
+<span class="fc" id="L119">        }</span>
+<span class="fc" id="L120">    }</span>
 
     // add parameters for functions, variables
     public void typecheckFunction(MethodDef function, Map&lt;String, MethodDef&gt; classMethods,
             Map&lt;String, Type&gt; classFields) throws IllTypedException {
 
-<span class="nc" id="L111">        final Map&lt;String, Type&gt; variables = makeCopy(classFields);// ?</span>
+<span class="fc" id="L126">        final Map&lt;String, Type&gt; variables = makeCopy(classFields);// ?</span>
 
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        for (final VariableDeclarationStmt parameter : function.parameters) {</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (!variables.containsKey(parameter.name)) {</span>
-<span class="nc" id="L115">                Type paramType = convertStringToType(parameter.type);</span>
-<span class="nc" id="L116">                variables.put(parameter.name, paramType);</span>
-<span class="nc" id="L117">            } else {</span>
-<span class="nc" id="L118">                throw new IllTypedException(&quot;Duplicate parameter name&quot;);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        for (final VariableDeclarationStmt parameter : function.parameters) {</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">            if (!variables.containsKey(parameter.name)) {</span>
+<span class="nc" id="L130">                Type paramType = convertStringToType(parameter.type);</span>
+<span class="nc" id="L131">                variables.put(parameter.name, paramType);</span>
+<span class="nc" id="L132">            } else {</span>
+<span class="nc" id="L133">                throw new IllTypedException(&quot;Duplicate parameter name&quot;);</span>
             }
-<span class="nc" id="L120">        } // add check for bad type declaration</span>
+<span class="nc" id="L135">        } // add check for bad type declaration</span>
 
-        // TO-DO
-<span class="nc" id="L123">        final Map&lt;String, Type&gt; finalGamma = typecheckStmts(variables, classMethods, function.body);</span>
-<span class="nc" id="L124">        final Type actualReturnType = typecheckExp(finalGamma, classMethods, function.returnExp);</span>
-<span class="nc bnc" id="L125" title="All 2 branches missed.">        if (!actualReturnType.equals(convertStringToType(function.type))) {</span>
-<span class="nc" id="L126">            throw new IllTypedException(&quot;return type mismatch&quot;);</span>
+<span class="fc" id="L137">        final Map&lt;String, Type&gt; finalGamma = typecheckStmts(variables, classMethods, function.body);</span>
+<span class="fc" id="L138">        final Type actualReturnType = typecheckExp(finalGamma, classMethods, function.returnExp);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (!actualReturnType.equals(convertStringToType(function.type))) {</span>
+<span class="nc" id="L140">            throw new IllTypedException(&quot;return type mismatch&quot;);</span>
         }
-<span class="nc" id="L128">    }</span>
+<span class="fc" id="L142">    }</span>
 
     public Map&lt;String, Type&gt; typecheckStmts(Map&lt;String, Type&gt; gamma, Map&lt;String, MethodDef&gt; classMethods,
             final BlockStmt body) throws IllTypedException {
-<span class="nc bnc" id="L132" title="All 2 branches missed.">        for (final Statement s : body.body) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for (final Statement s : body.body) {</span>
             // result gamma
             // initial []
             // int x = 7; [x -&gt; int]
             // int y = x + 3; [x -&gt; int, y -&gt; int]
             // int z = y + x; [x -&gt; int, y -&gt; int, z -&gt; int]
-<span class="nc" id="L138">            gamma = typecheckStmt(gamma, classMethods, s);</span>
-<span class="nc" id="L139">        }</span>
-<span class="nc" id="L140">        return gamma;</span>
+<span class="fc" id="L152">            gamma = typecheckStmt(gamma, classMethods, s);</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">        return gamma;</span>
     } // typecheckStmts
 
     public Map&lt;String, Type&gt; typecheckStmt(final Map&lt;String, Type&gt; gamma, Map&lt;String, MethodDef&gt; classMethods,
             final Statement s) throws IllTypedException {
         // x
-<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (s instanceof BlockStmt) {</span>
-<span class="nc" id="L147">            final BlockStmt asBlock = (BlockStmt) s;</span>
-<span class="nc" id="L148">            typecheckStmts(gamma, classMethods, new BlockStmt(asBlock.body));</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">        } else if (s instanceof ForStmt) {</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (s instanceof BlockStmt) {</span>
+<span class="nc" id="L161">            final BlockStmt asBlock = (BlockStmt) s;</span>
+<span class="nc" id="L162">            typecheckStmts(gamma, classMethods, new BlockStmt(asBlock.body));</span>
+<span class="pc bfc" id="L163" title="All 2 branches covered.">        } else if (s instanceof ForStmt) {</span>
             // for(int x = 0; x &lt; 10; x++) { s* }
             // gamma: []
             // newGamma: [x -&gt; int]
@@ -155,276 +169,319 @@ import parser.expressions.*;
             // int z = x + y;
             // [x -&gt; int, y -&gt; int, z -&gt; int]
             // }
-<span class="nc" id="L158">            final ForStmt asFor = (ForStmt) s;</span>
-<span class="nc" id="L159">            final Map&lt;String, Type&gt; newGamma = typecheckStmt(gamma, classMethods, asFor.initializer);</span>
-<span class="nc" id="L160">            final Type guardType = typecheckExp(newGamma, classMethods, asFor.condition);</span>
-<span class="nc bnc" id="L161" title="All 2 branches missed.">            if (guardType instanceof BoolType) {</span>
-<span class="nc" id="L162">                typecheckStmt(newGamma, classMethods, asFor.incrementor);</span>
-<span class="nc" id="L163">                typecheckStmts(newGamma, classMethods, asFor.body);</span>
+<span class="fc" id="L172">            final ForStmt asFor = (ForStmt) s;</span>
+<span class="fc" id="L173">            final Map&lt;String, Type&gt; newGamma = typecheckStmt(gamma, classMethods, asFor.initializer);</span>
+<span class="fc" id="L174">            final Type guardType = typecheckExp(newGamma, classMethods, asFor.condition);</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (guardType instanceof BoolType) {</span>
+<span class="fc" id="L176">                typecheckStmt(newGamma, classMethods, asFor.incrementor);</span>
+<span class="fc" id="L177">                typecheckStmts(newGamma, classMethods, asFor.body);</span>
             } else {
-<span class="nc" id="L165">                throw new IllTypedException(&quot;Guard in for must be boolean&quot;);</span>
+<span class="nc" id="L179">                throw new IllTypedException(&quot;Guard in for must be boolean&quot;);</span>
             }
-<span class="nc" id="L167">            return gamma;</span>
-<span class="nc bnc" id="L168" title="All 4 branches missed.">        } else if (s instanceof IfElseStmt || s instanceof IfStmt) {</span>
-<span class="nc" id="L169">            final IfElseStmt asIf = (IfElseStmt) s;</span>
-<span class="nc" id="L170">            final Type guardType = typecheckExp(gamma, classMethods, asIf.condition);</span>
-<span class="nc bnc" id="L171" title="All 4 branches missed.">            if (guardType instanceof BoolType &amp;&amp; asIf.falseBranch != null) {</span>
-<span class="nc" id="L172">                typecheckStmts(gamma, classMethods, asIf.trueBranch);</span>
-<span class="nc" id="L173">                typecheckStmts(gamma, classMethods, asIf.falseBranch);</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">            } else if (guardType instanceof BoolType) {</span>
-<span class="nc" id="L175">                typecheckStmts(gamma, classMethods, asIf.trueBranch);</span>
+<span class="fc" id="L181">            return gamma;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        } else if (s instanceof IfElseStmt) {</span>
+<span class="fc" id="L183">            final IfElseStmt asIf = (IfElseStmt) s;</span>
+<span class="fc" id="L184">            final Type guardType = typecheckExp(gamma, classMethods, asIf.condition);</span>
+<span class="pc bpc" id="L185" title="2 of 4 branches missed.">            if (guardType instanceof BoolType &amp;&amp; asIf.falseBranch != null) {</span>
+<span class="fc" id="L186">                typecheckStmts(gamma, classMethods, asIf.trueBranch);</span>
+<span class="fc" id="L187">                typecheckStmts(gamma, classMethods, asIf.falseBranch);</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            } else if (guardType instanceof BoolType) {</span>
+<span class="nc" id="L189">                typecheckStmts(gamma, classMethods, asIf.trueBranch);</span>
             } else {
-<span class="nc" id="L177">                throw new IllTypedException(&quot;Guard in If must be boolean&quot;);</span>
+<span class="nc" id="L191">                throw new IllTypedException(&quot;Guard in If must be boolean&quot;);</span>
             }
-<span class="nc" id="L179">            return gamma;</span>
-<span class="nc bnc" id="L180" title="All 2 branches missed.">        } else if (s instanceof PrintlnStmt) {</span>
-<span class="nc" id="L181">            final PrintlnStmt asPrintln = (PrintlnStmt) s;</span>
-<span class="nc" id="L182">            final Type guardType = typecheckExp(gamma, classMethods, asPrintln.output);</span>
-<span class="nc bnc" id="L183" title="All 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
-<span class="nc" id="L184">                throw new IllTypedException(&quot;Println must have Expression&quot;);</span>
+<span class="fc" id="L193">            return gamma;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        } else if (s instanceof IfStmt) {</span>
+<span class="fc" id="L195">            final IfStmt asIf = (IfStmt) s;</span>
+<span class="fc" id="L196">            final Type guardType = typecheckExp(gamma, classMethods, asIf.condition);</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            if (guardType instanceof BoolType) {</span>
+<span class="fc" id="L198">                typecheckStmts(gamma, classMethods, asIf.trueBranch);</span>
+            } else {
+<span class="nc" id="L200">                throw new IllTypedException(&quot;Guard in If must be boolean&quot;);</span>
             }
-<span class="nc" id="L186">            return gamma;</span>
-<span class="nc bnc" id="L187" title="All 2 branches missed.">        } else if (s instanceof PrintStmt) {</span>
-<span class="nc" id="L188">            final PrintStmt asPrint = (PrintStmt) s;</span>
-<span class="nc" id="L189">            final Type guardType = typecheckExp(gamma, classMethods, asPrint.output);</span>
-<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
-<span class="nc" id="L191">                throw new IllTypedException(&quot;Print must have Expression&quot;);</span>
+<span class="fc" id="L202">            return gamma;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        } else if (s instanceof PrintlnStmt) {</span>
+<span class="fc" id="L204">            final PrintlnStmt asPrintln = (PrintlnStmt) s;</span>
+<span class="fc" id="L205">            final Type guardType = typecheckExp(gamma, classMethods, asPrintln.output);</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
+<span class="nc" id="L207">                throw new IllTypedException(&quot;Println must have Expression&quot;);</span>
             }
-<span class="nc" id="L193">            return gamma;</span>
-<span class="nc bnc" id="L194" title="All 2 branches missed.">        } else if (s instanceof ReturnStmt) {</span>
-<span class="nc" id="L195">            final ReturnStmt asReturn = (ReturnStmt) s;</span>
-<span class="nc" id="L196">            final Type guardType = typecheckExp(gamma, classMethods, asReturn.value);</span>
+<span class="fc" id="L209">            return gamma;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        } else if (s instanceof PrintStmt) {</span>
+<span class="fc" id="L211">            final PrintStmt asPrint = (PrintStmt) s;</span>
+<span class="fc" id="L212">            final Type guardType = typecheckExp(gamma, classMethods, asPrint.output);</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
+<span class="nc" id="L214">                throw new IllTypedException(&quot;Print must have Expression&quot;);</span>
+            }
+<span class="fc" id="L216">            return gamma;</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        } else if (s instanceof ReturnStmt) {</span>
+<span class="nc" id="L218">            final ReturnStmt asReturn = (ReturnStmt) s;</span>
+<span class="nc" id="L219">            final Type guardType = typecheckExp(gamma, classMethods, asReturn.value);</span>
             // xxxxxxget type of function return
-<span class="nc bnc" id="L198" title="All 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
-<span class="nc" id="L199">                throw new IllTypedException(&quot;Function must have return value of &quot; + guardType);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
+<span class="nc" id="L222">                throw new IllTypedException(&quot;Function must have return value of &quot; + guardType);</span>
             }
-<span class="nc" id="L201">            return gamma;</span>
-<span class="nc bnc" id="L202" title="All 2 branches missed.">        } else if (s instanceof ReturnVoidStmt) {</span>
-<span class="nc" id="L203">            final VoidType guardType = new VoidType();</span>
+<span class="nc" id="L224">            return gamma;</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">        } else if (s instanceof ReturnVoidStmt) {</span>
+<span class="nc" id="L226">            final VoidType guardType = new VoidType();</span>
             // xxxxxxget type of function return
-<span class="nc bnc" id="L205" title="All 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
-<span class="nc" id="L206">                throw new IllTypedException(&quot;Function must have return value of &quot; + guardType);</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">            if (!(guardType instanceof Type)) {</span>
+<span class="nc" id="L229">                throw new IllTypedException(&quot;Function must have return value of &quot; + guardType);</span>
             }
-<span class="nc" id="L208">            return gamma;</span>
-<span class="nc bnc" id="L209" title="All 2 branches missed.">        } else if (s instanceof WhileStmt) {</span>
-<span class="nc" id="L210">            final WhileStmt asWhile = (WhileStmt) s;</span>
-<span class="nc" id="L211">            final Type guardType = typecheckExp(gamma, classMethods, asWhile.condition);</span>
-<span class="nc bnc" id="L212" title="All 2 branches missed.">            if (guardType instanceof Type) {</span>
-<span class="nc" id="L213">                typecheckStmts(gamma, classMethods, asWhile.body);</span>
+<span class="nc" id="L231">            return gamma;</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">        } else if (s instanceof WhileStmt) {</span>
+<span class="fc" id="L233">            final WhileStmt asWhile = (WhileStmt) s;</span>
+<span class="fc" id="L234">            final Type guardType = typecheckExp(gamma, classMethods, asWhile.condition);</span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">            if (guardType instanceof Type) {</span>
+<span class="fc" id="L236">                typecheckStmts(gamma, classMethods, asWhile.body);</span>
             } else {
-<span class="nc" id="L215">                throw new IllTypedException(&quot;Guard in While must be boolean&quot;);</span>
+<span class="nc" id="L238">                throw new IllTypedException(&quot;Guard in While must be boolean&quot;);</span>
             }
-<span class="nc" id="L217">            return gamma;</span>
-<span class="nc bnc" id="L218" title="All 2 branches missed.">        } else if (s instanceof VariableDeclarationStmt) {</span>
-<span class="nc" id="L219">            VariableDeclarationStmt asVarDec = (VariableDeclarationStmt) s;</span>
-<span class="nc" id="L220">            final Map&lt;String, Type&gt; newgamma = makeCopy(gamma);</span>
-<span class="nc" id="L221">            Type varType = convertStringToType(asVarDec.type);</span>
-<span class="nc bnc" id="L222" title="All 2 branches missed.">            if (!newgamma.containsKey(asVarDec.name)) {</span>
-<span class="nc bnc" id="L223" title="All 2 branches missed.">                if(asVarDec.value == null){</span>
-<span class="nc" id="L224">                    System.out.println(asVarDec.name);</span>
-<span class="nc" id="L225">                    newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));</span>
-<span class="nc" id="L226">                    return newgamma;</span>
-                }
-<span class="nc bnc" id="L228" title="All 2 branches missed.">                else if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {</span>
-                   
-<span class="nc" id="L230">                    newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));</span>
-<span class="nc" id="L231">                    return newgamma;</span>
+<span class="fc" id="L240">            return gamma;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        } else if (s instanceof VariableDeclarationStmt) {</span>
+<span class="fc" id="L242">            VariableDeclarationStmt asVarDec = (VariableDeclarationStmt) s;</span>
+<span class="fc" id="L243">            final Map&lt;String, Type&gt; newgamma = makeCopy(gamma);</span>
+<span class="fc" id="L244">            Type varType = convertStringToType(asVarDec.type);</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if (!newgamma.containsKey(asVarDec.name)) {</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">                if (asVarDec.value == null) {</span>
+<span class="fc" id="L247">                    newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));</span>
+<span class="fc" id="L248">                    return newgamma;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">                } else if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {</span>
+
+<span class="fc" id="L251">                    newgamma.put(asVarDec.name, convertStringToType(asVarDec.type));</span>
+<span class="fc" id="L252">                    return newgamma;</span>
                 } else {
-<span class="nc" id="L233">                    throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
+<span class="fc" id="L254">                    throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
                 }
             } else {
-<span class="nc" id="L236">                throw new IllTypedException(&quot;Declaring a variable twice&quot;);</span>
+<span class="nc" id="L257">                throw new IllTypedException(&quot;Declaring a variable twice&quot;);</span>
             }
 
-<span class="nc bnc" id="L239" title="All 2 branches missed.">        } else if (s instanceof VariableAssignmentStmt) {</span>
-<span class="nc" id="L240">            VariableAssignmentStmt asVarDec = (VariableAssignmentStmt) s;</span>
-<span class="nc" id="L241">            Type varType = gamma.get(asVarDec.name);</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">            if (gamma.containsKey(asVarDec.name)) {</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">                if (varType.equals(typecheckExp(gamma, classMethods, asVarDec.value))) {</span>
-<span class="nc" id="L244">                    return gamma;</span>
-                } else {
-<span class="nc" id="L246">                    throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
-                }
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">        } else if (s instanceof VariableAssignmentStmt) {</span>
+<span class="fc" id="L261">            VariableAssignmentStmt asVarDec = (VariableAssignmentStmt) s;</span>
+<span class="fc" id="L262">            Type varType = gamma.get(asVarDec.name);</span>
+<span class="fc" id="L263">            Type valueType = typecheckExp(gamma, classMethods, asVarDec.value);</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">            if (gamma.containsKey(asVarDec.name)) {</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">                if (varType.equals(valueType)) {</span>
+<span class="fc" id="L266">                    return gamma;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">                } else if (valueType instanceof ObjectType) {</span>
+<span class="fc" id="L268">                    String childName = ((ObjectType) valueType).name;</span>
+
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">                    if (classDefinitions.containsKey(childName)) {</span>
+<span class="fc" id="L271">                        String childinheritance = classDefinitions.get(childName).parent;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">                        if (childinheritance.length() &gt; 0) {</span>
+<span class="fc" id="L273">                            Type parentType = convertStringToType(childinheritance);</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">                            if (varType.equals(parentType)) {</span>
+<span class="fc" id="L275">                                return gamma;</span>
+                            } else
+<span class="nc" id="L277">                                throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
+                        } else
+<span class="fc" id="L279">                            throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
+                    } else
+<span class="nc" id="L281">                        throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
+                } else
+<span class="fc" id="L283">                    throw new IllTypedException(&quot;Assigning invalid type to variable&quot;);</span>
+
             } else {
-<span class="nc" id="L249">                throw new IllTypedException(&quot;Assigning value to nonexistent variable&quot;);</span>
+<span class="nc" id="L286">                throw new IllTypedException(&quot;Assigning value to nonexistent variable&quot;);</span>
             }
-        }else{
-<span class="nc" id="L252">        throw new IllTypedException(&quot;Unrecognized statement&quot;);}</span>
-<span class="nc" id="L253">            return gamma;</span>
+        }
+
+<span class="nc" id="L290">        throw new IllTypedException(&quot;Unrecognized statement&quot;);</span>
+
     } // typecheckStmt
 
     public Type typecheckExp(final Map&lt;String, Type&gt; gamma, final Map&lt;String, MethodDef&gt; classMethods,
             final Expression e) throws IllTypedException {
         // Check for integers
-<span class="nc bnc" id="L259" title="All 2 branches missed.">        if (e instanceof IntegerExp) {</span>
-<span class="nc" id="L260">            return new IntType();</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (e instanceof IntegerExp) {</span>
+<span class="fc" id="L298">            return new IntType();</span>
         }
-<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (e instanceof StringExp) {</span>
-<span class="nc" id="L263">            return new StringType();</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">        if (e instanceof StringExp) {</span>
+<span class="fc" id="L301">            return new StringType();</span>
         }
-<span class="nc bnc" id="L265" title="All 2 branches missed.">        if (e instanceof VariableExp) {</span>
-<span class="nc" id="L266">            VariableExp asVar = (VariableExp) e;</span>
-<span class="nc" id="L267">            return gamma.get(asVar.name);</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (e instanceof VariableExp) {</span>
+<span class="fc" id="L304">            VariableExp asVar = (VariableExp) e;</span>
+<span class="fc" id="L305">            return gamma.get(asVar.name);</span>
         }
         // Check for Binary Operators
-<span class="nc bnc" id="L270" title="All 2 branches missed.">        else if (e instanceof PlusExp) {</span>
-<span class="nc" id="L271">            PlusExp asBinOpExp = (PlusExp) e;</span>
-<span class="nc" id="L272">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L273">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">        else if (e instanceof PlusExp) {</span>
+<span class="fc" id="L309">            PlusExp asBinOpExp = (PlusExp) e;</span>
+<span class="fc" id="L310">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="fc" id="L311">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L275" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L276">                return new BoolType();</span>
+<span class="pc bpc" id="L313" title="2 of 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="fc" id="L314">                return new IntType();</span>
             } else {
-<span class="nc" id="L278">                throw new IllTypedException(&quot;left or right in Plus is not an int&quot;);</span>
+<span class="nc" id="L316">                throw new IllTypedException(&quot;left or right in Plus is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L280" title="All 2 branches missed.">        } else if (e instanceof MinusExp) {</span>
-<span class="nc" id="L281">            MinusExp asBinOpExp = (MinusExp) e;</span>
-<span class="nc" id="L282">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L283">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L318" title="1 of 2 branches missed.">        } else if (e instanceof MinusExp) {</span>
+<span class="nc" id="L319">            MinusExp asBinOpExp = (MinusExp) e;</span>
+<span class="nc" id="L320">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L321">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L285" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L286">                return new IntType();</span>
+<span class="nc bnc" id="L323" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L324">                return new IntType();</span>
             } else {
-<span class="nc" id="L288">                throw new IllTypedException(&quot;left or right in minus is not an int&quot;);</span>
+<span class="nc" id="L326">                throw new IllTypedException(&quot;left or right in minus is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L290" title="All 2 branches missed.">        } else if (e instanceof ModulusExp) {</span>
-<span class="nc" id="L291">            ModulusExp asBinOpExp = (ModulusExp) e;</span>
-<span class="nc" id="L292">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L293">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        } else if (e instanceof ModulusExp) {</span>
+<span class="nc" id="L329">            ModulusExp asBinOpExp = (ModulusExp) e;</span>
+<span class="nc" id="L330">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L331">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L295" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L296">                return new IntType();</span>
+<span class="nc bnc" id="L333" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L334">                return new IntType();</span>
             } else {
-<span class="nc" id="L298">                throw new IllTypedException(&quot;left or right in Modulus is not an int&quot;);</span>
+<span class="nc" id="L336">                throw new IllTypedException(&quot;left or right in Modulus is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L300" title="All 2 branches missed.">        } else if (e instanceof MultiplicationExp) {</span>
-<span class="nc" id="L301">            MultiplicationExp asBinOpExp = (MultiplicationExp) e;</span>
-<span class="nc" id="L302">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L303">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">        } else if (e instanceof MultiplicationExp) {</span>
+<span class="nc" id="L339">            MultiplicationExp asBinOpExp = (MultiplicationExp) e;</span>
+<span class="nc" id="L340">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L341">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L305" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L306">                return new IntType();</span>
+<span class="nc bnc" id="L343" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L344">                return new IntType();</span>
             } else {
-<span class="nc" id="L308">                throw new IllTypedException(&quot;left or right in Multiplication is not an int&quot;);</span>
+<span class="nc" id="L346">                throw new IllTypedException(&quot;left or right in Multiplication is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L310" title="All 2 branches missed.">        } else if (e instanceof DivisionExp) {</span>
-<span class="nc" id="L311">            DivisionExp asBinOpExp = (DivisionExp) e;</span>
-<span class="nc" id="L312">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L313">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">        } else if (e instanceof DivisionExp) {</span>
+<span class="nc" id="L349">            DivisionExp asBinOpExp = (DivisionExp) e;</span>
+<span class="nc" id="L350">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L351">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L315" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L316">                return new IntType();</span>
+<span class="nc bnc" id="L353" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L354">                return new IntType();</span>
             } else {
-<span class="nc" id="L318">                throw new IllTypedException(&quot;left or right in Division is not an int&quot;);</span>
+<span class="nc" id="L356">                throw new IllTypedException(&quot;left or right in Division is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L320" title="All 2 branches missed.">        } else if (e instanceof GreaterThanExp) {</span>
-<span class="nc" id="L321">            GreaterThanExp asBinOpExp = (GreaterThanExp) e;</span>
-<span class="nc" id="L322">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L323">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">        } else if (e instanceof GreaterThanExp) {</span>
+<span class="nc" id="L359">            GreaterThanExp asBinOpExp = (GreaterThanExp) e;</span>
+<span class="nc" id="L360">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L361">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L325" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L326">                return new BoolType();</span>
+<span class="nc bnc" id="L363" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L364">                return new BoolType();</span>
             } else {
-<span class="nc" id="L328">                throw new IllTypedException(&quot;left or right in GreaterThan is not an int&quot;);</span>
+<span class="nc" id="L366">                throw new IllTypedException(&quot;left or right in GreaterThan is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L330" title="All 2 branches missed.">        } else if (e instanceof GreaterThanOrEqualExp) {</span>
-<span class="nc" id="L331">            GreaterThanOrEqualExp asBinOpExp = (GreaterThanOrEqualExp) e;</span>
-<span class="nc" id="L332">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L333">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">        } else if (e instanceof GreaterThanOrEqualExp) {</span>
+<span class="nc" id="L369">            GreaterThanOrEqualExp asBinOpExp = (GreaterThanOrEqualExp) e;</span>
+<span class="nc" id="L370">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L371">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L335" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L336">                return new BoolType();</span>
+<span class="nc bnc" id="L373" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L374">                return new BoolType();</span>
             } else {
-<span class="nc" id="L338">                throw new IllTypedException(&quot;left or right in GreaterThanOrEqual is not an int&quot;);</span>
+<span class="nc" id="L376">                throw new IllTypedException(&quot;left or right in GreaterThanOrEqual is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L340" title="All 2 branches missed.">        } else if (e instanceof LessThanExp) {</span>
-<span class="nc" id="L341">            LessThanExp asBinOpExp = (LessThanExp) e;</span>
-<span class="nc" id="L342">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L343">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        } else if (e instanceof LessThanExp) {</span>
+<span class="fc" id="L379">            LessThanExp asBinOpExp = (LessThanExp) e;</span>
+<span class="fc" id="L380">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="fc" id="L381">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L345" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L346">                return new BoolType();</span>
+<span class="pc bpc" id="L383" title="2 of 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="fc" id="L384">                return new BoolType();</span>
             } else {
-<span class="nc" id="L348">                throw new IllTypedException(&quot;left or right in LessThan is not an int&quot;);</span>
+<span class="nc" id="L386">                throw new IllTypedException(&quot;left or right in LessThan is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L350" title="All 2 branches missed.">        } else if (e instanceof LessThanOrEqualExp) {// &lt;,&lt;=</span>
-<span class="nc" id="L351">            LessThanOrEqualExp asBinOpExp = (LessThanOrEqualExp) e;</span>
-<span class="nc" id="L352">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L353">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">        } else if (e instanceof LessThanOrEqualExp) {// &lt;,&lt;=</span>
+<span class="nc" id="L389">            LessThanOrEqualExp asBinOpExp = (LessThanOrEqualExp) e;</span>
+<span class="nc" id="L390">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="nc" id="L391">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L355" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L356">                return new BoolType();</span>
+<span class="nc bnc" id="L393" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="nc" id="L394">                return new BoolType();</span>
             } else {
-<span class="nc" id="L358">                throw new IllTypedException(&quot;left or right in LessThanOrEqual is not an int&quot;);</span>
+<span class="nc" id="L396">                throw new IllTypedException(&quot;left or right in LessThanOrEqual is not an int&quot;);</span>
             }
-<span class="nc bnc" id="L360" title="All 2 branches missed.">        } else if (e instanceof EqualEqualExp) {</span>
-<span class="nc" id="L361">            EqualEqualExp asBinOpExp = (EqualEqualExp) e;</span>
-<span class="nc" id="L362">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
-<span class="nc" id="L363">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        } else if (e instanceof EqualEqualExp) {</span>
+<span class="fc" id="L399">            EqualEqualExp asBinOpExp = (EqualEqualExp) e;</span>
+<span class="fc" id="L400">            final Type leftType = typecheckExp(gamma, classMethods, asBinOpExp.exp1);</span>
+<span class="fc" id="L401">            final Type rightType = typecheckExp(gamma, classMethods, asBinOpExp.exp2);</span>
 
-<span class="nc bnc" id="L365" title="All 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
-<span class="nc" id="L366">                return new BoolType();</span>
+<span class="pc bpc" id="L403" title="2 of 4 branches missed.">            if (leftType instanceof IntType &amp;&amp; rightType instanceof IntType) {</span>
+<span class="fc" id="L404">                return new BoolType();</span>
             } else {
-<span class="nc" id="L368">                throw new IllTypedException(&quot;left or right in EqualEqual is not an int&quot;);</span>
+<span class="nc" id="L406">                throw new IllTypedException(&quot;left or right in EqualEqual is not an int&quot;);</span>
             }
         }
         // Check for Variables
-<span class="nc bnc" id="L372" title="All 2 branches missed.">        else if (e instanceof VariableExp) {</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">        else if (e instanceof VariableExp) {</span>
             // final Map&lt;Variable, Type&gt; gamma
-<span class="nc" id="L374">            final VariableExp asVar = (VariableExp) e;</span>
-<span class="nc bnc" id="L375" title="All 2 branches missed.">            if (gamma.containsKey(asVar.name)) {</span>
-<span class="nc" id="L376">                final Type tau = gamma.get(asVar.name);</span>
-<span class="nc" id="L377">                return tau;</span>
+<span class="nc" id="L412">            final VariableExp asVar = (VariableExp) e;</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">            if (gamma.containsKey(asVar.name)) {</span>
+<span class="nc" id="L414">                final Type tau = gamma.get(asVar.name);</span>
+<span class="nc" id="L415">                return tau;</span>
             } else {
-<span class="nc" id="L379">                throw new IllTypedException(&quot;Not in scope: &quot; + asVar.name);</span>
+<span class="nc" id="L417">                throw new IllTypedException(&quot;Not in scope: &quot; + asVar.name);</span>
             }
         }
         // Check for MethodCall
-<span class="nc bnc" id="L383" title="All 2 branches missed.">        else if (e instanceof MethodCallExp) {</span>
-<span class="nc" id="L384">            final MethodCallExp asCall = (MethodCallExp) e;</span>
-<span class="nc" id="L385">            String objectName = asCall.objectName;</span>
-<span class="nc bnc" id="L386" title="All 4 branches missed.">            if (objectName == &quot;this&quot; &amp;&amp; classMethods.containsKey(asCall.name)) {</span>
-<span class="nc" id="L387">                final MethodDef fdef = classMethods.get(objectName);</span>
-<span class="nc" id="L388">                checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);</span>
-<span class="nc" id="L389">                return convertStringToType(fdef.type);</span>
-<span class="nc bnc" id="L390" title="All 2 branches missed.">            } else if (classDefinitions.containsKey(objectName)) {</span>
-                // TO-DO
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        else if (e instanceof MethodCallExp) {</span>
+<span class="fc" id="L422">            final MethodCallExp asCall = (MethodCallExp) e;</span>
+<span class="fc" id="L423">            String objectName = asCall.objectName;</span>
+<span class="pc bpc" id="L424" title="3 of 4 branches missed.">            if (objectName == &quot;this&quot; &amp;&amp; classMethods.containsKey(asCall.name)) {</span>
+<span class="nc" id="L425">                final MethodDef fdef = classMethods.get(objectName);</span>
+<span class="nc" id="L426">                checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);</span>
+<span class="nc" id="L427">                return convertStringToType(fdef.type);</span>
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">            } else if (gamma.containsKey(objectName)) {</span>
+<span class="fc" id="L429">                final Type tau = gamma.get(objectName);</span>
+                String objectType;
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">                if (tau instanceof ObjectType) {</span>
+<span class="fc" id="L432">                    objectType = ((ObjectType) tau).name;</span>
+<span class="fc" id="L433">                    ClassDef classDef = classDefinitions.get(objectType);// use classname to get classdef</span>
+<span class="fc" id="L434">                    MethodDef fdef = null;// verify that classdef contains call</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">                    for (final MethodDef method : classDef.methods) {</span>
+<span class="pc bpc" id="L436" title="1 of 2 branches missed.">                        if (method.name.equals(asCall.name))</span>
+<span class="fc" id="L437">                            fdef = method;</span>
+<span class="fc" id="L438">                    }</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">                    if (fdef != null) {</span>
+<span class="fc" id="L440">                        checkParams(gamma, fdef.parameters, asCall.parameters, classMethods);</span>
+<span class="fc" id="L441">                        return convertStringToType(fdef.type);</span>
+                    } else {
+<span class="nc" id="L443">                        throw new IllTypedException(&quot;function does not exist: &quot; + asCall.name);</span>
+                    }
+
+                } else {
+<span class="nc" id="L447">                    throw new IllTypedException(&quot;function does not exist: &quot; + asCall.name);</span>
+                }
+
             } else {
-<span class="nc" id="L393">                throw new IllTypedException(&quot;function does not exist: &quot; + asCall.name);</span>
+<span class="nc" id="L451">                throw new IllTypedException(&quot;function does not exist: &quot; + asCall.name);</span>
             }
-<span class="nc bnc" id="L395" title="All 2 branches missed.">        } else if (e instanceof NewExp) {</span>
-<span class="nc" id="L396">            NewExp asNewExp = (NewExp) e;</span>
-<span class="nc bnc" id="L397" title="All 2 branches missed.">            if (classDefinitions.containsKey(asNewExp.classname)) {</span>
-<span class="nc" id="L398">                return convertStringToType(asNewExp.classname);</span>
+<span class="pc bpc" id="L453" title="1 of 2 branches missed.">        } else if (e instanceof NewExp) {</span>
+<span class="fc" id="L454">            NewExp asNewExp = (NewExp) e;</span>
+<span class="pc bpc" id="L455" title="1 of 2 branches missed.">            if (classDefinitions.containsKey(asNewExp.classname)) {</span>
+<span class="fc" id="L456">                return convertStringToType(asNewExp.classname);</span>
             } else {
-<span class="nc" id="L400">                throw new IllTypedException(&quot;unrecognized classname in 'new' expression&quot;);</span>
+<span class="nc" id="L458">                throw new IllTypedException(&quot;unrecognized classname in 'new' expression&quot;);</span>
             }
 
         }
-<span class="nc" id="L404">        throw new IllTypedException(&quot;unrecognized expression&quot; + e);</span>
-        
+<span class="nc" id="L462">        throw new IllTypedException(&quot;unrecognized expression&quot; + e);</span>
 
     } // typecheckExp
 
     private void checkParams(final Map&lt;String, Type&gt; gamma, final List&lt;VariableDeclarationStmt&gt; formalParams,
             final List&lt;Expression&gt; actualParams, final Map&lt;String, MethodDef&gt; classMethods) throws IllTypedException {
-<span class="nc bnc" id="L411" title="All 2 branches missed.">        if (formalParams.size() == actualParams.size()) {</span>
-<span class="nc" id="L412">            final Iterator&lt;VariableDeclarationStmt&gt; formalIterator = formalParams.iterator();</span>
-<span class="nc" id="L413">            final Iterator&lt;Expression&gt; actualIterator = actualParams.iterator();</span>
-<span class="nc bnc" id="L414" title="All 4 branches missed.">            while (formalIterator.hasNext() &amp;&amp; actualIterator.hasNext()) {</span>
-<span class="nc" id="L415">                final VariableDeclarationStmt formalParam = formalIterator.next();</span>
-<span class="nc" id="L416">                final Expression actualParam = actualIterator.next();</span>
-<span class="nc" id="L417">                final Type actualType = typecheckExp(gamma, classMethods, actualParam);</span>
-<span class="nc bnc" id="L418" title="All 2 branches missed.">                if (!actualType.equals(convertStringToType(formalParam.type))) {</span>
-<span class="nc" id="L419">                    throw new IllTypedException(&quot;Parameter type mismatch&quot;);</span>
+<span class="pc bpc" id="L468" title="1 of 2 branches missed.">        if (formalParams.size() == actualParams.size()) {</span>
+<span class="fc" id="L469">            final Iterator&lt;VariableDeclarationStmt&gt; formalIterator = formalParams.iterator();</span>
+<span class="fc" id="L470">            final Iterator&lt;Expression&gt; actualIterator = actualParams.iterator();</span>
+<span class="pc bpc" id="L471" title="3 of 4 branches missed.">            while (formalIterator.hasNext() &amp;&amp; actualIterator.hasNext()) {</span>
+<span class="nc" id="L472">                final VariableDeclarationStmt formalParam = formalIterator.next();</span>
+<span class="nc" id="L473">                final Expression actualParam = actualIterator.next();</span>
+<span class="nc" id="L474">                final Type actualType = typecheckExp(gamma, classMethods, actualParam);</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">                if (!actualType.equals(convertStringToType(formalParam.type))) {</span>
+<span class="nc" id="L476">                    throw new IllTypedException(&quot;Parameter type mismatch&quot;);</span>
                 }
-<span class="nc" id="L421">            }</span>
+<span class="nc" id="L478">            }</span>
 
-<span class="nc bnc" id="L423" title="All 4 branches missed.">            assert (!formalIterator.hasNext());</span>
-<span class="nc bnc" id="L424" title="All 4 branches missed.">            assert (!actualIterator.hasNext());</span>
-<span class="nc" id="L425">        } else {</span>
-<span class="nc" id="L426">            throw new IllTypedException(&quot;wrong number of arguments&quot;);</span>
+<span class="pc bpc" id="L480" title="2 of 4 branches missed.">            assert (!formalIterator.hasNext());</span>
+<span class="pc bpc" id="L481" title="2 of 4 branches missed.">            assert (!actualIterator.hasNext());</span>
+<span class="fc" id="L482">        } else {</span>
+<span class="nc" id="L483">            throw new IllTypedException(&quot;wrong number of arguments&quot;);</span>
         }
-<span class="nc" id="L428">    }</span>
+<span class="fc" id="L485">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

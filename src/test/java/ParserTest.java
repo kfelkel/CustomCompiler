@@ -25,21 +25,25 @@ public class ParserTest {
         // even though all the .equals() method is doing for those objects is comparing
         // the toString()s
         // assertEquals(expected, actual);
-        assert (expected.equals(actual));
-        //assertEquals(expected.toString(), actual.toString());
+        //assert(expected.equals(actual));
+        assertEquals(expected.toString(), actual.toString());
+    }
+    @Test
+    public void testMainOnly()throws TokenizationException, ParseException {
+            // no class defs
+            String programString = "Int main(){ return 0;}";
+            Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("Int", "main",
+                    new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
+            testParse(programString, expected);
     }
 
     @Test
     public void ClassDefTest() throws TokenizationException, ParseException {
-        // no class defs
-        String programString = "Int main(){}";
-        Program expected = new Program(new ArrayList<ClassDef>(), new MethodDef("Int", "main",
-                new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>()), null));
-        System.out.println(expected);
-        testParse(programString, expected);
+        String programString;
+            Program expected;
 
         // one class def
-        programString = "class TestClass{constructor(){}}" + "Int main(){}";
+        programString = "class TestClass{constructor(){}}" + "Int main(){return 0;}";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
@@ -49,7 +53,7 @@ public class ParserTest {
         testParse(programString, expected);
 
         // // two class defs
-        // programString = "class TestClassA{constructor(){}} class TestClassB{constructor(){}} " + "Int main(){}";
+        // programString = "class TestClassA{constructor(){}} class TestClassB{constructor(){}} " + "Int main(){return 0;}";
         // classDefs = new ArrayList<ClassDef>();
         // classDefs.add(new ClassDef("TestClassA", new ArrayList<VariableDeclarationStmt>(),
         //         new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
@@ -64,7 +68,7 @@ public class ParserTest {
 
     @Test
     public void InheritanceTest() throws TokenizationException, ParseException {
-        String programString = "class TestClass:ParentClass{constructor(){}} " + "Int main(){}";
+        String programString = "class TestClass:ParentClass{constructor(){}} " + "Int main(){ return 0; }";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         classDefs.add(new ClassDef("TestClass", "ParentClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
@@ -77,7 +81,7 @@ public class ParserTest {
     @Test
     public void MethodDefTest() throws TokenizationException, ParseException {
         // one method
-        String programString = "class TestClass{constructor(){} Int methodTest(){}} " + "Int main(){}";
+        String programString = "class TestClass{constructor(){} Int methodTest(){ return 0;}} " + "Int main(){ return 0;}";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         ArrayList<MethodDef> methodDefs = new ArrayList<MethodDef>();
         methodDefs.add(new MethodDef("Int", "methodTest", new ArrayList<VariableDeclarationStmt>(),
@@ -89,7 +93,7 @@ public class ParserTest {
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
         // two methods
-        programString = "class TestClass{constructor(){} Int methodA(){} TestClass methodB(){}} " + "Int main(){}";
+        programString = "class TestClass{constructor(){} Int methodA(){return 0;} TestClass methodB(){return 0;}} " + "Int main(){return 0;}";
         classDefs = new ArrayList<ClassDef>();
         methodDefs = new ArrayList<MethodDef>();
         methodDefs.add(new MethodDef("Int", "methodA", new ArrayList<VariableDeclarationStmt>(),

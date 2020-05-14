@@ -294,7 +294,8 @@ public class CodeGeneratorTest {
 
         Program myProgram = new Program(classdefs, new MethodDef("int", "main",
                 new ArrayList<VariableDeclarationStmt>(), new BlockStmt(mainStatements), new IntegerExp(0)));
-        System.out.println((new CodeGenerator(myProgram).getCode()));
+        String code = (new CodeGenerator(myProgram).getCode());
+        //System.out.println(code);
         // Produces following code (manually formatted for readibility)
         /*
             typedef ParentClass;

@@ -5,15 +5,15 @@ import tokenizer.tokens.IntegerToken;
 public class IntegerExp implements Expression {
     public final int value;
 
-<span class="nc" id="L8">    public IntegerExp(IntegerToken value) {</span>
-<span class="nc" id="L9">        this.value = value.value;</span>
-<span class="nc" id="L10">    }</span>
+<span class="fc" id="L8">    public IntegerExp(IntegerToken value) {</span>
+<span class="fc" id="L9">        this.value = value.value;</span>
+<span class="fc" id="L10">    }</span>
 <span class="fc" id="L11">    public IntegerExp(final int value) {</span>
 <span class="fc" id="L12">        this.value = value;</span>
 <span class="fc" id="L13">    }</span>
 
     public String toString() {
-<span class="nc" id="L16">        return &quot;IntegerExp(&quot; + value + &quot;)&quot;;</span>
+<span class="fc" id="L16">        return &quot;IntegerExp(&quot; + value + &quot;)&quot;;</span>
     }
 
     public boolean equals(Expression exp){

@@ -1,3 +1,4 @@
+compiler\Compiler.class
 typechecker\types\Type.class
 parser\statements\Statement.class
 codeGenerator\CodeGeneratorException.class
@@ -17,6 +18,7 @@ tokenizer\tokens\keywords\BoolKeywordToken.class
 parser\statements\IfElseStmt.class
 tokenizer\tokens\keywords\ThisToken.class
 typechecker\Typechecker.class
+parser\Parser.class
 parser\Program.class
 tokenizer\tokens\operatortokens\EqualToken.class
 parser\ParseException.class
@@ -80,6 +82,7 @@ tokenizer\tokens\operatortokens\EqualEqualToken.class
 tokenizer\tokens\BoolValueToken.class
 tokenizer\tokens\keywords\ForToken.class
 tokenizer\tokens\keywords\VoidToken.class
+parser\Parser$ParseResult.class
 tokenizer\Lexer.class
 parser\expressions\IntegerExp.class
 tokenizer\tokens\operatortokens\PlusToken.class

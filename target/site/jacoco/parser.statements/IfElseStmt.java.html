@@ -8,13 +8,13 @@ public class IfElseStmt implements Statement {
     public final BlockStmt trueBranch;
     public final BlockStmt falseBranch;
 
-<span class="nc" id="L11">    public IfElseStmt(Expression condition, BlockStmt trueBranch, BlockStmt falseBranch) {</span>
+<span class="fc" id="L11">    public IfElseStmt(Expression condition, BlockStmt trueBranch, BlockStmt falseBranch) {</span>
 
-<span class="nc" id="L13">        this.condition = condition;</span>
-<span class="nc" id="L14">        this.trueBranch = trueBranch;</span>
-<span class="nc" id="L15">        this.falseBranch = falseBranch;</span>
+<span class="fc" id="L13">        this.condition = condition;</span>
+<span class="fc" id="L14">        this.trueBranch = trueBranch;</span>
+<span class="fc" id="L15">        this.falseBranch = falseBranch;</span>
 
-<span class="nc" id="L17">    }</span>
+<span class="fc" id="L17">    }</span>
 
     public String toString() {
 <span class="nc" id="L20">        return &quot;IfElseStmt(&quot;+ condition + &quot;, &quot; + trueBranch + &quot;, &quot; + falseBranch + &quot;)&quot;;</span>

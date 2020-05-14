@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Parser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tokenizer</a> &gt; <a href="index.source.html" class="el_package">parser</a> &gt; <span class="el_source">Parser.java</span></div><h1>Parser.java</h1><pre class="source lang-java linenums">package parser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
+
+import tokenizer.Lexer;
+import tokenizer.TokenizationException;
+import tokenizer.tokens.*;
+import tokenizer.tokens.keywords.*;
+import tokenizer.tokens.operatortokens.*;
+import parser.expressions.*;
+import parser.statements.*;
+
+public class Parser {
+
+    private Token[] tokens;
+    private List&lt;Token&gt; subtokens;
+
+<span class="fc" id="L21">    public Parser(Token[] tokens) {</span>
+<span class="fc" id="L22">        this.tokens = tokens;</span>
+<span class="fc" id="L23">        this.subtokens = new ArrayList&lt;Token&gt;(Arrays.asList(tokens));</span>
+<span class="fc" id="L24">    }</span>
+
+    public class ParseResult&lt;A&gt; {
+        public final A result;
+        public final int nextPos;
+
+<span class="fc" id="L30">        public ParseResult(final A result, final int nextPos) {</span>
+<span class="fc" id="L31">            this.result = result;</span>
+<span class="fc" id="L32">            this.nextPos = nextPos;</span>
+<span class="fc" id="L33">        }</span>
+    }
+
+    public ParseResult&lt;Expression&gt; parseExp(final int startPos) throws ParseException, TokenizationException {
+<span class="fc" id="L37">        int nextPos = startPos;</span>
+
+<span class="pc bpc" id="L39" title="1 of 4 branches missed.">        while (!(subtokens.get(nextPos) instanceof SemicolonToken) &amp;&amp; nextPos != subtokens.size()) {</span>
+<span class="fc" id="L40">            nextPos++;</span>
+        }
+<span class="fc" id="L42">        return new ParseResult&lt;Expression&gt;(parseSubExp(getExp(startPos, nextPos, subtokens)), nextPos);</span>
+    }
+
+    public ArrayList&lt;Token&gt; getExp(int left, int right, List&lt;Token&gt; array) {
+<span class="fc" id="L46">        ArrayList&lt;Token&gt; subExp = new ArrayList&lt;Token&gt;();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        while (left != right) {</span>
+<span class="fc" id="L48">            subExp.add(array.get(left));</span>
+<span class="fc" id="L49">            left++;</span>
+        }
+<span class="fc" id="L51">        return (subExp);</span>
+    }
+
+    public Expression parseSubExp(ArrayList&lt;Token&gt; array) throws ParseException, TokenizationException {
+<span class="fc" id="L55">        int right = array.size() - 1;</span>
+<span class="fc" id="L56">        int left = array.size() - 1;</span>
+<span class="fc" id="L57">        int paren = 0;</span>
+<span class="fc" id="L58">        int ops = 0;</span>
+<span class="fc" id="L59">        int neg = 0;</span>
+<span class="fc" id="L60">        int nums = 0;</span>
+
+        // Comparison Ops
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (left = 0; left &lt; array.size() - 1; left++) {</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            if (array.get(left) instanceof LessThanToken) {</span>
+<span class="nc" id="L65">                return new LessThanExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="nc" id="L66">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">            if (array.get(left) instanceof GreaterThanToken) {</span>
+<span class="nc" id="L69">                return new GreaterThanExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="nc" id="L70">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">            if (array.get(left) instanceof LessThanOrEqualToken) {</span>
+<span class="nc" id="L73">                return new LessThanOrEqualExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="nc" id="L74">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">            if (array.get(left) instanceof GreaterThanOrEqualToken) {</span>
+<span class="nc" id="L77">                return new GreaterThanOrEqualExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="nc" id="L78">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            if (array.get(left) instanceof EqualEqualToken) {</span>
+<span class="nc" id="L81">                return new EqualEqualExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="nc" id="L82">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+        }
+        // find even amount of Parens
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (int i = array.size() - 1; i &gt;= 0; i--) {</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">            if (array.get(i) instanceof RightParenToken) {</span>
+<span class="nc" id="L88">                paren++;</span>
+            }
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            if (array.get(i) instanceof LeftParenToken) {</span>
+<span class="nc" id="L91">                paren--;</span>
+            }
+        }
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (paren % 2 != 0) {</span>
+<span class="nc" id="L95">            throw new ParseException(&quot;Missing Parentheses&quot;);</span>
+        }
+        // Check for missing ops or variables
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (int i = array.size() - 1; i &gt;= 0; i--) {</span>
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">            if (array.get(i) instanceof IntegerToken || array.get(i) instanceof IdentifierToken) {</span>
+<span class="fc" id="L100">                nums++;</span>
+            }
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            if ((array.get(i) instanceof MinusToken)) {</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">                if (i == 0) {</span>
+<span class="nc" id="L104">                    neg++;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">                } else if (array.get(i - 1) instanceof OperatorToken) {</span>
+<span class="nc" id="L106">                    neg++;</span>
+                }
+
+            }
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            if (array.get(i) instanceof OperatorToken) {</span>
+<span class="fc" id="L111">                ops++;</span>
+            }
+
+        }
+        // ops=ops-neg;
+
+        // if(ops&gt;=nums){
+        // throw new ParseException(&quot;Missing Int or Variable&quot;);
+        // }else if(nums&gt;(ops+1)){
+        // throw new ParseException(&quot;Missing Operation&quot;);
+        // }
+        // Plus/Minus
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (left = array.size() - 1; left &gt;= 0; left--) {</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">            if (array.get(left) instanceof RightParenToken) {</span>
+<span class="nc" id="L125">                paren++;</span>
+            }
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">            if (array.get(left) instanceof LeftParenToken) {</span>
+<span class="nc" id="L128">                paren--;</span>
+            }
+<span class="pc bpc" id="L130" title="1 of 4 branches missed.">            if (array.get(left) instanceof PlusToken &amp;&amp; paren == 0) {</span>
+<span class="fc" id="L131">                return new PlusExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="fc" id="L132">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L134" title="2 of 6 branches missed.">            if (array.get(left) instanceof MinusToken &amp;&amp; paren == 0 &amp;&amp; left != 0) {</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">                if (array.get(left - 1) instanceof OperatorToken) {</span>
+
+                } else {
+<span class="fc" id="L138">                    return new MinusExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="fc" id="L139">                            parseSubExp(getExp(left + 1, right + 1, array)));</span>
+                }
+
+            }
+        }
+        // Mult/Divide
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (left = array.size() - 1; left &gt;= 0; left--) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">            if (array.get(left) instanceof RightParenToken) {</span>
+<span class="nc" id="L147">                paren += 1;</span>
+            }
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">            if (array.get(left) instanceof LeftParenToken) {</span>
+<span class="nc" id="L150">                paren--;</span>
+            }
+<span class="pc bpc" id="L152" title="1 of 4 branches missed.">            if (array.get(left) instanceof MultiplicationToken &amp;&amp; paren == 0) {</span>
+<span class="fc" id="L153">                return new MultiplicationExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="fc" id="L154">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">            if (array.get(left) instanceof DivisionToken &amp;&amp; paren == 0) {</span>
+<span class="fc" id="L157">                return new DivisionExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="fc" id="L158">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+<span class="pc bpc" id="L160" title="3 of 4 branches missed.">            if (array.get(left) instanceof ModulusToken &amp;&amp; paren == 0) {</span>
+<span class="nc" id="L161">                return new ModulusExp(parseSubExp(getExp(0, left, array)),</span>
+<span class="nc" id="L162">                        parseSubExp(getExp(left + 1, right + 1, array)));</span>
+            }
+        }
+        // New expression
+<span class="fc" id="L166">        int parsenew = 0;</span>
+<span class="pc bpc" id="L167" title="3 of 4 branches missed.">        if (array.get(parsenew) instanceof NewToken &amp;&amp; array.size() - 1 &gt; parsenew) {</span>
+            String classname;
+<span class="nc" id="L169">            List&lt;Expression&gt; parameters = new ArrayList&lt;Expression&gt;();</span>
+<span class="nc" id="L170">            parsenew++;</span>
+<span class="nc bnc" id="L171" title="All 4 branches missed.">            if (array.get(parsenew) instanceof ClassKeywordToken &amp;&amp; array.size() - 1 &gt; parsenew) {</span>
+<span class="nc" id="L172">                classname = ((ClassKeywordToken) array.get(parsenew)).toString();</span>
+<span class="nc" id="L173">                parsenew++;</span>
+            } else {
+<span class="nc" id="L175">                throw new ParseException(&quot;Missing Classname after new keyword&quot;);</span>
+            }
+<span class="nc bnc" id="L177" title="All 4 branches missed.">            if (array.get(parsenew) instanceof LeftParenToken &amp;&amp; array.size() - 1 &gt; parsenew) {</span>
+<span class="nc" id="L178">                parsenew++;</span>
+            } else {
+<span class="nc" id="L180">                throw new ParseException(&quot;Missing LeftParen after classname&quot;);</span>
+            }
+<span class="nc bnc" id="L182" title="All 4 branches missed.">            if (array.get(parsenew) instanceof RightParenToken &amp;&amp; array.size() - 1 &gt; parsenew) {</span>
+<span class="nc" id="L183">                return new NewExp(classname, parameters);</span>
+            } else {
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                for (int i = parsenew; i &lt; array.size(); i++) {</span>
+
+<span class="nc bnc" id="L187" title="All 4 branches missed.">                    if (array.get(i) instanceof CommaToken || array.get(i) instanceof RightParenToken) {</span>
+<span class="nc" id="L188">                        parameters.add(parseSubExp(getExp(parsenew, i, array)));</span>
+<span class="nc" id="L189">                        parsenew = i + 1;</span>
+                    }
+                }
+            }
+<span class="nc" id="L193">            return new NewExp(classname, parameters);</span>
+        }
+        // Methodcall()
+<span class="fc" id="L196">        int parsemethod = 0;</span>
+<span class="pc bpc" id="L197" title="3 of 4 branches missed.">        if (array.get(parsemethod) instanceof IdentifierToken &amp;&amp; array.size() - 1 &gt; parsemethod) {</span>
+            String objectName;
+            String name;
+<span class="nc" id="L200">            List&lt;Expression&gt; parameters = new ArrayList&lt;Expression&gt;();</span>
+<span class="nc" id="L201">            objectName = ((IdentifierToken) array.get(parsemethod)).toString();</span>
+<span class="nc" id="L202">            parsemethod++;</span>
+<span class="nc bnc" id="L203" title="All 4 branches missed.">            if (array.get(parsemethod) instanceof DotOperatorToken &amp;&amp; array.size() - 1 &gt; parsemethod) {</span>
+<span class="nc" id="L204">                parsemethod++;</span>
+<span class="nc" id="L205">                name = ((IdentifierToken) array.get(parsemethod)).toString();</span>
+<span class="nc" id="L206">                parsemethod++;</span>
+            } else {
+<span class="nc" id="L208">                throw new ParseException(&quot;Missing Identifier after dot operator&quot;);</span>
+            }
+<span class="nc bnc" id="L210" title="All 4 branches missed.">            if (array.get(parsemethod) instanceof LeftParenToken &amp;&amp; array.size() - 1 &gt; parsemethod) {</span>
+<span class="nc" id="L211">                parsemethod++;</span>
+            } else {
+<span class="nc" id="L213">                throw new ParseException(&quot;Missing LeftParen after identifier&quot;);</span>
+            }
+<span class="nc bnc" id="L215" title="All 4 branches missed.">            if (array.get(parsemethod) instanceof RightParenToken &amp;&amp; array.size() - 1 &gt; parsemethod) {</span>
+<span class="nc" id="L216">                return new MethodCallExp(objectName, name, parameters);</span>
+            } else {
+<span class="nc bnc" id="L218" title="All 2 branches missed.">                for (int i = parsemethod; i &lt; array.size(); i++) {</span>
+
+<span class="nc bnc" id="L220" title="All 4 branches missed.">                    if (array.get(i) instanceof CommaToken || array.get(i) instanceof RightParenToken) {</span>
+<span class="nc" id="L221">                        parameters.add(parseSubExp(getExp(parsemethod, i, array)));</span>
+<span class="nc" id="L222">                        parsemethod = i + 1;</span>
+                    }
+                }
+            }
+<span class="nc" id="L226">            return new MethodCallExp(objectName, name, parameters);</span>
+        }
+        // Paren
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">        for (left = array.size() - 1; left &gt; 0; left--) {</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">            if (array.get(left) instanceof RightParenToken) {</span>
+<span class="nc" id="L231">                return new ParenthesizedExp(parseSubExp(getExp(1, array.size() - 1, array)));</span>
+            }
+        }
+        // This
+<span class="pc bpc" id="L235" title="3 of 4 branches missed.">        if (array.get(0) instanceof ThisToken &amp;&amp; array.size() - 1 &gt; 0) {</span>
+<span class="nc bnc" id="L236" title="All 4 branches missed.">            if (array.get(1) instanceof DotOperatorToken &amp;&amp; array.size() - 1 &gt; 1) {</span>
+<span class="nc" id="L237">                return new ThisExp(parseSubExp(getExp(2, array.size(), array)));</span>
+            }
+        }
+        // Negative Int
+<span class="pc bpc" id="L241" title="3 of 4 branches missed.">        if (array.size() == 2 &amp;&amp; array.get(0) instanceof MinusToken) {</span>
+<span class="nc" id="L242">            IntegerToken numb = (IntegerToken) array.get(left + 1);</span>
+<span class="nc" id="L243">            return new IntegerExp(numb.value * -1);</span>
+        }
+        // Single int
+<span class="pc bpc" id="L246" title="2 of 4 branches missed.">        if (array.size() == 1 &amp;&amp; array.get(0) instanceof IntegerToken) {</span>
+<span class="fc" id="L247">            return new IntegerExp((IntegerToken) array.get(left));</span>
+        }
+<span class="nc bnc" id="L249" title="All 4 branches missed.">        if (array.size() == 1 &amp;&amp; array.get(0) instanceof IdentifierToken) {</span>
+<span class="nc" id="L250">            return new VariableExp((IdentifierToken) array.get(left));</span>
+        }
+<span class="nc bnc" id="L252" title="All 4 branches missed.">        if (array.size() == 1 &amp;&amp; array.get(0) instanceof StringLiteralToken) {</span>
+<span class="nc" id="L253">            return new StringExp(((StringLiteralToken) array.get(parsemethod)).toString());</span>
+        }
+<span class="nc" id="L255">        return null;</span>
+    }
+
+    public static void main(String[] args) throws TokenizationException, ParseException {
+        String mystring;
+        Token[] tokens;
+        Parser myparser;
+
+<span class="nc" id="L263">        mystring = &quot;class TestClass{constructor(){return null;}} Int main(){}&quot;;</span>
+<span class="nc" id="L264">        tokens = Lexer.lex(mystring).toArray(new Token[0]);</span>
+<span class="nc" id="L265">        myparser = new Parser(tokens);</span>
+<span class="nc" id="L266">        System.out.println(myparser.parseProgram());</span>
+<span class="nc" id="L267">    }</span>
+
+    public ParseResult&lt;Statement&gt; parseStmt(final int startPos) throws ParseException, TokenizationException {
+<span class="fc" id="L270">        int nextPos = startPos;</span>
+<span class="fc" id="L271">        Statement myStmt = null;</span>
+
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof PrintToken) {</span>
+<span class="nc" id="L274">            nextPos++;</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">            if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="nc" id="L276">                nextPos++;</span>
+<span class="nc" id="L277">                ParseResult&lt;Expression&gt; expressionResult = parseExp(nextPos);</span>
+<span class="nc" id="L278">                myStmt = new PrintStmt(expressionResult.result);</span>
+<span class="nc" id="L279">                nextPos = expressionResult.nextPos;</span>
+<span class="nc" id="L280">            } else {</span>
+<span class="nc" id="L281">                throw new ParseException(&quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="nc bnc" id="L283" title="All 2 branches missed.">            if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="nc" id="L284">                nextPos++;</span>
+            } else {
+<span class="nc" id="L286">                throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="nc bnc" id="L288" title="All 2 branches missed.">            if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L289">                nextPos++;</span>
+            } else {
+<span class="nc" id="L291">                throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof PrintlnToken) {</span>
+<span class="nc" id="L294">            nextPos++;</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">            if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="nc" id="L296">                nextPos++;</span>
+<span class="nc" id="L297">                ParseResult&lt;Expression&gt; expressionResult = parseExp(nextPos);</span>
+<span class="nc" id="L298">                myStmt = new PrintlnStmt(expressionResult.result);</span>
+<span class="nc" id="L299">                nextPos = expressionResult.nextPos;</span>
+<span class="nc" id="L300">            } else {</span>
+<span class="nc" id="L301">                throw new ParseException(&quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="nc" id="L304">                nextPos++;</span>
+            } else {
+<span class="nc" id="L306">                throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="nc bnc" id="L308" title="All 2 branches missed.">            if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L309">                nextPos++;</span>
+            } else {
+<span class="nc" id="L311">                throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof ForToken) {</span>
+<span class="nc" id="L314">            ParseResult&lt;ForStmt&gt; result = parseForStmt(nextPos);</span>
+<span class="nc" id="L315">            myStmt = result.result;</span>
+<span class="nc" id="L316">            nextPos = result.nextPos;</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof WhileToken) {</span>
+<span class="nc" id="L318">            ParseResult&lt;WhileStmt&gt; result = parseWhileStmt(nextPos);</span>
+<span class="nc" id="L319">            myStmt = result.result;</span>
+<span class="nc" id="L320">            nextPos = result.nextPos;</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof IfToken) {</span>
+<span class="nc" id="L322">            ParseResult&lt;Statement&gt; result = parseIfStmt(nextPos);</span>
+<span class="nc" id="L323">            myStmt = result.result;</span>
+<span class="nc" id="L324">            nextPos = result.nextPos;</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof LCurlyToken) {</span>
+<span class="nc" id="L326">            ParseResult&lt;BlockStmt&gt; result = parseBlockStmt(nextPos);</span>
+<span class="nc" id="L327">            myStmt = result.result;</span>
+<span class="nc" id="L328">            nextPos = result.nextPos;</span>
+<span class="pc bpc" id="L329" title="3 of 6 branches missed.">        } else if (tokens[nextPos] instanceof IntKeywordToken || tokens[nextPos] instanceof BoolKeywordToken</span>
+                || tokens[nextPos] instanceof StringKeywordToken) {
+<span class="nc" id="L331">            ParseResult&lt;VariableDeclarationStmt&gt; result = parseVarDec(nextPos);</span>
+<span class="nc" id="L332">            myStmt = result.result;</span>
+<span class="nc" id="L333">            nextPos = result.nextPos;</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">            if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L335">                nextPos++;</span>
+            } else {
+<span class="nc" id="L337">                throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="pc bpc" id="L339" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">            if (tokens[nextPos + 1] instanceof IdentifierToken) {</span>
+<span class="nc" id="L341">                ParseResult&lt;VariableDeclarationStmt&gt; result = parseVarDec(nextPos);</span>
+<span class="nc" id="L342">                myStmt = result.result;</span>
+<span class="nc" id="L343">                nextPos = result.nextPos;</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">                if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L345">                    nextPos++;</span>
+                } else {
+<span class="nc" id="L347">                    throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+                }
+<span class="nc" id="L349">            } else {</span>
+                // This is where assignment statements are handled
+                // Need to fill this in, but wasn't sure how to do it until I have expression
+                // code
+                // Not sure how much I should write here, and how much I should pass off to
+                // another method
+            }
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof ReturnToken) {</span>
+<span class="fc" id="L357">            nextPos++;</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">            if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L359">                nextPos++;</span>
+<span class="nc" id="L360">                myStmt = new ReturnVoidStmt();</span>
+                // methodDef.returnlist.add(mystmt);
+            } else {
+<span class="fc" id="L363">                ParseResult&lt;Expression&gt; expressionResult = parseExp(nextPos);</span>
+<span class="fc" id="L364">                myStmt = new ReturnStmt(expressionResult.result);</span>
+<span class="fc" id="L365">                nextPos = expressionResult.nextPos;</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">                if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="fc" id="L367">                    nextPos++;</span>
+                } else {
+<span class="nc" id="L369">                    throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+                }
+
+<span class="fc" id="L372">            }</span>
+        } else {
+<span class="nc" id="L374">            throw new ParseException(</span>
+<span class="nc" id="L375">                    &quot;Unexpected Token &quot; + tokens[nextPos].toString() + &quot; received while parsing a statement.&quot;);</span>
+        }
+
+<span class="fc" id="L378">        return new ParseResult&lt;Statement&gt;(myStmt, nextPos);</span>
+    }
+
+    public ParseResult&lt;ForStmt&gt; parseForStmt(final int startPos) throws ParseException, TokenizationException {
+<span class="nc" id="L382">        int nextPos = startPos;</span>
+        Statement initialization;
+        Expression condition;
+        Statement incrementation;
+        Statement body;
+
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        if (tokens[nextPos] instanceof ForToken) {</span>
+<span class="nc" id="L389">            nextPos++;</span>
+        } else {
+<span class="nc" id="L391">            throw new ParseException(&quot;Expected ForToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="nc" id="L394">            nextPos++;</span>
+        } else {
+<span class="nc" id="L396">            throw new ParseException(&quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L398">        ParseResult&lt;Statement&gt; stmtResult = parseStmt(nextPos);</span>
+<span class="nc" id="L399">        initialization = stmtResult.result;</span>
+<span class="nc" id="L400">        nextPos = stmtResult.nextPos;</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">        if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L402">            nextPos++;</span>
+        } else {
+<span class="nc" id="L404">            throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L406">        ParseResult&lt;Expression&gt; expResult = parseExp(nextPos);</span>
+<span class="nc" id="L407">        condition = expResult.result;</span>
+<span class="nc" id="L408">        nextPos = expResult.nextPos;</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">        if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L410">            nextPos++;</span>
+        } else {
+<span class="nc" id="L412">            throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L414">        stmtResult = parseStmt(nextPos);</span>
+<span class="nc" id="L415">        incrementation = stmtResult.result;</span>
+<span class="nc" id="L416">        nextPos = stmtResult.nextPos;</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">        if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="nc" id="L418">            nextPos++;</span>
+        } else {
+<span class="nc" id="L420">            throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L422">        stmtResult = parseStmt(nextPos);</span>
+<span class="nc" id="L423">        body = stmtResult.result;</span>
+<span class="nc" id="L424">        nextPos = stmtResult.nextPos;</span>
+
+<span class="nc" id="L426">        return new ParseResult&lt;ForStmt&gt;(new ForStmt(initialization, condition, incrementation, (BlockStmt) body),</span>
+                nextPos);
+    }
+
+    public ParseResult&lt;WhileStmt&gt; parseWhileStmt(final int startPos) throws ParseException, TokenizationException {
+<span class="nc" id="L431">        int nextPos = startPos;</span>
+        Expression condition;
+        BlockStmt body;
+
+<span class="nc bnc" id="L435" title="All 2 branches missed.">        if (tokens[nextPos] instanceof WhileToken) {</span>
+<span class="nc" id="L436">            nextPos++;</span>
+        } else {
+<span class="nc" id="L438">            throw new ParseException(&quot;Expected ForToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc bnc" id="L440" title="All 2 branches missed.">        if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="nc" id="L441">            nextPos++;</span>
+        } else {
+<span class="nc" id="L443">            throw new ParseException(&quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L445">        ParseResult&lt;Expression&gt; expResult = parseExp(nextPos);</span>
+<span class="nc" id="L446">        condition = expResult.result;</span>
+<span class="nc" id="L447">        nextPos = expResult.nextPos;</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">        if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="nc" id="L449">            nextPos++;</span>
+        } else {
+<span class="nc" id="L451">            throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L453">        ParseResult&lt;Statement&gt; stmtResult = parseStmt(nextPos);</span>
+<span class="nc" id="L454">        body = (BlockStmt) stmtResult.result;</span>
+<span class="nc" id="L455">        nextPos = stmtResult.nextPos;</span>
+
+<span class="nc" id="L457">        return new ParseResult&lt;WhileStmt&gt;((new WhileStmt(condition, body)), nextPos);</span>
+    }
+
+    public ParseResult&lt;Statement&gt; parseIfStmt(final int startPos) throws ParseException, TokenizationException {
+<span class="nc" id="L461">        int nextPos = startPos;</span>
+        Expression condition;
+        BlockStmt trueBranch;
+        BlockStmt falseBranch;
+
+<span class="nc bnc" id="L466" title="All 2 branches missed.">        if (tokens[nextPos] instanceof IfToken) {</span>
+<span class="nc" id="L467">            nextPos++;</span>
+        } else {
+<span class="nc" id="L469">            throw new ParseException(&quot;Expected ForToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc bnc" id="L471" title="All 2 branches missed.">        if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="nc" id="L472">            nextPos++;</span>
+        } else {
+<span class="nc" id="L474">            throw new ParseException(&quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L476">        ParseResult&lt;Expression&gt; expResult = parseExp(nextPos);</span>
+<span class="nc" id="L477">        condition = expResult.result;</span>
+<span class="nc" id="L478">        nextPos = expResult.nextPos;</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">        if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="nc" id="L480">            nextPos++;</span>
+        } else {
+<span class="nc" id="L482">            throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc" id="L484">        ParseResult&lt;Statement&gt; stmtResult = parseStmt(nextPos);</span>
+<span class="nc" id="L485">        trueBranch = (BlockStmt) stmtResult.result;</span>
+<span class="nc" id="L486">        nextPos = stmtResult.nextPos;</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">        if (tokens[nextPos] instanceof ElseToken) {</span>
+<span class="nc" id="L488">            nextPos++;</span>
+<span class="nc" id="L489">            stmtResult = parseStmt(nextPos);</span>
+<span class="nc" id="L490">            falseBranch = (BlockStmt) stmtResult.result;</span>
+<span class="nc" id="L491">            nextPos = stmtResult.nextPos;</span>
+<span class="nc" id="L492">            return new ParseResult&lt;Statement&gt;(new IfElseStmt(condition, trueBranch, falseBranch), nextPos);</span>
+        }
+<span class="nc" id="L494">        return new ParseResult&lt;Statement&gt;(new IfStmt(condition, trueBranch), nextPos);</span>
+    }
+
+    public ParseResult&lt;BlockStmt&gt; parseBlockStmt(final int startPos) throws ParseException, TokenizationException {
+<span class="fc" id="L498">        ArrayList&lt;Statement&gt; block = new ArrayList&lt;Statement&gt;();</span>
+
+<span class="fc" id="L500">        int nextPos = startPos;</span>
+
+<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof LCurlyToken) {</span>
+<span class="fc" id="L503">            nextPos++;</span>
+        } else {
+<span class="nc" id="L505">            throw new ParseException(&quot;Expected LCurlyToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+        // Something going on here i think
+<span class="fc bfc" id="L508" title="All 2 branches covered.">        while (!(tokens[nextPos] instanceof RCurlyToken)) {</span>
+<span class="fc" id="L509">            ParseResult&lt;Statement&gt; result = parseStmt(nextPos);</span>
+<span class="fc" id="L510">            block.add(result.result);</span>
+<span class="fc" id="L511">            nextPos = result.nextPos;</span>
+<span class="fc" id="L512">        }</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof RCurlyToken) {</span>
+<span class="fc" id="L514">            nextPos++;</span>
+        } else {
+<span class="nc" id="L516">            throw new ParseException(&quot;Expected RCurlyToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+
+<span class="fc" id="L519">        return new ParseResult&lt;BlockStmt&gt;(new BlockStmt(block), nextPos);</span>
+    }
+
+    public ParseResult&lt;VariableDeclarationStmt&gt; parseVarDec(final int startPos)
+            throws ParseException, TokenizationException {
+        String type;
+        String name;
+<span class="nc" id="L526">        Expression value = null;</span>
+
+<span class="nc" id="L528">        int nextPos = startPos;</span>
+
+<span class="nc bnc" id="L530" title="All 2 branches missed.">        if (tokens[nextPos] instanceof IntKeywordToken) {</span>
+<span class="nc" id="L531">            type = &quot;Int&quot;;</span>
+<span class="nc" id="L532">            nextPos++;</span>
+<span class="nc bnc" id="L533" title="All 2 branches missed.">        } else if (tokens[nextPos] instanceof BoolKeywordToken) {</span>
+<span class="nc" id="L534">            type = &quot;Bool&quot;;</span>
+<span class="nc" id="L535">            nextPos++;</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">        } else if (tokens[nextPos] instanceof StringKeywordToken) {</span>
+<span class="nc" id="L537">            type = &quot;String&quot;;</span>
+<span class="nc" id="L538">            nextPos++;</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">        } else if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="nc" id="L540">            type = ((IdentifierToken) tokens[nextPos]).name;</span>
+<span class="nc" id="L541">            nextPos++;</span>
+        } else {
+<span class="nc" id="L543">            throw new ParseException(&quot;Expected token indicating variable type; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc bnc" id="L545" title="All 2 branches missed.">        if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="nc" id="L546">            name = ((IdentifierToken) tokens[nextPos]).name;</span>
+<span class="nc" id="L547">            nextPos++;</span>
+        } else {
+<span class="nc" id="L549">            throw new ParseException(</span>
+<span class="nc" id="L550">                    &quot;Expected IdentifierToken for variable name; received &quot; + tokens[nextPos].toString());</span>
+        }
+<span class="nc bnc" id="L552" title="All 2 branches missed.">        if (tokens[nextPos] instanceof EqualToken) {</span>
+<span class="nc" id="L553">            nextPos++;</span>
+<span class="nc" id="L554">            ParseResult&lt;Expression&gt; result = parseExp(nextPos);</span>
+<span class="nc" id="L555">            value = result.result;</span>
+<span class="nc" id="L556">            nextPos = result.nextPos;</span>
+        }
+
+<span class="nc bnc" id="L559" title="All 2 branches missed.">        if (value != null) {</span>
+<span class="nc" id="L560">            return new ParseResult&lt;VariableDeclarationStmt&gt;(new VariableDeclarationStmt(type, name, value), nextPos);</span>
+        } else {
+<span class="nc" id="L562">            return new ParseResult&lt;VariableDeclarationStmt&gt;(new VariableDeclarationStmt(type, name), nextPos);</span>
+        }
+    }
+
+    public ParseResult&lt;Constructor&gt; parseConstructor(final int startPos) throws ParseException, TokenizationException {
+<span class="fc" id="L567">        int nextPos = startPos;</span>
+<span class="fc" id="L568">        ArrayList&lt;VariableDeclarationStmt&gt; parameters = new ArrayList&lt;VariableDeclarationStmt&gt;();</span>
+        BlockStmt body;
+
+<span class="pc bpc" id="L571" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof ConstructorKeywordToken) {</span>
+<span class="fc" id="L572">            nextPos++;</span>
+        } else {
+<span class="nc" id="L574">            throw new ParseException(</span>
+                    &quot;should not have started parsing a Constructor that doesn't start with a ConstructorKeywordToken, but somehow we have a &quot;
+<span class="nc" id="L576">                            + tokens[nextPos].toString());</span>
+        }
+<span class="pc bpc" id="L578" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="fc" id="L579">            nextPos++;</span>
+        } else {
+<span class="nc" id="L581">            throw new ParseException(&quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+        // get parameters
+<span class="pc bpc" id="L584" title="1 of 2 branches missed.">        if (!(tokens[nextPos] instanceof RightParenToken)) {</span>
+<span class="nc" id="L585">            ParseResult&lt;VariableDeclarationStmt&gt; result = parseVarDec(nextPos);</span>
+<span class="nc" id="L586">            parameters.add(result.result);</span>
+<span class="nc" id="L587">            nextPos = result.nextPos;</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            while (tokens[nextPos] instanceof CommaToken) {</span>
+<span class="nc" id="L589">                nextPos++;</span>
+<span class="nc" id="L590">                result = parseVarDec(nextPos);</span>
+<span class="nc" id="L591">                parameters.add(result.result);</span>
+<span class="nc" id="L592">                nextPos = result.nextPos;</span>
+            }
+        }
+<span class="pc bpc" id="L595" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="fc" id="L596">            nextPos++;</span>
+        } else {
+<span class="nc" id="L598">            throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+
+        // get body
+<span class="fc" id="L602">        ParseResult&lt;BlockStmt&gt; result = parseBlockStmt(nextPos);</span>
+<span class="fc" id="L603">        body = result.result;</span>
+<span class="fc" id="L604">        nextPos = result.nextPos;</span>
+
+<span class="fc" id="L606">        return new ParseResult&lt;Constructor&gt;(new Constructor(parameters, body), nextPos);</span>
+    }
+
+    public ParseResult&lt;MethodDef&gt; parseMethodDef(final int startPos) throws ParseException, TokenizationException {
+<span class="fc" id="L610">        int nextPos = startPos;</span>
+
+        String type;
+        String name;
+<span class="fc" id="L614">        ArrayList&lt;VariableDeclarationStmt&gt; parameters = new ArrayList&lt;VariableDeclarationStmt&gt;();</span>
+        BlockStmt body;
+<span class="fc" id="L616">        Expression returnExp = null;</span>
+
+        // get type
+
+<span class="fc bfc" id="L620" title="All 2 branches covered.">        if (tokens[nextPos] instanceof IntKeywordToken) {</span>
+<span class="fc" id="L621">            type = &quot;Int&quot;;</span>
+<span class="fc" id="L622">            nextPos++;</span>
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof BoolKeywordToken) {</span>
+<span class="nc" id="L624">            type = &quot;Bool&quot;;</span>
+<span class="nc" id="L625">            nextPos++;</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof StringKeywordToken) {</span>
+<span class="nc" id="L627">            type = &quot;String&quot;;</span>
+<span class="nc" id="L628">            nextPos++;</span>
+<span class="pc bpc" id="L629" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof VoidToken) {</span>
+<span class="nc" id="L630">            type = &quot;Void&quot;;</span>
+<span class="nc" id="L631">            nextPos++;</span>
+<span class="pc bpc" id="L632" title="1 of 2 branches missed.">        } else if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="fc" id="L633">            type = ((IdentifierToken) tokens[nextPos]).name;</span>
+<span class="fc" id="L634">            nextPos++;</span>
+        } else {
+<span class="nc" id="L636">            throw new ParseException(</span>
+<span class="nc" id="L637">                    &quot;Expected token indicating method return type; received &quot; + tokens[nextPos].toString());</span>
+        }
+        // get method name
+
+<span class="pc bpc" id="L641" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="fc" id="L642">            name = ((IdentifierToken) tokens[nextPos]).name;</span>
+<span class="fc" id="L643">            nextPos++;</span>
+        } else {
+<span class="nc" id="L645">            throw new ParseException(</span>
+<span class="nc" id="L646">                    &quot;Expected IdentifierToken for method name; received &quot; + tokens[nextPos].toString());</span>
+        }
+        // get parameters
+<span class="pc bpc" id="L649" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof LeftParenToken) {</span>
+<span class="fc" id="L650">            nextPos++;</span>
+        } else {
+<span class="nc" id="L652">            throw new ParseException(</span>
+<span class="nc" id="L653">                    &quot;Expected LeftParenToken; received &quot; + tokens[nextPos].toString() + &quot; at position &quot; + nextPos);</span>
+        }
+<span class="pc bpc" id="L655" title="1 of 2 branches missed.">        if (!(tokens[nextPos] instanceof RightParenToken)) {</span>
+<span class="nc" id="L656">            ParseResult&lt;VariableDeclarationStmt&gt; result = parseVarDec(nextPos);</span>
+<span class="nc" id="L657">            parameters.add(result.result);</span>
+<span class="nc" id="L658">            nextPos = result.nextPos;</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">            while (tokens[nextPos] instanceof CommaToken) {</span>
+<span class="nc" id="L660">                nextPos++;</span>
+<span class="nc" id="L661">                result = parseVarDec(nextPos);</span>
+<span class="nc" id="L662">                parameters.add(result.result);</span>
+<span class="nc" id="L663">                nextPos = result.nextPos;</span>
+            }
+        }
+<span class="pc bpc" id="L666" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof RightParenToken) {</span>
+<span class="fc" id="L667">            nextPos++;</span>
+        } else {
+<span class="nc" id="L669">            throw new ParseException(&quot;Expected RightParenToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+
+        // get
+        // body/////////////////////////////////////////////////////////////////////////
+<span class="fc" id="L674">        ParseResult&lt;BlockStmt&gt; result = parseBlockStmt(nextPos);</span>
+<span class="fc" id="L675">        body = result.result;</span>
+<span class="fc" id="L676">        nextPos = result.nextPos;</span>
+
+<span class="fc" id="L678">        List&lt;Statement&gt; bodyStmts = body.body;</span>
+<span class="pc bpc" id="L679" title="1 of 2 branches missed.">        if (bodyStmts.size() &gt; 0) {</span>
+<span class="fc" id="L680">            Statement returnStmt = bodyStmts.get(bodyStmts.size() - 1);</span>
+<span class="pc bpc" id="L681" title="1 of 2 branches missed.">            if (returnStmt instanceof ReturnStmt) {</span>
+<span class="fc" id="L682">                returnExp = ((ReturnStmt) returnStmt).value;</span>
+<span class="fc" id="L683">                bodyStmts.remove(bodyStmts.size() - 1);</span>
+<span class="nc bnc" id="L684" title="All 2 branches missed.">            } else if (returnStmt instanceof ReturnVoidStmt) {</span>
+<span class="nc" id="L685">                bodyStmts.remove(bodyStmts.size() - 1);</span>
+            } else {
+<span class="nc" id="L687">                throw new ParseException(&quot;Missing Return statement&quot;);</span>
+            }
+<span class="fc" id="L689">        } else {</span>
+<span class="nc" id="L690">            throw new ParseException(&quot;Missing Return statement&quot;);</span>
+        }
+<span class="fc" id="L692">        return new ParseResult&lt;MethodDef&gt;(new MethodDef(type, name, parameters, (BlockStmt) body, returnExp), nextPos);</span>
+    }
+
+    public ParseResult&lt;ClassDef&gt; parseClassDefinition(final int startPos) throws ParseException, TokenizationException {
+        String className;
+<span class="fc" id="L697">        String parentClass = &quot;&quot;;</span>
+<span class="fc" id="L698">        ArrayList&lt;VariableDeclarationStmt&gt; fields = new ArrayList&lt;VariableDeclarationStmt&gt;();</span>
+        Constructor constructor;
+<span class="fc" id="L700">        ArrayList&lt;MethodDef&gt; methods = new ArrayList&lt;MethodDef&gt;();</span>
+
+<span class="fc" id="L702">        int nextPos = startPos;</span>
+<span class="pc bpc" id="L703" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof ClassKeywordToken) {</span>
+<span class="fc" id="L704">            nextPos++;</span>
+        } else {
+<span class="nc" id="L706">            throw new ParseException(</span>
+                    &quot;should not have started parsing a ClassDefinition that doesn't start with a ClassKeywordToken, but somehow we did&quot;);
+        }
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="fc" id="L710">            className = ((IdentifierToken) tokens[nextPos]).name;</span>
+<span class="fc" id="L711">            nextPos++;</span>
+        } else {
+<span class="nc" id="L713">            throw new ParseException(&quot;Expected IdentifierToken for className; received &quot; + tokens[nextPos].toString());</span>
+        }
+        // check for parent class
+<span class="fc bfc" id="L716" title="All 2 branches covered.">        if (tokens[nextPos] instanceof ColonToken) {</span>
+<span class="fc" id="L717">            nextPos++;</span>
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">            if (tokens[nextPos] instanceof IdentifierToken) {</span>
+<span class="fc" id="L719">                parentClass = ((IdentifierToken) tokens[nextPos]).name;</span>
+<span class="fc" id="L720">                nextPos++;</span>
+            } else {
+<span class="nc" id="L722">                throw new ParseException(</span>
+<span class="nc" id="L723">                        &quot;Expected IdentifierToken for parent class; received &quot; + tokens[nextPos].toString());</span>
+            }
+        }
+<span class="pc bpc" id="L726" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof LCurlyToken) {</span>
+<span class="fc" id="L727">            nextPos++;</span>
+        } else {
+<span class="nc" id="L729">            throw new ParseException(&quot;Expected LCurlyToken; received &quot; + tokens[nextPos].toString());</span>
+        }
+        // get fields
+<span class="pc bpc" id="L732" title="1 of 2 branches missed.">        while (!(tokens[nextPos] instanceof ConstructorKeywordToken)) {</span>
+<span class="nc" id="L733">            ParseResult&lt;VariableDeclarationStmt&gt; result = parseVarDec(nextPos);</span>
+<span class="nc" id="L734">            fields.add(result.result);</span>
+<span class="nc" id="L735">            nextPos = result.nextPos;</span>
+<span class="nc bnc" id="L736" title="All 2 branches missed.">            if (tokens[nextPos] instanceof SemicolonToken) {</span>
+<span class="nc" id="L737">                nextPos++;</span>
+            } else {
+<span class="nc" id="L739">                throw new ParseException(&quot;Expected SemicolonToken; received &quot; + tokens[nextPos].toString());</span>
+            }
+<span class="nc" id="L741">        }</span>
+        // get constructor
+<span class="pc bpc" id="L743" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof ConstructorKeywordToken) {</span>
+<span class="fc" id="L744">            ParseResult&lt;Constructor&gt; result = parseConstructor(nextPos);</span>
+<span class="fc" id="L745">            constructor = result.result;</span>
+<span class="fc" id="L746">            nextPos = result.nextPos;</span>
+<span class="fc" id="L747">        } else {</span>
+<span class="nc" id="L748">            throw new ParseException(</span>
+                    &quot;should not have reached here if next token wasn't a ConstructorKeywordToken, but somehow we did&quot;);
+        }
+        // get methods
+
+<span class="fc bfc" id="L753" title="All 2 branches covered.">        while (!(tokens[nextPos] instanceof RCurlyToken)) {</span>
+<span class="fc" id="L754">            ParseResult&lt;MethodDef&gt; result = parseMethodDef(nextPos);</span>
+<span class="fc" id="L755">            methods.add(result.result);</span>
+<span class="fc" id="L756">            nextPos = result.nextPos;</span>
+<span class="fc" id="L757">        }</span>
+
+<span class="pc bpc" id="L759" title="1 of 2 branches missed.">        if (tokens[nextPos] instanceof RCurlyToken) {</span>
+<span class="fc" id="L760">            nextPos++;</span>
+        } else {
+<span class="nc" id="L762">            throw new ParseException(</span>
+                    &quot;should not have reached here if next token wasn't a RCurlyToken, but somehow we did&quot;);
+        }
+
+<span class="fc bfc" id="L766" title="All 2 branches covered.">        if (parentClass.isEmpty()) {</span>
+<span class="fc" id="L767">            return new ParseResult&lt;ClassDef&gt;(new ClassDef(className, fields, constructor, methods), nextPos);</span>
+        } else {
+<span class="fc" id="L769">            return new ParseResult&lt;ClassDef&gt;(new ClassDef(className, parentClass, fields, constructor, methods),</span>
+                    nextPos);
+        }
+    }
+
+    public Program parseProgram() throws ParseException, TokenizationException {
+<span class="fc" id="L775">        int nextPos = 0;</span>
+<span class="fc" id="L776">        ArrayList&lt;ClassDef&gt; classDefs = new ArrayList&lt;ClassDef&gt;();</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">        while (tokens[nextPos] instanceof ClassKeywordToken) {</span>
+<span class="fc" id="L778">            ParseResult&lt;ClassDef&gt; result = parseClassDefinition(nextPos);</span>
+<span class="fc" id="L779">            classDefs.add(result.result);</span>
+<span class="fc" id="L780">            nextPos = result.nextPos;</span>
+<span class="fc" id="L781">        }</span>
+
+        // final ParseResult&lt;Expression&gt; result = parseExp(nextPos);
+<span class="fc" id="L784">        final ParseResult&lt;MethodDef&gt; result = parseMethodDef(nextPos);</span>
+
+<span class="pc bpc" id="L786" title="1 of 2 branches missed.">        if (result.nextPos == tokens.length) {</span>
+<span class="fc" id="L787">            return new Program(classDefs, result.result);</span>
+        } else {
+<span class="nc" id="L789">            throw new ParseException(&quot;extra tokens at end&quot;);</span>
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

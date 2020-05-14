@@ -9,24 +9,24 @@ public class Program{
 
     public final MethodDef entryPoint;
 
-<span class="nc" id="L12">    public Program(final ArrayList&lt;ClassDef&gt; classDefs, final MethodDef entryPoint){</span>
-<span class="nc" id="L13">        this.classDefs = classDefs;</span>
-<span class="nc" id="L14">        this.entryPoint = entryPoint;</span>
-<span class="nc" id="L15">    }</span>
+<span class="fc" id="L12">    public Program(final ArrayList&lt;ClassDef&gt; classDefs, final MethodDef entryPoint){</span>
+<span class="fc" id="L13">        this.classDefs = classDefs;</span>
+<span class="fc" id="L14">        this.entryPoint = entryPoint;</span>
+<span class="fc" id="L15">    }</span>
 
     public String toString(){
-<span class="nc" id="L18">        return &quot;Program(&quot; + classDefsString() + &quot;, &quot; + entryPoint + &quot;)&quot;;</span>
+<span class="fc" id="L18">        return &quot;Program(&quot; + classDefsString() + &quot;, &quot; + entryPoint + &quot;)&quot;;</span>
     }
 
     private String classDefsString() {
-<span class="nc" id="L22">        String ret = &quot;&quot;;</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">        if (classDefs.size() &gt;= 1) {</span>
-<span class="nc" id="L24">            ret += classDefs.get(0).toString();</span>
+<span class="fc" id="L22">        String ret = &quot;&quot;;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (classDefs.size() &gt;= 1) {</span>
+<span class="fc" id="L24">            ret += classDefs.get(0).toString();</span>
         }
-<span class="nc bnc" id="L26" title="All 2 branches missed.">        for (int i = 1; i &lt; classDefs.size(); i++) {</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        for (int i = 1; i &lt; classDefs.size(); i++) {</span>
 <span class="nc" id="L27">            ret += &quot;, &quot; + classDefs.get(i).toString();</span>
         }
-<span class="nc" id="L29">        return ret;</span>
+<span class="fc" id="L29">        return ret;</span>
     }
 
     public boolean equals(Program program) {

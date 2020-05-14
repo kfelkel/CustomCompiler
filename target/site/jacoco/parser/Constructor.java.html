@@ -9,24 +9,24 @@ public class Constructor{
     final public List&lt;VariableDeclarationStmt&gt; parameters;
     final public BlockStmt body;
 
-<span class="nc" id="L12">    public Constructor(final List&lt;VariableDeclarationStmt&gt; parameters, final BlockStmt body){</span>
-<span class="nc" id="L13">        this.parameters = parameters;</span>
-<span class="nc" id="L14">        this.body = body;</span>
-<span class="nc" id="L15">    }</span>
+<span class="fc" id="L12">    public Constructor(final List&lt;VariableDeclarationStmt&gt; parameters, final BlockStmt body){</span>
+<span class="fc" id="L13">        this.parameters = parameters;</span>
+<span class="fc" id="L14">        this.body = body;</span>
+<span class="fc" id="L15">    }</span>
 
     public String toString(){
-<span class="nc" id="L18">        return &quot;Constructor(&quot; + parametersString() + &quot;, &quot; + body + &quot;)&quot;;</span>
+<span class="fc" id="L18">        return &quot;Constructor(&quot; + parametersString() + &quot;, &quot; + body + &quot;)&quot;;</span>
     }
 
     private String parametersString(){
-<span class="nc" id="L22">        String ret = &quot;&quot;;</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">        if(parameters.size() &gt;= 1){</span>
+<span class="fc" id="L22">        String ret = &quot;&quot;;</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if(parameters.size() &gt;= 1){</span>
 <span class="nc" id="L24">            ret += parameters.get(0).toString();</span>
         }
-<span class="nc bnc" id="L26" title="All 2 branches missed.">        for(int i = 1; i &lt; parameters.size(); i++){</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        for(int i = 1; i &lt; parameters.size(); i++){</span>
 <span class="nc" id="L27">            ret += &quot;, &quot; + parameters.get(i).toString();</span>
         }
-<span class="nc" id="L29">        return ret;</span>
+<span class="fc" id="L29">        return ret;</span>
     }
 
     public boolean equals(Constructor constructor) {
