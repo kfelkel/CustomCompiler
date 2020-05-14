@@ -13,6 +13,7 @@ public class CodeGenerator {
     private ArrayList<String> FunctionHeaders = new ArrayList<String>();
     private ArrayList<String> Classes = new ArrayList<String>();
     private ArrayList<String> Main = new ArrayList<String>();
+    private final Map<String, ClassDef> classDefinitions = new HashMap<String, ClassDef>();
     private Program myProgram;
 
     public CodeGenerator(Program myProgram) {
@@ -42,7 +43,7 @@ public class CodeGenerator {
         return completeCode;
     }
 
-    private void generateProgramCode() throws CodeGeneratorException {
+    private void generateProgramCode() throws CodeGeneratorException {   
         for (int i = 0; i < myProgram.classDefs.size(); i++) {
             generateClassCode(myProgram.classDefs.get(i));
         }
@@ -50,6 +51,21 @@ public class CodeGenerator {
     }
 
     private void generateClassCode(ClassDef myClass) throws CodeGeneratorException {
+        for(final ClassDef classdef:Program.classDefs){
+            classDefinitions.put(classdef.className, classdef);
+            if (classdef.parent != "") { // Add parent fields to top of class
+                ClassDef parentDef = classDefinitions.get(classdef.parent);
+                List<VariableDeclarationStmt> childtemp = classdef.fields;
+                classdef.fields = parentDef.fields;
+                classdef.fields.addAll(childtemp);
+            }
+            if(classdef.parent != ""){
+                ClassDef parentDef = classDefinitions.get(classdef.parent);
+                ArrayList<MethodDef> childtemp = classdef.methods;
+                classdef.methods = parentDef.methods;
+                classdef.methods.addAll(childtemp);
+            }
+        }
         //header
         StructHeaders.add("struct");
         StructHeaders.add(myClass.className);
@@ -62,6 +78,7 @@ public class CodeGenerator {
         for (int i = 0; i < myClass.fields.size(); i++) {
             generateStatementCode(myClass.fields.get(i), Classes);
         }
+
         //TO-DO: Deal with parent class
         Classes.add("}");
 
