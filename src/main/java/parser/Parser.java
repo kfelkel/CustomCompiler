@@ -399,13 +399,14 @@ public class Parser {
         body = stmtResult.result;
         nextPos = stmtResult.nextPos;
 
-        return new ParseResult<ForStmt>(new ForStmt(initialization, condition, incrementation, body), nextPos);
+        return new ParseResult<ForStmt>(new ForStmt(initialization, condition, incrementation, (BlockStmt) body),
+                nextPos);
     }
 
     public ParseResult<WhileStmt> parseWhileStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Expression condition;
-        Statement body;
+        BlockStmt body;
 
         if (tokens[nextPos] instanceof WhileToken) {
             nextPos++;
@@ -426,7 +427,7 @@ public class Parser {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
         ParseResult<Statement> stmtResult = parseStmt(nextPos);
-        body = stmtResult.result;
+        body = (BlockStmt) stmtResult.result;
         nextPos = stmtResult.nextPos;
 
         return new ParseResult<WhileStmt>((new WhileStmt(condition, body)), nextPos);
@@ -435,8 +436,8 @@ public class Parser {
     public ParseResult<Statement> parseIfStmt(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
         Expression condition;
-        Statement trueBranch;
-        Statement falseBranch;
+        BlockStmt trueBranch;
+        BlockStmt falseBranch;
 
         if (tokens[nextPos] instanceof IfToken) {
             nextPos++;
@@ -457,12 +458,12 @@ public class Parser {
             throw new ParseException("Expected RightParenToken; received " + tokens[nextPos].toString());
         }
         ParseResult<Statement> stmtResult = parseStmt(nextPos);
-        trueBranch = stmtResult.result;
+        trueBranch = (BlockStmt) stmtResult.result;
         nextPos = stmtResult.nextPos;
         if (tokens[nextPos] instanceof ElseToken) {
             nextPos++;
             stmtResult = parseStmt(nextPos);
-            falseBranch = stmtResult.result;
+            falseBranch = (BlockStmt) stmtResult.result;
             nextPos = stmtResult.nextPos;
             return new ParseResult<Statement>(new IfElseStmt(condition, trueBranch, falseBranch), nextPos);
         }
@@ -586,6 +587,7 @@ public class Parser {
         String name;
         ArrayList<VariableDeclarationStmt> parameters = new ArrayList<VariableDeclarationStmt>();
         BlockStmt body;
+        Expression returnExp=null;
 
         // get type
         if (tokens[nextPos] instanceof IntKeywordToken) {
@@ -651,6 +653,7 @@ public class Parser {
                 //methodDef.returnlist.add(mystmt);
             } else {System.out.println("hello");
                 ParseResult<Expression> expressionResult = parseExp(nextPos);
+                returnExp = expressionResult.result;
                 myStmt = new ReturnStmt(expressionResult.result);
                 nextPos = expressionResult.nextPos;
                 if (tokens[nextPos] instanceof SemicolonToken) {
@@ -660,7 +663,7 @@ public class Parser {
                 }
             }
         } 
-        return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, body), nextPos);
+        return new ParseResult<MethodDef>(new MethodDef(type, name, parameters, (BlockStmt)body,returnExp), nextPos);
     }
 
     public ParseResult<ClassDef> parseClassDefinition(final int startPos) throws ParseException, TokenizationException {
