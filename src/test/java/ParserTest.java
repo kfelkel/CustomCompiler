@@ -70,18 +70,18 @@ public class ParserTest {
                 new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
         testParse(programString, expected);
 
-        // // two class defs
-        // programString = "class TestClassA{constructor(){}} class TestClassB{constructor(){}} " + "int main(){return 0;}";
-        // classDefs = new ArrayList<ClassDef>();
-        // classDefs.add(new ClassDef("TestClassA", new ArrayList<VariableDeclarationStmt>(),
-        //         new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
-        //         new ArrayList<MethodDef>()));
-        // classDefs.add(new ClassDef("TestClassB", new ArrayList<VariableDeclarationStmt>(),
-        //         new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
-        //         new ArrayList<MethodDef>()));
-        // expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
-        //         new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
-        // testParse(programString, expected);
+        // two class defs
+        programString = "class TestClassA{constructor(){}} class TestClassB{constructor(){}} " + "int main(){return 0;}";
+        classDefs = new ArrayList<ClassDef>();
+        classDefs.add(new ClassDef("TestClassA", new ArrayList<VariableDeclarationStmt>(),
+                new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
+                new ArrayList<MethodDef>()));
+        classDefs.add(new ClassDef("TestClassB", new ArrayList<VariableDeclarationStmt>(),
+                new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
+                new ArrayList<MethodDef>()));
+        expected = new Program(classDefs, new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(),
+                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
+        testParse(programString, expected);
     }
 
     @Test
@@ -126,30 +126,19 @@ public class ParserTest {
         testParse(programString, expected);
     }
 
-//     @Test
-//     public void HelloWorldTest() throws TokenizationException, ParseException {
-//         String programString = "int main(){" + "String mystring= \"Hello World!\";" + "println(mystring);" + "return 0;"
-//                 + ")";
-//         ArrayList<Statement> stmtList = new ArrayList<Statement>();
-//         stmtList.add(new VariableInitializerStmt("String", "mystring", new StringExp("Hello World!")));
-//         stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
-//         stmtList.add(new ReturnStmt(new IntegerExp(0)));
-//         BlockStmt mainBody = new BlockStmt(stmtList);
-//         Program expected = new Program(new ArrayList<ClassDef>(),
-//                 new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody));
+    @Test
+    public void HelloWorldTest() throws TokenizationException, ParseException {
+        String programString = "int main(){" + "String mystring = \"Hello World!\";" + "println(mystring);" + "return 0;"
+                + "}";
+        ArrayList<Statement> stmtList = new ArrayList<Statement>();
+        stmtList.add(new VariableDeclarationStmt("String", "mystring", new StringExp("Hello World!")));
+        stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
+        BlockStmt mainBody = new BlockStmt(stmtList);
+        Program expected = new Program(new ArrayList<ClassDef>(),
+                new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody, new IntegerExp(0)));
 
-//         List<Token> tokens = Lexer.lex(programString);
-
-//         // I know Token[0] is weird, but, from the documentation,
-//         // "If the list fits in the specified array, it is returned therein."
-//         // "Otherwise, a new array is allocated with the runtime type of the specified
-//         // array and the size of this list."
-//         // So, as far as I can tell, toArray(new Token[0]) will return an array of the
-//         // proper size
-//         Parser myparser = new Parser(tokens.toArray(new Token[0]));
-//         Program actual = myparser.parseProgram();
-//         assertEquals(expected, actual);
-//     }
+        testParse(programString, expected);
+    }
 
     @Test
     public void testParseExpression() throws TokenizationException, ParseException{

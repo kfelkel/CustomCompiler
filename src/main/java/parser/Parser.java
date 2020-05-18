@@ -18,6 +18,9 @@ public class Parser {
     private Token[] tokens;
     private List<Token> subtokens;
 
+    // tokens and subtokens are the same thing, just in Array vs List form. The discrepancy is because
+    // different people wrote different parts of the code, and we decided to just leave it instead of
+    // bothering to refactor
     public Parser(Token[] tokens) {
         this.tokens = tokens;
         this.subtokens = new ArrayList<Token>(Arrays.asList(tokens));
@@ -36,7 +39,20 @@ public class Parser {
     public ParseResult<Expression> parseExp(final int startPos) throws ParseException, TokenizationException {
         int nextPos = startPos;
 
+        int parenBalance = 0;
         while (!(subtokens.get(nextPos) instanceof SemicolonToken) && nextPos != subtokens.size()) {
+            if(subtokens.get(nextPos) instanceof LeftParenToken){
+                parenBalance++;
+            }
+            // if we find a RightParenToken without a matching LeftParenToken, that means we've gotten out
+            // of the expression
+            if(subtokens.get(nextPos) instanceof RightParenToken){
+                parenBalance--;
+                if(parenBalance < 0){
+                    break;
+                }
+            }
+
             nextPos++;
         }
         return new ParseResult<Expression>(parseSubExp(getExp(startPos, nextPos, subtokens)), nextPos);
@@ -92,6 +108,7 @@ public class Parser {
             }
         }
         if (paren % 2 != 0) {
+            //System.out.println(Arrays.toString(array.toArray()));
             throw new ParseException("Missing Parentheses");
         }
         // Check for missing ops or variables
