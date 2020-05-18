@@ -406,14 +406,13 @@ public class Parser {
         } else {
             throw new ParseException("Expected LeftParenToken; received " + tokens[nextPos].toString());
         }
+
+        // parse the initializer
         ParseResult<Statement> stmtResult = parseStmt(nextPos);
         initialization = stmtResult.result;
         nextPos = stmtResult.nextPos;
-        if (tokens[nextPos] instanceof SemicolonToken) {
-            nextPos++;
-        } else {
-            throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
-        }
+
+        // parse the condition
         ParseResult<Expression> expResult = parseExp(nextPos);
         condition = expResult.result;
         nextPos = expResult.nextPos;
@@ -422,6 +421,8 @@ public class Parser {
         } else {
             throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
         }
+
+        // parse the incrementor
         stmtResult = parseStmt(nextPos);
         incrementation = stmtResult.result;
         nextPos = stmtResult.nextPos;
@@ -515,7 +516,7 @@ public class Parser {
         } else {
             throw new ParseException("Expected LCurlyToken; received " + tokens[nextPos].toString());
         }
-        // Something going on here i think
+
         while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<Statement> result = parseStmt(nextPos);
             System.out.println(result.result.toString());
@@ -664,7 +665,7 @@ public class Parser {
             type = "int";
             nextPos++;
         } else if (tokens[nextPos] instanceof BoolKeywordToken) {
-            type = "Bool";
+            type = "bool";
             nextPos++;
         } else if (tokens[nextPos] instanceof StringKeywordToken) {
             type = "String";

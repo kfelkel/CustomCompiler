@@ -101,12 +101,14 @@ public class ParserTest {
     @Test
     public void MethodDefTest() throws TokenizationException, ParseException {
         // one method
-        String programString = "class TestClass{constructor(){} int methodTest(){ return 0;}} "
+        String programString = "class TestClass{constructor(){} int methodTest(){ println(\"Hello World\"); return 0;}} "
                 + "int main(){ return 0;}";
         ArrayList<ClassDef> classDefs = new ArrayList<ClassDef>();
         ArrayList<MethodDef> methodDefs = new ArrayList<MethodDef>();
+        ArrayList<Statement> methodStmts = new ArrayList<Statement>();
+        methodStmts.add(new PrintlnStmt(new StringExp("Hello World")));
         methodDefs.add(new MethodDef("int", "methodTest", new ArrayList<VariableDeclarationStmt>(),
-                new BlockStmt(new ArrayList<Statement>()), new IntegerExp(0)));
+                new BlockStmt(methodStmts), new IntegerExp(0)));
         classDefs.add(new ClassDef("TestClass", new ArrayList<VariableDeclarationStmt>(),
                 new Constructor(new ArrayList<VariableDeclarationStmt>(), new BlockStmt(new ArrayList<Statement>())),
                 methodDefs));
@@ -176,6 +178,58 @@ public class ParserTest {
         ArrayList<Statement> stmtList = new ArrayList<Statement>();
         stmtList.add(new VariableDeclarationStmt("String", "mystring", new StringExp("Hello World!")));
         stmtList.add(new PrintlnStmt(new VariableExp("mystring")));
+        BlockStmt mainBody = new BlockStmt(stmtList);
+        Program expected = new Program(new ArrayList<ClassDef>(),
+                new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody, new IntegerExp(0)));
+
+        testParse(programString, expected);
+    }
+
+    @Test
+    public void StatementTesting() throws TokenizationException, ParseException{
+        String programString = "int main(){" 
+        + "int myInt;"
+        + "String myString = \"text\";"
+        + "myInt = 1;"
+        + "print(myString);"
+        + "println(myString);"
+        + "for(int i = 0; i < 5; i = i + 1;){myInt = myInt * 2; println(\"For Loop Text\");}"
+        + "while(myInt > 1){myInt = myInt - 1; println(\"While Loop Text\");}"
+        + "if(myInt == 1){println(\"true branch text\");} else {println(\"false branch text\");}"
+        + "if(myInt == 0){println(\"true branch text\");}"
+        + "return 0;" 
+        + "}";
+        ArrayList<Statement> stmtList = new ArrayList<Statement>();
+        stmtList.add(new VariableDeclarationStmt("int", "myInt"));
+        stmtList.add(new VariableDeclarationStmt("String", "myString", new StringExp("text")));
+        stmtList.add(new VariableAssignmentStmt("myInt", new IntegerExp(1)));
+        stmtList.add(new PrintStmt(new VariableExp("myString")));
+        stmtList.add(new PrintlnStmt(new VariableExp("myString")));
+        ArrayList<Statement> forStmts = new ArrayList<Statement>();
+        forStmts.add(new VariableAssignmentStmt("myInt", new MultiplicationExp(new VariableExp("myInt"), new IntegerExp(2))));
+        forStmts.add(new PrintlnStmt(new StringExp("For Loop Text")));
+        stmtList.add(new ForStmt(new VariableDeclarationStmt("int", "i", new IntegerExp(0)), 
+        new LessThanExp(new VariableExp("i"), new IntegerExp(5)),
+        new VariableAssignmentStmt("i", new PlusExp(new VariableExp("i"), new IntegerExp(1))), 
+        new BlockStmt(forStmts)));
+        ArrayList<Statement> whileStmts = new ArrayList<Statement>();
+        whileStmts.add(new VariableAssignmentStmt("myInt", new MinusExp(new VariableExp("myInt"), new IntegerExp(1))));
+        whileStmts.add(new PrintlnStmt(new StringExp("While Loop Text")));
+        stmtList.add(new WhileStmt(new GreaterThanExp(new VariableExp("myInt"), new IntegerExp(1)), 
+        new BlockStmt(whileStmts)));
+        ArrayList<Statement> ifElseTrueStmts = new ArrayList<Statement>();
+        ifElseTrueStmts.add(new PrintlnStmt(new StringExp("true branch text")));
+        ArrayList<Statement> ifElseFalseStmts = new ArrayList<Statement>();
+        ifElseFalseStmts.add(new PrintlnStmt(new StringExp("false branch text")));
+        stmtList.add(new IfElseStmt(new EqualEqualExp(new VariableExp("myInt"), new IntegerExp(1)), 
+        new BlockStmt(ifElseTrueStmts), 
+        new BlockStmt(ifElseFalseStmts)));
+        ArrayList<Statement> ifStmts = new ArrayList<Statement>();
+        ifStmts.add(new PrintlnStmt(new StringExp("true branch text")));
+        stmtList.add(new IfStmt(new EqualEqualExp(new VariableExp("myInt"), new IntegerExp(0)), 
+        new BlockStmt(ifStmts)));
+
+
         BlockStmt mainBody = new BlockStmt(stmtList);
         Program expected = new Program(new ArrayList<ClassDef>(),
                 new MethodDef("int", "main", new ArrayList<VariableDeclarationStmt>(), mainBody, new IntegerExp(0)));

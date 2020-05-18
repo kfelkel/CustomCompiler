@@ -29,7 +29,7 @@ public class LexerTest {
         testLex("else", new ElseToken());
         testLex("for", new ForToken());
         testLex("if", new IfToken());
-        testLex("int", new IntKeywordToken());
+        testLex("Int", new IntKeywordToken());
         testLex("new", new NewToken());
         testLex("println", new PrintlnToken());
         testLex("print", new PrintToken());
@@ -37,7 +37,7 @@ public class LexerTest {
         testLex("this", new ThisToken());
         testLex("Void", new VoidToken());
         testLex("while", new WhileToken());
-        testLex("bool", new BoolKeywordToken());
+        testLex("Bool", new BoolKeywordToken());
         testLex("true", new BoolValueToken(true));
         testLex("false", new BoolValueToken(false));
     }

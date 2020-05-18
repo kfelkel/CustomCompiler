@@ -148,7 +148,7 @@ public class Lexer {
                     result.add(new ForToken());
                 } else if (atom.equals("if")) {
                     result.add(new IfToken());
-                } else if (atom.equals("int")) {
+                } else if (atom.equals("Int")) {
                     result.add(new IntKeywordToken());
                 } else if (atom.equals("new")) {
                     result.add(new NewToken());
@@ -168,7 +168,7 @@ public class Lexer {
                     result.add(new BoolValueToken(true));
                 } else if (atom.equals("false")) {
                     result.add(new BoolValueToken(false));
-                } else if (atom.equals("bool")) {
+                } else if (atom.equals("Bool")) {
                     result.add(new BoolKeywordToken());
                 } else {
                     result.add(new IdentifierToken(atom));
