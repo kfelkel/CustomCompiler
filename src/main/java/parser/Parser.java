@@ -18,8 +18,10 @@ public class Parser {
     private Token[] tokens;
     private List<Token> subtokens;
 
-    // tokens and subtokens are the same thing, just in Array vs List form. The discrepancy is because
-    // different people wrote different parts of the code, and we decided to just leave it instead of
+    // tokens and subtokens are the same thing, just in Array vs List form. The
+    // discrepancy is because
+    // different people wrote different parts of the code, and we decided to just
+    // leave it instead of
     // bothering to refactor
     public Parser(Token[] tokens) {
         this.tokens = tokens;
@@ -41,14 +43,15 @@ public class Parser {
 
         int parenBalance = 0;
         while (!(subtokens.get(nextPos) instanceof SemicolonToken) && nextPos != subtokens.size()) {
-            if(subtokens.get(nextPos) instanceof LeftParenToken){
+            if (subtokens.get(nextPos) instanceof LeftParenToken) {
                 parenBalance++;
             }
-            // if we find a RightParenToken without a matching LeftParenToken, that means we've gotten out
+            // if we find a RightParenToken without a matching LeftParenToken, that means
+            // we've gotten out
             // of the expression
-            if(subtokens.get(nextPos) instanceof RightParenToken){
+            if (subtokens.get(nextPos) instanceof RightParenToken) {
                 parenBalance--;
-                if(parenBalance < 0){
+                if (parenBalance < 0) {
                     break;
                 }
             }
@@ -108,7 +111,7 @@ public class Parser {
             }
         }
         if (paren % 2 != 0) {
-            //System.out.println(Arrays.toString(array.toArray()));
+            // System.out.println(Arrays.toString(array.toArray()));
             throw new ParseException("Missing Parentheses");
         }
         // Check for missing ops or variables
@@ -196,7 +199,7 @@ public class Parser {
             } else {
                 throw new ParseException("Missing LeftParen after classname");
             }
-            if (array.get(parsenew) instanceof RightParenToken){
+            if (array.get(parsenew) instanceof RightParenToken) {
                 return new NewExp(classname, parameters);
             } else {
                 for (int i = parsenew; i < array.size(); i++) {
@@ -352,11 +355,14 @@ public class Parser {
                     throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
                 }
             } else {
-                // This is where assignment statements are handled
-                // Need to fill this in, but wasn't sure how to do it until I have expression
-                // code
-                // Not sure how much I should write here, and how much I should pass off to
-                // another method
+                ParseResult<VariableAssignmentStmt> result = parseVarAssignment(nextPos);
+                myStmt = result.result;
+                nextPos = result.nextPos;
+                if (tokens[nextPos] instanceof SemicolonToken) {
+                    nextPos++;
+                } else {
+                    throw new ParseException("Expected SemicolonToken; received " + tokens[nextPos].toString());
+                }
             }
         } else if (tokens[nextPos] instanceof ReturnToken) {
             nextPos++;
@@ -512,6 +518,7 @@ public class Parser {
         // Something going on here i think
         while (!(tokens[nextPos] instanceof RCurlyToken)) {
             ParseResult<Statement> result = parseStmt(nextPos);
+            System.out.println(result.result.toString());
             block.add(result.result);
             nextPos = result.nextPos;
         }
@@ -536,7 +543,7 @@ public class Parser {
             type = "int";
             nextPos++;
         } else if (tokens[nextPos] instanceof BoolKeywordToken) {
-            type = "Bool";
+            type = "bool";
             nextPos++;
         } else if (tokens[nextPos] instanceof StringKeywordToken) {
             type = "String";
@@ -560,12 +567,43 @@ public class Parser {
             value = result.result;
             nextPos = result.nextPos;
         }
+        // Note: Does not need to look for a semi-colon; parseStmt() does that after
+        // calling this function
 
         if (value != null) {
             return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name, value), nextPos);
         } else {
             return new ParseResult<VariableDeclarationStmt>(new VariableDeclarationStmt(type, name), nextPos);
         }
+    }
+
+    public ParseResult<VariableAssignmentStmt> parseVarAssignment(final int startPos)
+            throws ParseException, TokenizationException {
+        String name;
+        Expression value = null;
+
+        int nextPos = startPos;
+
+        if (tokens[nextPos] instanceof IdentifierToken) {
+            name = ((IdentifierToken) tokens[nextPos]).name;
+            nextPos++;
+        } else {
+            throw new ParseException(
+                    "Expected IdentifierToken for variable name; received " + tokens[nextPos].toString());
+        }
+        if (tokens[nextPos] instanceof EqualToken) {
+            nextPos++;
+            ParseResult<Expression> result = parseExp(nextPos);
+            value = result.result;
+            nextPos = result.nextPos;
+        } else {
+            throw new ParseException(
+                    "Expected EqualToken; received " + tokens[nextPos].toString());
+        }
+        // Note: Does not need to look for a semi-colon; parseStmt() does that after
+        // calling this function
+
+        return new ParseResult<VariableAssignmentStmt>(new VariableAssignmentStmt(name, value), nextPos);
     }
 
     public ParseResult<Constructor> parseConstructor(final int startPos) throws ParseException, TokenizationException {
